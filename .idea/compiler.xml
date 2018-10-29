@@ -20,7 +20,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="IR2" target="1.5" />
+      <module name="IR2" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>
