@@ -29,13 +29,24 @@ public class ReadFile {
         String File = stringBuffer.toString();
         String[] Docs = File.split("<DOC>");
         fr.close();
-        for (int j = 0; j < Docs.length ; j++) {
-//            CreateDocFromString(Docs[j]);
+        for (int j = 1; j < Docs.length ; j++) {
+            CreateDocFromString(Docs[j]);
         }
-
 
     }
 
+    public void CreateDocFromString(String str){
+        String DocNo="";
+        String Date="";
+        String Header="";
+        String Text="";
+
+        DocNo = str.split("<DOCNO>")[1].split("</DOCNO>")[0];
+        Date = str.split("<DATE1>")[1].split("</DATE1>")[0];
+        Text = str.split("<TEXT>")[1].split("</TEXT>")[0];
+        Document document = new Document(DocNo,Date,Header,Text);
+        docList.add(document);
+    }
 
 //    public void CreateDocFromString(String str){
 //        String DocNo="";
