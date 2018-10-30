@@ -42,10 +42,11 @@ public class ReadFile {
         String Text="";
 
         DocNo = str.split("<DOCNO>")[1].split("</DOCNO>")[0];
-        Date = str.split("<DATE1>")[1].split("</DATE1>")[0];
+        Date = str.split("<DATE1>|<DATE>")[1].split("</DATE1>|</DATE>")[0];
         Text = str.split("<TEXT>")[1].split("</TEXT>")[0];
         Document document = new Document(DocNo,Date,Header,Text);
         docList.add(document);
+        document.toString();
     }
 
 //    public void CreateDocFromString(String str){
