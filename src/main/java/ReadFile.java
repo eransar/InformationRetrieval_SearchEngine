@@ -20,11 +20,10 @@ public class ReadFile {
         BufferedReader bufferedReader = new BufferedReader(fr);
         StringBuffer stringBuffer = new StringBuffer();
         String line;
-        int i=1;
+
         while ((line = bufferedReader.readLine()) != null) {
             stringBuffer.append(line);
             stringBuffer.append("\n");
-            i++;
         }
         String File = stringBuffer.toString();
         String[] Docs = File.split("<DOC>");

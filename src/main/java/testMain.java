@@ -21,30 +21,4 @@ public class testMain {
 //        System.out.println(s);
     }
 
-    public static  String decimalNumbers(String wordTemp)
-    {
-        StringBuilder finalWord = new StringBuilder();
-        int len = wordTemp.length();
-        int index = wordTemp.indexOf(".");
-        int corruntLen = len - index;
-        if (corruntLen > 3) {
-            //String s = Character.toString(wordTemp.charAt(index + 3));
-            //System.out.println(wordTemp);
-            //if it is a number at the third char after the .
-            if (Character.isDigit(wordTemp.charAt(index+3))) {
-                int three = Integer.parseInt(""+wordTemp.charAt(index+3));
-                if (three > 4) {
-                    //String t = wordTemp.charAt(index + 2) + "";
-                    int twoAfterDec = wordTemp.charAt(index + 2)-'0';
-                    twoAfterDec = twoAfterDec + 1;
-                    String number = twoAfterDec + "";
-                    finalWord.append(wordTemp.substring(0, index + 2) + number.charAt(0));
-                } else {
-                    finalWord.append(wordTemp.substring(0, index + 3));
-                }
-            }
-        }
-        return finalWord.toString();
-
-    }
 }
