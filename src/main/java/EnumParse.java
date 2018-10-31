@@ -32,7 +32,7 @@ public enum EnumParse {
                     Number number = format.parse(text[i]);
                     double number_term = number.doubleValue();
 
-                    if(number_term >=1000 && number_term <100000){
+                    if(number_term >=1000 && number_term <1000000){
                         toReturn.add(convertDouble(number_term/1000)+"K");
                     }
                     else if (number_term>=1000000 && number_term <1000000000){

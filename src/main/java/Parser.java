@@ -50,6 +50,7 @@ public class Parser {
 
         textWithoutDelimeters=text.split(" ");
         identifyDoc();
+
 //        ParseWords();
     }
 
@@ -67,12 +68,11 @@ public class Parser {
                     enumParse = EnumParse.symbol;
                     terms.addAll(enumParse.parse(i));
 
-
                     System.out.println("Symbol : "+textWithoutDelimeters[i]);
                 }
                 else if (isNumber(i)){
                     enumParse = EnumParse.number;
-                    System.out.println("Number : "+textWithoutDelimeters[i]);
+                    terms.addAll(enumParse.parse(i));
                 }
             } catch (ParseException e) {
                 enumParse = EnumParse.word;
