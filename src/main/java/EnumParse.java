@@ -1,6 +1,7 @@
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 
@@ -63,8 +64,8 @@ public enum EnumParse {
                     }
                 }
             }
-            else if(i+1<text.length && (months().contains(text[i+1].substring(0,1).toUpperCase()+text[i+1].substring(1)) || months().contains(text[i+1].toUpperCase()))){
-
+            else if(i+1<text.length && months().containsKey(text[i+1])){
+                
             }
             else{
                     if(number_term >=1000 && number_term <1000000){
@@ -97,21 +98,34 @@ public enum EnumParse {
             keywords.add("trillion");
             return keywords;
         }
-        public ArrayList<String> months(){
-            ArrayList<String> keywords=new ArrayList<String>();
-            keywords.add("january");
-            keywords.add("february");
-            keywords.add("march");
-            keywords.add("april");
-            keywords.add("may");
-            keywords.add("june");
-            keywords.add("july");
-            keywords.add("august");
-            keywords.add("september");
-            keywords.add("october");
-            keywords.add("november");
-            keywords.add("december");
-            return keywords;
+        public HashMap<String, Integer> months(){
+
+            HashMap<String,Integer> parse_months = new HashMap<String,Integer>();
+
+            parse_months.put("JANUARY",1);
+            parse_months.put("January",1);
+            parse_months.put("February",2);
+            parse_months.put("FEBRUARY",2);
+            parse_months.put("March",3);
+            parse_months.put("MARCH",3);
+            parse_months.put("April",4);
+            parse_months.put("APRIL",4);
+            parse_months.put("June",6);
+            parse_months.put("JUNE",6);
+            parse_months.put("August",8);
+            parse_months.put("AUGUST",8);
+            parse_months.put("July",7);
+            parse_months.put("JULY",7);
+            parse_months.put("September",9);
+            parse_months.put("SEPTEMBER",9);
+            parse_months.put("October",10);
+            parse_months.put("OCTOBER",10);
+            parse_months.put("November",11);
+            parse_months.put("NOVEMBER",11);
+            parse_months.put("December",12);
+            parse_months.put("DECEMBER",12);
+
+            return parse_months;
         }
     },
     symbol{
