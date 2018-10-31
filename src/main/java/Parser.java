@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
@@ -10,12 +11,17 @@ public class Parser {
     private HashSet<String> stopWords;
     private HashSet<String> terms;
     private Document doc;
-    private String[] textWithoutDelimeters;
+
+    public static String[] getTextWithoutDelimeters() {
+        return textWithoutDelimeters;
+    }
+
+    private static String[] textWithoutDelimeters;
 
 
     public Parser() throws IOException {
         stopWords=new HashSet<String>();
-        initializestopwords();
+//        initializestopwords();
         terms=new HashSet<String>();
     }
 
@@ -43,9 +49,59 @@ public class Parser {
 
 
         textWithoutDelimeters=text.split(" ");
-        ParseNumbers();
+        identifyDoc();
 //        ParseWords();
     }
+
+    public void setDoc(Document doc) {
+        this.doc = doc;
+    }
+
+
+
+    public void identifyDoc(){
+        EnumParse enumParse;
+        for (int i = 0; i <textWithoutDelimeters.length ; i++) {
+            try {
+                if(isSymbol(i)){
+                    enumParse = EnumParse.symbol;
+                    terms.addAll(enumParse.parse(i));
+
+
+                    System.out.println("Symbol : "+textWithoutDelimeters[i]);
+                }
+                else if (isNumber(i)){
+                    enumParse = EnumParse.number;
+                    System.out.println("Number : "+textWithoutDelimeters[i]);
+                }
+            } catch (ParseException e) {
+                enumParse = EnumParse.word;
+                System.out.println("Word : "+textWithoutDelimeters[i]);
+
+            }
+        }
+    }
+
+    private boolean isSymbol(int i) throws ParseException {
+
+        ArrayList<Character> ch = new ArrayList<>();
+        ch.add('$');
+        if(ch.contains(textWithoutDelimeters[i].charAt(0))) {
+            NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
+            String substring = textWithoutDelimeters[i].substring(1, textWithoutDelimeters[i].length());
+            Number number = format.parse(substring);
+            return true;
+        }
+            return false;
+    }
+
+    private boolean isNumber(int i) throws ParseException {
+        NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
+
+        Number number = format.parse(textWithoutDelimeters[i]);
+        return true;
+    }
+
 
     private void ParseWords(int i) {
 

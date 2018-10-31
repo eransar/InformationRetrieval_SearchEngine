@@ -9,13 +9,18 @@ public class testMain {
         ReadFile rf = new ReadFile();
         rf.updateDocList("FT923_5");
         Parser parse = new Parser();
-        parse.ParseDocument(rf.docList.get(0));
+//        parse.ParseDocument(rf.docList.get(0));
 
 //        String s="1,000";
 //        NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
 //        Number number = format.parse(s);
 //        double d = number.doubleValue();
-        parse.printTerms();
+//        parse.printTerms();
+
+        Document doc = new Document("1","2","33","788,000 $55567 adasdadsa");
+        parse.setDoc(doc);
+        parse.ParseDocument(doc);
+
 
 //        s = s.indexOf(".") < 0 ? s : s.replaceAll("0*$", "").replaceAll("\\.$", "");
 //        System.out.println(s);
