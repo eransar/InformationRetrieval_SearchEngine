@@ -73,6 +73,7 @@ public class Parser {
                 else if (isNumber(i)){
                     enumParse = EnumParse.number;
                     terms.addAll(enumParse.parse(i));
+                    System.out.println("Number : "+textWithoutDelimeters[i]);
                 }
             } catch (ParseException e) {
                 enumParse = EnumParse.word;

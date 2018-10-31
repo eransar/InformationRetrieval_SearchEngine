@@ -17,12 +17,11 @@ public class testMain {
 //        double d = number.doubleValue();
 //        parse.printTerms();
 
-//        Document doc = new Document("1","2","33","788,000 $55567 adasdadsa");
-//        parse.setDoc(doc);
-//        parse.ParseDocument(doc);
+        Document doc = new Document("1","2","33","788,000 14 May adasdadsa");
+        parse.setDoc(doc);
+        parse.ParseDocument(doc);
 
-        String m = "may";
-        System.out.println(m.substring(0,1).toUpperCase()+m.substring(1));
+
 
 
 

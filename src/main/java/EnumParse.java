@@ -65,10 +65,16 @@ public enum EnumParse {
                 }
             }
             else if(i+1<text.length && months().containsKey(text[i+1])){
-                if(number_term<10)
-                    toReturn.add("0"+months().get(text[i+1])+"-"+number_term);
-                else
-                    toReturn.add(months().get(text[i+1])+"-"+number_term);
+                String month =""+months().get(text[i+1]);
+                if(months().get(text[i+1]) < 10){
+                    month="0"+months().get(text[i+1]);
+                }
+                if(number_term<10){
+                    toReturn.add(month+"-"+"0"+convertDouble(number_term));
+                }
+                else{
+                    toReturn.add(month+"-"+convertDouble(number_term));
+                }
             }
             else{
                     if(number_term >=1000 && number_term <1000000){
@@ -113,6 +119,8 @@ public enum EnumParse {
             parse_months.put("MARCH",3);
             parse_months.put("April",4);
             parse_months.put("APRIL",4);
+            parse_months.put("May",5);
+            parse_months.put("MAY",5);
             parse_months.put("June",6);
             parse_months.put("JUNE",6);
             parse_months.put("August",8);
