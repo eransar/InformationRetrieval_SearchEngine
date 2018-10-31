@@ -65,7 +65,10 @@ public enum EnumParse {
                 }
             }
             else if(i+1<text.length && months().containsKey(text[i+1])){
-                
+                if(number_term<10)
+                    toReturn.add("0"+months().get(text[i+1])+"-"+number_term);
+                else
+                    toReturn.add(months().get(text[i+1])+"-"+number_term);
             }
             else{
                     if(number_term >=1000 && number_term <1000000){
