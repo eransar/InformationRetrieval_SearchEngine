@@ -111,28 +111,46 @@ public enum EnumParse {
 
             HashMap<String,Integer> parse_months = new HashMap<String,Integer>();
 
+            parse_months.put("JAN",1);
+            parse_months.put("Jan",1);
             parse_months.put("JANUARY",1);
             parse_months.put("January",1);
+            parse_months.put("FEB",2);
+            parse_months.put("Feb",2);
             parse_months.put("February",2);
             parse_months.put("FEBRUARY",2);
+            parse_months.put("Mar",3);
+            parse_months.put("MAR",3);
             parse_months.put("March",3);
             parse_months.put("MARCH",3);
+            parse_months.put("Apr",4);
+            parse_months.put("APR",4);
             parse_months.put("April",4);
             parse_months.put("APRIL",4);
             parse_months.put("May",5);
             parse_months.put("MAY",5);
             parse_months.put("June",6);
             parse_months.put("JUNE",6);
-            parse_months.put("August",8);
-            parse_months.put("AUGUST",8);
             parse_months.put("July",7);
             parse_months.put("JULY",7);
+            parse_months.put("Aug",8);
+            parse_months.put("AUG",8);
+            parse_months.put("August",8);
+            parse_months.put("AUGUST",8);
+            parse_months.put("Sept",9);
+            parse_months.put("SEPT",9);
             parse_months.put("September",9);
             parse_months.put("SEPTEMBER",9);
+            parse_months.put("Oct",10);
+            parse_months.put("OCT",10);
             parse_months.put("October",10);
             parse_months.put("OCTOBER",10);
+            parse_months.put("Nov",11);
+            parse_months.put("NOV",11);
             parse_months.put("November",11);
             parse_months.put("NOVEMBER",11);
+            parse_months.put("Dec",12);
+            parse_months.put("DEC",12);
             parse_months.put("December",12);
             parse_months.put("DECEMBER",12);
 
