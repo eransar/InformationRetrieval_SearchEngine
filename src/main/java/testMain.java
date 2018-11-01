@@ -17,7 +17,7 @@ public class testMain {
 //        double d = number.doubleValue();
 //        parse.printTerms();
 
-        Document doc = new Document("1","2","33","320 million U.S. Dollars");
+        Document doc = new Document("1","2","33","$100 billion");
         parse.setDoc(doc);
         parse.ParseDocument(doc);
 

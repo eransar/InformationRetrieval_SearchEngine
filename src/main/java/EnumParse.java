@@ -135,20 +135,7 @@ public enum EnumParse {
 
 
 
-        public ArrayList<String> getFirstKeyWords(){
-            ArrayList<String> keywords=new ArrayList<String>();
-            keywords.add("Thousand");
-            keywords.add("Million");
-            keywords.add("Trillion");
-            keywords.add("Billion");
-            keywords.add("percent");
-            keywords.add("percentage");
-            keywords.add("Dollars");
-            keywords.add("billion");
-            keywords.add("million");
-            keywords.add("trillion");
-            return keywords;
-        }
+
         public HashMap<String, Integer> months(){
 
             HashMap<String,Integer> parse_months = new HashMap<String,Integer>();
@@ -221,8 +208,35 @@ public enum EnumParse {
     },
     symbol{
         HashSet<String> toReturn = new HashSet<>();
+        public ArrayList<String> first_keywords=getFirstKeyWords();
         public HashSet<String> parse(){
+            int i=Parser.getIndex();
             String[] text = Parser.getTextWithoutDelimeters();
+            NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
+            String substring = text[i].substring(1, text[i].length());
+            try {
+                Number number = format.parse(substring);
+                double number_term = number.doubleValue();
+                if(i+1<text.length && first_keywords.contains(text[i+1])) {
+                    switch (text[i + 1]) {
+                        case "million":
+                            toReturn.add(convertDouble(number_term) + " " + "M" + " " + "Dollars");
+                            break;
+                        case "billion":
+                            toReturn.add(convertDouble(number_term * 1000) + " " + "M" + " " + "Dollars");
+                            break;
+                        default:
+                            toReturn.add(text[i] + " " + text[i + 1]);
+                    }
+                }
+                else if(number_term<1000000){
+                    toReturn.add(substring+" "+"Dollars");
+                }
+                else
+                    toReturn.add(convertDouble(number_term/1000000)+" "+"M"+" "+"Dollars");
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             return toReturn;
         }
     };
@@ -239,5 +253,19 @@ public enum EnumParse {
     public String convertDouble(double d){
         String result=""+d;
         return result=result.indexOf(".") < 0 ? result : result.replaceAll("0*$", "").replaceAll("\\.$", "");
+    }
+    public ArrayList<String> getFirstKeyWords(){
+        ArrayList<String> keywords=new ArrayList<String>();
+        keywords.add("Thousand");
+        keywords.add("Million");
+        keywords.add("Trillion");
+        keywords.add("Billion");
+        keywords.add("percent");
+        keywords.add("percentage");
+        keywords.add("Dollars");
+        keywords.add("billion");
+        keywords.add("million");
+        keywords.add("trillion");
+        return keywords;
     }
 }
