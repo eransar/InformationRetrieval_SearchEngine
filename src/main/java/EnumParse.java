@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 public enum EnumParse {
 
     word{
-        public HashSet<String> parse(int i){
+        public HashSet<String> parse(){
         HashSet<String> toReturn = new HashSet<>();
         String[] text = Parser.getTextWithoutDelimeters();
 
@@ -18,11 +19,16 @@ public enum EnumParse {
     number{
         public ArrayList<String> first_keywords=getFirstKeyWords();
 
-        public HashSet<String> parse(int i){
+        public HashSet<String> parse(){
+            int i=Parser.getIndex();
             HashSet<String> toReturn = new HashSet<>();
-            String[] text = Parser.getTextWithoutDelimeters();
+            String[] text = Parser.textWithoutDelimeters;
+            boolean fraction=text[i].contains("/");
+            boolean fractionAndText =fraction && i+1<text.length && first_keywords.contains(text[i+1]);
             NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
             Number number = null;
+
+
             try {
                 number = format.parse(text[i]);
             } catch (ParseException e) {
@@ -30,7 +36,7 @@ public enum EnumParse {
             }
             double number_term = number.doubleValue();
             //has a keyword after the word
-            if(i+1 < text.length && first_keywords.contains(text[i+1])){
+            if(!fraction && i+1 < text.length && first_keywords.contains(text[i+1])){
                 //number + value + U.S + Dollar
                 if(i+2<text.length && text[i+2].equals("U.S.") && i+3<text.length && text[i+3].equals("Dollars")){
                     switch (text[i+1]){
@@ -44,25 +50,55 @@ public enum EnumParse {
                     toReturn.add(convertDouble(number_term)+" "+"M"+" "+"Dollars");
                 }
                 else{
-                    switch (text[i+1]){
-                        case "Thousand":number_term = number_term/1000;
-                            toReturn.add(convertDouble(number_term) +"K");
-                        break;
-                        case "Million": number_term = number_term/1000000;
-                            toReturn.add(convertDouble(number_term) +"M");
-                            break;
-                        case "Billion":number_term = number_term/1000000000;
-                            toReturn.add(convertDouble(number_term) +"B");
-                            break;
-                        case "percent":
-                        case "percentage":
-                            toReturn.add(convertDouble(number_term) +"%");
-                        break;
-                        case "Dollars":
-                            toReturn.add(transformNumber(number_term));
-                        break;
+                    if(!fraction){
+                        switch (text[i+1]){
+                            case "Thousand":number_term = number_term;
+                                toReturn.add(convertDouble(number_term) +"K");
+                                break;
+                            case "Million": number_term = number_term;
+                                toReturn.add(convertDouble(number_term) +"M");
+                                break;
+                            case "Trillion":
+                            case "Billion":number_term = number_term;
+                                toReturn.add(convertDouble(number_term) +"B");
+                                break;
+                            case "percent":
+                            case "percentage":
+                                toReturn.add(convertDouble(number_term) +"%");
+                                break;
+                            case "Dollars":
+                                toReturn.add(transformNumber(number_term));
+                                break;
+
+                        }
                     }
+
+
                 }
+            }
+            //Fraction
+            else if(i+1<text.length && isFraction(text[i+1])){
+                if(number_term < 1000000 && i+2<text.length && text[i+2].equals("Dollars")){
+                    toReturn.add(convertDouble(number_term)+" "+text[i+1]+" "+"Dollars");
+                    Parser.setIndex(i+1);
+                }
+
+
+                else{
+                    toReturn.add(convertDouble(number_term)+" "+text[i+1]);
+                }
+
+                return toReturn;
+
+            }
+            else if(fraction){
+                 if(i+1 < text.length && first_keywords.contains(text[i+1])){
+                    toReturn.add(text[i]+" "+text[i+1]);
+                }
+                else{
+                     toReturn.add(text[i]);
+                 }
+
             }
             else if(i+1<text.length && months().containsKey(text[i+1])){
                 String month =""+months().get(text[i+1]);
@@ -77,28 +113,34 @@ public enum EnumParse {
                 }
             }
             else{
-                    if(number_term >=1000 && number_term <1000000){
-                        toReturn.add(convertDouble(number_term/1000)+"K");
+                    if(!fraction){
+                        if(number_term >=1000 && number_term <1000000){
+                            toReturn.add(convertDouble(number_term/1000)+"K");
+                        }
+                        else if (number_term>=1000000 && number_term <1000000000){
+                            toReturn.add(convertDouble(number_term/1000000)+"M");
+                        }
+                        else if(number_term >=1000000000 ){
+                            toReturn.add(convertDouble(number_term/1000000000)+"B");
+                        }
+                        else{
+                            toReturn.add(convertDouble(number_term));
+                        }
                     }
-                    else if (number_term>=1000000 && number_term <1000000000){
-                        toReturn.add(convertDouble(number_term/1000000)+"M");
-                    }
-                    else if(number_term >=1000000000 ){
-                        toReturn.add(convertDouble(number_term/1000000000)+"B");
-                    }
-                    else{
-                         toReturn.add(convertDouble(number_term));
-                    }
+
             }
 
             return toReturn;
         }
+
+
 
         public ArrayList<String> getFirstKeyWords(){
             ArrayList<String> keywords=new ArrayList<String>();
             keywords.add("Thousand");
             keywords.add("Million");
             keywords.add("Trillion");
+            keywords.add("Billion");
             keywords.add("percent");
             keywords.add("percentage");
             keywords.add("Dollars");
@@ -156,23 +198,44 @@ public enum EnumParse {
 
             return parse_months;
         }
+
+
+
+        public boolean isFraction(String str) {
+
+            if (str.contains("/")) {
+                String separator = "/";
+                String[] new_str = str.split(Pattern.quote(separator));
+                NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
+                try {
+                    Number first = format.parse(new_str[0]);
+                    Number second = format.parse(new_str[1]);
+                    return true;
+                } catch (ParseException e) {
+                    return false;
+                }
+            }
+            return false;
+        }
+
     },
     symbol{
         HashSet<String> toReturn = new HashSet<>();
-        public HashSet<String> parse(int i){
+        public HashSet<String> parse(){
             String[] text = Parser.getTextWithoutDelimeters();
             return toReturn;
         }
     };
 
     public String transformNumber(double number) {
-        if(number>1000000){
-            return number/1000000+" "+"M"+" "+"Dollars";
+        if(number>=1000000){
+            number=number/1000000;
+            return convertDouble(number)+" "+"M"+" "+"Dollars";
         }
         return number+" "+"Dollars";
     }
 
-    public abstract HashSet<String> parse(int i);
+    public abstract HashSet<String> parse();
     public String convertDouble(double d){
         String result=""+d;
         return result=result.indexOf(".") < 0 ? result : result.replaceAll("0*$", "").replaceAll("\\.$", "");

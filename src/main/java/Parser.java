@@ -16,7 +16,17 @@ public class Parser {
         return textWithoutDelimeters;
     }
 
-    private static String[] textWithoutDelimeters;
+    public static void setIndex(int index) {
+        Parser.index = index;
+    }
+
+    public static int getIndex() {
+
+        return index;
+    }
+
+    private static int index =0;
+    public static String[] textWithoutDelimeters;
 
 
     public Parser() throws IOException {
@@ -50,6 +60,7 @@ public class Parser {
 
         textWithoutDelimeters=text.split(" ");
         identifyDoc();
+        int i=5;
 
 //        ParseWords();
     }
@@ -62,22 +73,22 @@ public class Parser {
 
     public void identifyDoc(){
         EnumParse enumParse;
-        for (int i = 0; i <textWithoutDelimeters.length ; i++) {
+        for (index=0 ; index <textWithoutDelimeters.length ; index++) {
             try {
-                if(isSymbol(i)){
+                if(isSymbol(index)){
                     enumParse = EnumParse.symbol;
-                    terms.addAll(enumParse.parse(i));
+                    terms.addAll(enumParse.parse());
 
-                    System.out.println("Symbol : "+textWithoutDelimeters[i]);
+                    System.out.println("Symbol : "+textWithoutDelimeters[index]);
                 }
-                else if (isNumber(i)){
+                else if (isNumber(index)){
                     enumParse = EnumParse.number;
-                    terms.addAll(enumParse.parse(i));
-                    System.out.println("Number : "+textWithoutDelimeters[i]);
+                    terms.addAll(enumParse.parse());
+                    System.out.println("Number : "+textWithoutDelimeters[index]);
                 }
             } catch (ParseException e) {
                 enumParse = EnumParse.word;
-                System.out.println("Word : "+textWithoutDelimeters[i]);
+                System.out.println("Word : "+textWithoutDelimeters[index]);
 
             }
         }
