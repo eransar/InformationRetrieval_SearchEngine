@@ -35,6 +35,10 @@ public class Parser {
         terms=new HashSet<String>();
     }
 
+    /**
+     * remove the stopwords
+     * @throws IOException
+     */
     private void initializestopwords() throws IOException {
         URL url = getClass().getResource("stop_words.txt");
         File file = new File(url.getPath());
@@ -48,6 +52,10 @@ public class Parser {
         }
     }
 
+    /**
+     * prepare the text to parse
+     * @param doc
+     */
     public void ParseDocument(Document doc){
         this.doc=doc;
         String text=doc.getTEXT();
@@ -70,7 +78,9 @@ public class Parser {
     }
 
 
-
+    /**
+     * to identify what type of parse to do
+     */
     public void identifyDoc(){
         EnumParse enumParse;
         for (index=0 ; index <textWithoutDelimeters.length ; index++) {
@@ -94,6 +104,12 @@ public class Parser {
         }
     }
 
+    /**
+     * check if the word to parse is symbol
+     * @param i
+     * @return
+     * @throws ParseException
+     */
     private boolean isSymbol(int i) throws ParseException {
 
         ArrayList<Character> ch = new ArrayList<>();
@@ -107,6 +123,12 @@ public class Parser {
             return false;
     }
 
+    /**
+     * if the word to parse is number
+     * @param i
+     * @return
+     * @throws ParseException
+     */
     private boolean isNumber(int i) throws ParseException {
         NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
 
