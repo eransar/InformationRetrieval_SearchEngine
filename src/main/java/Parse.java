@@ -51,11 +51,6 @@ public class Parse {
                 lineNumber++;
                 continue;
             }
-            //else if its a space increase position
-            else if( docText[index].equals(" ")) {
-                wordPosition++;
-                continue;
-            }
 
             else {
 
@@ -64,13 +59,49 @@ public class Parse {
                 if (type == wordType.NUMBER) {
                     parseNumber(docText[index], index);
                 } else if (type == wordType.SYMBOL) {
-
+                    parseSymbol(docText[index],index);
                 } else if (type == wordType.WORD) {
+
 
                 }
             }
+            wordPosition++;
         }
     }
+
+    private void parseSymbol(String str, int index) {
+        Term tempTerm = new Term();
+        ArrayList<String> first_keywords=getFirstKeyWords();
+        NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
+        String substring =str.substring(1,str.length());
+            try {
+                Number number = format.parse(substring);
+                double number_term = number.doubleValue();
+                if(index+1<docText.length && first_keywords.contains(docText[index+1])) {
+                    switch (docText[index + 1]) {
+                        case "million":
+                            tempTerm.setName(convertDouble(number_term) + " " + "M" + " " + "Dollars");
+                            break;
+                        case "billion":
+                            tempTerm.setName(convertDouble(number_term * 1000) + " " + "M" + " " + "Dollars");
+                            break;
+                        default:
+                            tempTerm.setName(docText[index] + " " + docText[index + 1]);
+                    }
+                }
+                else if(number_term<1000000){
+                    tempTerm.setName(substring+" "+"Dollars");
+                }
+                else
+                    tempTerm.setName(convertDouble(number_term/1000000)+" "+"M"+" "+"Dollars");
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            handleTerm(tempTerm);
+
+        }
+
 
     public wordType identifyDoc(String str) {
         for (int i = 0; i < docText.length; i++) {
