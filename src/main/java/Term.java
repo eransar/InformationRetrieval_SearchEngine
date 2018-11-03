@@ -7,6 +7,7 @@ public class Term {
     private int corpusFrequency;
     private HashMap<Document,Integer> docFrequency;
 
+
     public void setDocFrequency(HashMap<Document, Integer> docFrequency) {
         this.docFrequency = docFrequency;
     }
@@ -17,7 +18,7 @@ public class Term {
 
     public Term(Term t){
         this.name=t.name;
-
+        this.docFrequency=t.docFrequency;
         this.df=t.df;
         this.corpusFrequency=t.corpusFrequency;
         this.docFrequency=null;
@@ -65,6 +66,8 @@ public class Term {
         this.name="";
         this.df=0;
         this.tf=0;
+        this.docFrequency=new HashMap<Document,Integer>();
+        this.corpusFrequency=0;
     }
 
     @Override

@@ -26,6 +26,7 @@ public class Parse {
         this.lineNumber=0;
         this.wordPosition=0;
         this.index=0;
+        this.terms=new HashMap<String,Term>();
 
     }
 
@@ -34,7 +35,12 @@ public class Parse {
      */
     public void ParseDoc(){
         String text=doc.getTEXT();
-
+        text=text.replace("."+"\n"," ");
+//        text=text.replace(System.lineSeparator()," ");
+//        text=text.replace("\n"," ").replace("\r"," ");
+        text=text.replace(", "," ");
+        text=text.replace("\t"," ");
+        docText=text.split(" ");
         startParse();
     }
 
@@ -43,10 +49,12 @@ public class Parse {
             //if it's a line seperator. increase line number
             if (docText[index].equals(System.lineSeparator())) {
                 lineNumber++;
+                continue;
             }
             //else if its a space increase position
             else if( docText[index].equals(" ")) {
                 wordPosition++;
+                continue;
             }
 
             else {
@@ -253,6 +261,7 @@ public class Parse {
             }
 
             handleTerm(tempTerm); //
+            int i =5;
         }
 
 //    public HashMap<Term, HashMap<Document, Integer>> getTermsInfo() {
@@ -263,6 +272,7 @@ public class Parse {
         /*
             if found term not avilable in the term list
                 set doc frequency of the term to 1
+                increase doc distnict term by 1
                 add to terms
                 set corpus frequency to 1
                 set df to 1
@@ -270,8 +280,9 @@ public class Parse {
                 set doc frequency
                 set term location in doc
          */
-        if (terms.get(toCheck) ==null) {
+        if (terms.get(toCheck)==null) {
             toCheck.getDocFrequency().put(doc,1);
+            doc.setDistinctwords(doc.getDistinctwords()+1);
             toCheck.setCorpusFrequency(toCheck.getCorpusFrequency()+1);
             terms.put(toCheck.getName(),toCheck);
 

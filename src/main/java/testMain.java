@@ -2,13 +2,14 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class testMain {
     public static void main(String[] args) throws IOException, ParseException {
         ReadFile rf = new ReadFile();
         rf.updateDocList("FT923_5");
-        Parser parse = new Parser();
+//        Parser parse = new Parser();
 //        parse.ParseDocument(rf.docList.get(0));
 
 //        String s="1,000";
@@ -17,10 +18,12 @@ public class testMain {
 //        double d = number.doubleValue();
 //        parse.printTerms();
 
-        Document doc = new Document("1","2","33","$100 billion");
-        parse.setDoc(doc);
-        parse.ParseDocument(doc);
+//        Document doc = new Document("1","2","33","$100 billion");
+//        parse.setDoc(doc);
+//        parse.ParseDocument(doc);
 
+        Parse parse = new Parse(new Document("1","2","33","100 Billion"));
+        parse.ParseDoc();
 
 
 

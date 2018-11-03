@@ -8,6 +8,18 @@ public class Document {
     private String HEADER;
     private String TEXT;
     private int maxtf;
+    private int distinctwords;
+
+    public Document(String docno, String date, String header, String text){
+        this.DOCNO=docno;
+        this.DATE=date;
+        this.HEADER=header;
+        this.TEXT=text;
+        this.distinctwords=0;
+        this.maxtf=0;
+
+//        this.termLocation=new HashMap<Location,Term>();
+    }
 
     public void AddTermLocation(){
 
@@ -24,13 +36,22 @@ public class Document {
     //    private HashMap<Location,Term> termLocation;
 
 
-    public Document(String docno, String date, String header, String text){
-        this.DOCNO=docno;
-        this.DATE=date;
-        this.HEADER=header;
-        this.TEXT=text;
-//        this.termLocation=new HashMap<Location,Term>();
+    public String getCITY() {
+        return CITY;
     }
+
+    public void setCITY(String CITY) {
+        this.CITY = CITY;
+    }
+
+    public int getDistinctwords() {
+        return distinctwords;
+    }
+
+    public void setDistinctwords(int distinctwords) {
+        this.distinctwords = distinctwords;
+    }
+
     public String getDOCNO() {
         return DOCNO;
     }
