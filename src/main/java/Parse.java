@@ -1,11 +1,10 @@
 
 import javax.print.Doc;
+import java.io.*;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class Parse {
@@ -19,7 +18,7 @@ public class Parse {
     private String[] docText;
     private enum wordType {NUMBER, SYMBOL, WORD,NULL};
 
-    public Parse(Document doc){
+    public Parse(Document doc) throws IOException {
         this.stopWords=new HashSet<String>();
 //        this.termsInfo=new HashMap<Term,HashMap<Document,Integer>>();
         this.doc=doc;
@@ -27,6 +26,8 @@ public class Parse {
         this.wordPosition=0;
         this.index=0;
         this.terms=new HashMap<String,Term>();
+        this.stopWords=new HashSet<String>();
+        initStopwords();
 
     }
 
@@ -42,6 +43,33 @@ public class Parse {
         text=text.replace("\t"," ");
         docText=text.split(" ");
         startParse();
+        printTerm();
+    }
+
+    public void initStopwords() throws IOException {
+        URL url = getClass().getResource("stop_words.txt");
+        File file = new File(url.getPath());
+        FileReader fr = new FileReader(file);
+        BufferedReader bufferedReader = new BufferedReader(fr);
+        StringBuffer stringBuffer = new StringBuffer();
+        String line;
+
+        while ((line = bufferedReader.readLine()) != null) {
+            if(!line.equals(System.lineSeparator())){
+                stopWords.add(line);
+            }
+
+
+        }
+    }
+
+    private void printTerm() {
+        for (String name: terms.keySet()){
+
+            String key =name.toString();
+            System.out.println(key);
+
+        }
     }
 
     private void startParse() {
@@ -104,26 +132,24 @@ public class Parse {
 
 
     public wordType identifyDoc(String str) {
-        for (int i = 0; i < docText.length; i++) {
             try {
                 if (isSymbol(str)) {
-                    System.out.println("Symbol : " + docText[i]);
+                    System.out.println("Symbol : " + str);
                     return wordType.SYMBOL;
 
                 } else if (isNumber(str)) {
-                    System.out.println("Number : " + docText[i]);
+                    System.out.println("Number : " + str);
                     return wordType.NUMBER;
 
                 }
             } catch (ParseException e) {
-                System.out.println("Word : " + docText[i]);
+                System.out.println("Word : " + str);
                 return wordType.WORD;
 
 
             }
+            return wordType.WORD;
         }
-        return wordType.NULL;
-    }
 
 
     public boolean isSymbol (String str) throws ParseException {
@@ -300,8 +326,9 @@ public class Parse {
 //    }
 
     private void handleTerm(Term toCheck) {
+
         /*
-            if found term not avilable in the term list
+            if found term not avilable in the term list && not a stop word
                 set doc frequency of the term to 1
                 increase doc distnict term by 1
                 add to terms
@@ -311,7 +338,7 @@ public class Parse {
                 set doc frequency
                 set term location in doc
          */
-        if (terms.get(toCheck)==null) {
+         if (terms.get(toCheck)==null && !stopWords.contains(toCheck.getName())) {
             toCheck.getDocFrequency().put(doc,1);
             doc.setDistinctwords(doc.getDistinctwords()+1);
             toCheck.setCorpusFrequency(toCheck.getCorpusFrequency()+1);

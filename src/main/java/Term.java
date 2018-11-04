@@ -83,4 +83,7 @@ public class Term {
 
         return Objects.hash(name);
     }
+    public String toString(){
+        return this.name;
+    }
 }

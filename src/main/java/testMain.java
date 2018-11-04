@@ -22,7 +22,7 @@ public class testMain {
 //        parse.setDoc(doc);
 //        parse.ParseDocument(doc);
 
-        Parse parse = new Parse(new Document("1","2","33","100 Billion"));
+        Parse parse = new Parse(new Document("1","2","33","1,000,000 Dollars"));
         parse.ParseDoc();
 
 
