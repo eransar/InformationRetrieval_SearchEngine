@@ -24,7 +24,7 @@ public class Parse {
         this.doc=doc;
         this.lineNumber=0;
         this.wordPosition=0;
-        this.index=0;
+        this.index=1;
         this.terms=new HashMap<String,Term>();
         this.stopWords=new HashSet<String>();
         initStopwords();
@@ -37,11 +37,13 @@ public class Parse {
     public void ParseDoc(){
         String text=doc.getTEXT();
         text=text.replace("."+"\n"," ");
-//        text=text.replace(System.lineSeparator()," ");
-//        text=text.replace("\n"," ").replace("\r"," ");
+        text=text.replace(System.lineSeparator()," ");
+        text=text.replace("\n"," ").replace("\r"," ");
         text=text.replace(", "," ");
         text=text.replace("\t"," ");
-        docText=text.split(" ");
+        text=text.replace("\\r\\n","");
+        text=text.replace("","");
+        docText=(text.split(" "));
         startParse();
         printTerm();
     }
@@ -73,7 +75,7 @@ public class Parse {
     }
 
     private void startParse() {
-        for (index = 0; index < docText.length; index++) {
+        for (index = 1; index < docText.length; index++) {
             //if it's a line seperator. increase line number
             if (docText[index].equals(System.lineSeparator())) {
                 lineNumber++;
@@ -89,8 +91,11 @@ public class Parse {
                 } else if (type == wordType.SYMBOL) {
                     parseSymbol(docText[index],index);
                 } else if (type == wordType.WORD) {
-
-
+                    try {
+                        parseWord(index);
+                    } catch (ParseException e) {
+                        return;
+                    }
                 }
             }
             wordPosition++;
@@ -99,6 +104,7 @@ public class Parse {
 
     private void parseSymbol(String str, int index) {
         Term tempTerm = new Term();
+        tempTerm.setType("Symbol");
         ArrayList<String> first_keywords=getFirstKeyWords();
         NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
         String substring =str.substring(1,str.length());
@@ -130,20 +136,54 @@ public class Parse {
 
         }
 
+    private void parseWord( int index) throws ParseException {
+        Term tempTerm = new Term();
+        tempTerm.setType("Word");
+        if (docText[index].contains("-")) {
+            tempTerm.setName(docText[index]);
+        }
+        //month that starts with word example : MAY 19945
+        else if(months().containsKey(docText[index]) && isNotOutBound(index+1) && isNumber(docText[index+1])){
+            if(months().get(docText[index])<10){
+                tempTerm.setName(docText[index+1]+"-"+"0"+months().get(docText[index]));
+            }
+            else {
+                tempTerm.setName(docText[index+1]+"-"+months().get(docText[index]));
+            }
+        }
+        //between number and number
+        else if(docText[index].equals("between") && isNotOutBound(index + 1) && isNumber(docText[index + 1])
+                && isNotOutBound(index + 2) && docText[index + 2].equals("and") && isNotOutBound(index + 3)
+                && isNumber(docText[index + 3]))
+                        {
+                            tempTerm.setName(docText[index] + " " + docText[index + 1] + " " + docText[index + 2] + " " + docText[index + 3]);
+                        }
+        else{
+            tempTerm.setName(docText[index]);
+        }
+             handleTerm(tempTerm);
+    }
+
+    public boolean isNotOutBound(int i){
+        return i < docText.length;
+    }
+
+
+
 
     public wordType identifyDoc(String str) {
             try {
                 if (isSymbol(str)) {
-                    System.out.println("Symbol : " + str);
+//                    System.out.println("Symbol : " + str);
                     return wordType.SYMBOL;
 
                 } else if (isNumber(str)) {
-                    System.out.println("Number : " + str);
+//                    System.out.println("Number : " + str);
                     return wordType.NUMBER;
 
                 }
             } catch (ParseException e) {
-                System.out.println("Word : " + str);
+//                System.out.println("Word : " + str);
                 return wordType.WORD;
 
 
@@ -156,6 +196,9 @@ public class Parse {
 
         ArrayList<Character> ch = new ArrayList<>();
         ch.add('$');
+        if(str.equals("")){
+            return false;
+        }
         if(ch.contains(str.charAt(0))) {
             NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
             String substring = str.substring(1, str.length());
@@ -167,8 +210,8 @@ public class Parse {
 
     private boolean isNumber(String str) throws ParseException {
         NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
-
         Number number = format.parse(str);
+        double test=number.doubleValue();
         return true;
     }
     private boolean isFraction(String str) {
@@ -199,6 +242,7 @@ public class Parse {
      */
     public void parseNumber(String str, int index){
         Term tempTerm = new Term();
+        tempTerm.setType("Number");
         ArrayList<String> first_keywords=getFirstKeyWords(); // An Array of listed keywords that can appear after a term
 //        Term
         HashSet<String> toReturn = new HashSet<>();
@@ -318,7 +362,6 @@ public class Parse {
             }
 
             handleTerm(tempTerm); //
-            int i =5;
         }
 
 //    public HashMap<Term, HashMap<Document, Integer>> getTermsInfo() {
@@ -338,15 +381,17 @@ public class Parse {
                 set doc frequency
                 set term location in doc
          */
-         if (terms.get(toCheck)==null && !stopWords.contains(toCheck.getName())) {
-            toCheck.getDocFrequency().put(doc,1);
-            doc.setDistinctwords(doc.getDistinctwords()+1);
-            toCheck.setCorpusFrequency(toCheck.getCorpusFrequency()+1);
-            terms.put(toCheck.getName(),toCheck);
+         if (terms.get(toCheck.getName())==null){
+             if(!stopWords.contains(toCheck.getName()) && !stopWords.contains(toCheck.getName().toUpperCase()) && !stopWords.contains(toCheck.getName().toLowerCase())) {
+                 toCheck.getDocFrequency().put(doc, 1);
+                 doc.setDistinctwords(doc.getDistinctwords() + 1);
+                 toCheck.setCorpusFrequency(toCheck.getCorpusFrequency() + 1);
+                 terms.put(toCheck.getName(), toCheck);
+             }
+         }
 
 
 
-        }
         // if found term already exists in the term list:
             /*
                 Get the term from the list
@@ -357,6 +402,7 @@ public class Parse {
                 add the term back to the hashmap and overwrite the old term
              */
         else{
+             System.out.println(toCheck.getName());
             Term UsedTerm = terms.get(toCheck.getName());
             UsedTerm.setCorpusFrequency(UsedTerm.getCorpusFrequency()+1);
 
@@ -374,9 +420,6 @@ public class Parse {
 
         }
     }
-
-
-
 
 
 /*

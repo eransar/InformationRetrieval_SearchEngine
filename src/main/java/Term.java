@@ -6,7 +6,7 @@ public class Term {
     private int df;
     private int corpusFrequency;
     private HashMap<Document,Integer> docFrequency;
-
+    private String type;
 
     public void setDocFrequency(HashMap<Document, Integer> docFrequency) {
         this.docFrequency = docFrequency;
@@ -16,12 +16,22 @@ public class Term {
         return docFrequency;
     }
 
+    public Term(){
+        this.name="";
+        this.df=0;
+        this.tf=0;
+        this.docFrequency=new HashMap<Document,Integer>();
+        this.corpusFrequency=0;
+    }
+
     public Term(Term t){
         this.name=t.name;
         this.docFrequency=t.docFrequency;
         this.df=t.df;
         this.corpusFrequency=t.corpusFrequency;
         this.docFrequency=null;
+        this.type="";
+
 
 
     }
@@ -34,6 +44,14 @@ public class Term {
         this.corpusFrequency = corpusFrequency;
     }
 
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getName() {
         return name;
@@ -61,14 +79,6 @@ public class Term {
 
     private int tf;
 
-
-    public Term(){
-        this.name="";
-        this.df=0;
-        this.tf=0;
-        this.docFrequency=new HashMap<Document,Integer>();
-        this.corpusFrequency=0;
-    }
 
     @Override
     public boolean equals(Object o) {

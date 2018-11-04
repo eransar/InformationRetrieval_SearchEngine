@@ -9,8 +9,11 @@ public class testMain {
     public static void main(String[] args) throws IOException, ParseException {
         ReadFile rf = new ReadFile();
         rf.updateDocList("FT923_5");
-//        Parser parse = new Parser();
-//        parse.ParseDocument(rf.docList.get(0));
+        Parse parse = new Parse(rf.docList.get(0));
+        parse.ParseDoc();
+
+
+
 
 //        String s="1,000";
 //        NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
@@ -22,8 +25,8 @@ public class testMain {
 //        parse.setDoc(doc);
 //        parse.ParseDocument(doc);
 
-        Parse parse = new Parse(new Document("1","2","33","1,000,000 Dollars"));
-        parse.ParseDoc();
+//        Parse parse = new Parse(new Document("1","2","33","May 1994"));
+//        parse.ParseDoc();
 
 
 
