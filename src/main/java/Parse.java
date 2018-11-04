@@ -67,7 +67,6 @@ public class Parse {
 
     private void printTerm() {
         for (String name: terms.keySet()){
-
             String key =name.toString();
             System.out.println(key);
 
@@ -79,6 +78,9 @@ public class Parse {
             //if it's a line seperator. increase line number
             if (docText[index].equals(System.lineSeparator())) {
                 lineNumber++;
+                continue;
+            }
+            else if(docText[index].equals("") || docText[index].equals("-")){
                 continue;
             }
 
