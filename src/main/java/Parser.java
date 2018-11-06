@@ -12,6 +12,7 @@ public class Parser {
     private HashSet<String> terms;
     private Document doc;
 
+
     public static String[] getTextWithoutDelimeters() {
         return textWithoutDelimeters;
     }

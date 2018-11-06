@@ -10,27 +10,19 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Pattern;
 
+
 public class Parse {
     private HashSet<String> stopWords;
     private HashMap<String,Term> terms;
-
-    public void setDoc(Document doc) {
-        this.doc = doc;
-    }
-
-    public Document getDoc() {
-
-        return doc;
-    }
-
-    //    private HashMap<Term,HashMap<Document,Integer>> termsInfo;
     private Document doc;
     private int lineNumber;
     private int wordPosition;
     private int index;
     private String[] docText;
-    private enum wordType {NUMBER, SYMBOL, WORD,NULL};
+    private enum wordType {NUMBER, SYMBOL, WORD,NULL;};
     private HashMap <String,Integer> months;
+
+
 
     public Parse(Document doc) throws IOException {
         this.stopWords=new HashSet<String>();
@@ -44,6 +36,7 @@ public class Parse {
         this.months=months();
         initStopwords();
 
+
     }
 
     /**
@@ -52,16 +45,16 @@ public class Parse {
     public void ParseDoc(){
         String text=doc.getTEXT();
         text=text.replace("."+"\n"," ");
-        text=text.replace(System.lineSeparator()," ");
+//        text=text.replace(System.lineSeparator()," ");
         text=text.replace("\n"," ").replace("\r"," ");
         text=text.replace(", "," ");
         text=text.replace("\t"," ");
         text=text.replace("\\r\\n","");
-        text=text.replace(".)","");
-        text=text.replace(") "," ");
-        text=text.replace(" ("," ");
-        text=text.replace(" '","");
-        text=text.replace("' ","");
+//        text=text.replace(".)","");
+//        text=text.replace(") "," ");
+//        text=text.replace(" ("," ");
+//        text=text.replace(" '","");
+//        text=text.replace("' ","");
         docText=(text.split(" "));
         startParse();
 //        printTerm();
@@ -94,13 +87,11 @@ public class Parse {
     }
 
     private void startParse() {
+        long startTime;
         for (index = 1; index < docText.length; index++) {
             //if it's a line seperator. increase line number
-            if (docText[index].equals(System.lineSeparator())) {
-                lineNumber++;
-                continue;
-            }
-            else if(docText[index].equals("") || docText[index].equals("-")){
+//
+             if(docText[index].equals("") || docText[index].equals("-")){
                 continue;
             }
 
@@ -110,6 +101,9 @@ public class Parse {
 
                 if (type == wordType.NUMBER) {
                     parseNumber(docText[index], index);
+                    long endTime =  System.currentTimeMillis();
+
+                } else if (type == wordType.WORD) {
                 } else if (type == wordType.SYMBOL) {
                     parseSymbol(docText[index],index);
                 } else if (type == wordType.WORD) {
@@ -122,6 +116,7 @@ public class Parse {
             }
             wordPosition++;
         }
+
     }
 
     private void parseSymbol(String str, int index) {
@@ -191,12 +186,11 @@ public class Parse {
                      || terms.containsKey(docText[index].toUpperCase()))){
                 if(terms.containsKey(docText[index].substring(0,1).toUpperCase()+docText[index].substring(1))){
                     tempTerm = terms.remove(docText[index].substring(0,1).toUpperCase()+docText[index].substring(1));
-                    System.out.println(docText[index]);
                     tempTerm.setName(docText[index]);
                 }
                 else{
                     tempTerm = terms.remove(docText[index].toUpperCase());
-                    System.out.println(docText[index]);
+
                     tempTerm.setName(docText[index]);
                 }
 
@@ -210,8 +204,11 @@ public class Parse {
             }
 //            else if()
         }
+
              handleTerm(tempTerm);
+
     }
+
     public  boolean testAllLowerCase(String str){
         for(int i=0; i<str.length(); i++){
             char c = str.charAt(i);
@@ -221,7 +218,6 @@ public class Parse {
         }
         return true;
     }
-
     public boolean isNotOutBound(int i){
         return i < docText.length;
     }
@@ -263,15 +259,18 @@ public class Parse {
             Number number = format.parse(substring);
             return true;
         }
+
         return false;
     }
 
     private boolean isNumber(String str) throws ParseException {
+
         NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
         Number number = format.parse(str);
         double test=number.doubleValue();
         return true;
     }
+
     private boolean isFraction(String str) {
 
         if (str.contains("/")) {
@@ -293,7 +292,6 @@ public class Parse {
     /*
                      Starting Parsing functions
      */
-
     /**
      * Handles terms of type Number
      * @param str given String for term
@@ -422,14 +420,13 @@ public class Parse {
             handleTerm(tempTerm); //
         }
 
-//    public HashMap<Term, HashMap<Document, Integer>> getTermsInfo() {
-//        return termsInfo;
-//    }
 
+//    public HashMap<Term, HashMap<Document, Integer>> getTermsInfo() {
     public HashMap<String, Term> getTerms() {
         return terms;
     }
 
+    //    }
     private void handleTerm(Term toCheck) {
 
         /*
@@ -483,10 +480,12 @@ public class Parse {
         }
     }
 
+    //        return termsInfo;
 
 /*
                 Begining of Utilities functions
  */
+
     public ArrayList<String> getFirstKeyWords(){
         ArrayList<String> keywords=new ArrayList<String>();
         keywords.add("Thousand");
@@ -506,7 +505,6 @@ public class Parse {
             doc.setMaxtf(term_tf);
         }
     }
-
     /**
      * Convert Double to String without leaving Zero Trails behind
      * @param d given double
@@ -583,4 +581,13 @@ public class Parse {
         return parse_months;
     }
 
+
+    public void setDoc(Document doc) {
+        this.doc = doc;
+    }
+
+    public Document getDoc() {
+
+        return doc;
+    }
 }
