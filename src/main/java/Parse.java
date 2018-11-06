@@ -10,7 +10,17 @@ import java.util.regex.Pattern;
 public class Parse {
     private HashSet<String> stopWords;
     private HashMap<String,Term> terms;
-//    private HashMap<Term,HashMap<Document,Integer>> termsInfo;
+
+    public void setDoc(Document doc) {
+        this.doc = doc;
+    }
+
+    public Document getDoc() {
+
+        return doc;
+    }
+
+    //    private HashMap<Term,HashMap<Document,Integer>> termsInfo;
     private Document doc;
     private int lineNumber;
     private int wordPosition;
@@ -42,7 +52,6 @@ public class Parse {
         text=text.replace(", "," ");
         text=text.replace("\t"," ");
         text=text.replace("\\r\\n","");
-        text=text.replace("","");
         text=text.replace(".)","");
         text=text.replace(") "," ");
         text=text.replace(" ("," ");
@@ -50,7 +59,7 @@ public class Parse {
         text=text.replace("' ","");
         docText=(text.split(" "));
         startParse();
-        printTerm();
+//        printTerm();
     }
 
     public void initStopwords() throws IOException {
@@ -147,6 +156,9 @@ public class Parse {
     private void parseWord( int index) throws ParseException {
         Term tempTerm = new Term();
         tempTerm.setType("Word");
+        if(stopWords.contains(docText[index])){
+            return;
+        }
         if (docText[index].contains("-")) {
             tempTerm.setName(docText[index]);
         }
@@ -156,6 +168,7 @@ public class Parse {
                 tempTerm.setName(docText[index+1]+"-"+"0"+months().get(docText[index]));
             }
             else {
+
                 tempTerm.setName(docText[index+1]+"-"+months().get(docText[index]));
             }
         }
@@ -167,6 +180,12 @@ public class Parse {
                             tempTerm.setName(docText[index] + " " + docText[index + 1] + " " + docText[index + 2] + " " + docText[index + 3]);
                         }
         else{
+            //if word is lowercase - check for uppercase in the first letter in the terms map
+            if(terms.containsKey(docText[index].substring(0,1).toUpperCase()+docText[index].substring(1))){
+                terms.remove(docText[index].substring(0,1).toUpperCase()+docText[index].substring(1));
+                tempTerm.setName(docText[index]);
+            }
+//            else if()
             tempTerm.setName(docText[index]);
         }
              handleTerm(tempTerm);
@@ -376,6 +395,10 @@ public class Parse {
 //        return termsInfo;
 //    }
 
+    public HashMap<String, Term> getTerms() {
+        return terms;
+    }
+
     private void handleTerm(Term toCheck) {
 
         /*
@@ -410,7 +433,7 @@ public class Parse {
                 add the term back to the hashmap and overwrite the old term
              */
         else{
-             System.out.println(toCheck.getName());
+//             System.out.println(toCheck.getName());
             Term UsedTerm = terms.get(toCheck.getName());
             UsedTerm.setCorpusFrequency(UsedTerm.getCorpusFrequency()+1);
 
