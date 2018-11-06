@@ -15,9 +15,10 @@ public class testMain {
 
 
 
-//        String s="1,000";
+//        String s="-5 3/4";
 //        NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
 //        Number number = format.parse(s);
+//        System.out.println(number.doubleValue());
 //        double d = number.doubleValue();
 //        parse.printTerms();
 

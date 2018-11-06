@@ -43,6 +43,11 @@ public class Parse {
         text=text.replace("\t"," ");
         text=text.replace("\\r\\n","");
         text=text.replace("","");
+        text=text.replace(".)","");
+        text=text.replace(") "," ");
+        text=text.replace(" ("," ");
+        text=text.replace(" '","");
+        text=text.replace("' ","");
         docText=(text.split(" "));
         startParse();
         printTerm();
@@ -66,10 +71,11 @@ public class Parse {
     }
 
     private void printTerm() {
+        int i=0;
         for (String name: terms.keySet()){
             String key =name.toString();
-            System.out.println(key);
-
+            System.out.println(i+". "+key);
+        i++;
         }
     }
 
