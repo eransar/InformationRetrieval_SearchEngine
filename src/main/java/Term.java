@@ -26,7 +26,8 @@ public class Term {
 
     public Term(Term t){
         this.name=t.name;
-        this.docFrequency=t.docFrequency;
+        this.docFrequency=new HashMap<Document,Integer>();
+        this.docFrequency.putAll(t.docFrequency);
         this.df=t.df;
         this.corpusFrequency=t.corpusFrequency;
         this.docFrequency=null;

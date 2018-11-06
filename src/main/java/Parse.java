@@ -1,4 +1,7 @@
 
+
+import com.sun.xml.internal.ws.util.StringUtils;
+
 import javax.print.Doc;
 import java.io.*;
 import java.net.URL;
@@ -27,6 +30,7 @@ public class Parse {
     private int index;
     private String[] docText;
     private enum wordType {NUMBER, SYMBOL, WORD,NULL};
+    private HashMap <String,Integer> months;
 
     public Parse(Document doc) throws IOException {
         this.stopWords=new HashSet<String>();
@@ -37,6 +41,7 @@ public class Parse {
         this.index=1;
         this.terms=new HashMap<String,Term>();
         this.stopWords=new HashSet<String>();
+        this.months=months();
         initStopwords();
 
     }
@@ -163,13 +168,13 @@ public class Parse {
             tempTerm.setName(docText[index]);
         }
         //month that starts with word example : MAY 19945
-        else if(months().containsKey(docText[index]) && isNotOutBound(index+1) && isNumber(docText[index+1])){
-            if(months().get(docText[index])<10){
-                tempTerm.setName(docText[index+1]+"-"+"0"+months().get(docText[index]));
+        else if(months.containsKey(docText[index]) && isNotOutBound(index+1) && isNumber(docText[index+1])){
+            if(months.get(docText[index])<10){
+                tempTerm.setName(docText[index+1]+"-"+"0"+months.get(docText[index]));
             }
             else {
 
-                tempTerm.setName(docText[index+1]+"-"+months().get(docText[index]));
+                tempTerm.setName(docText[index+1]+"-"+months.get(docText[index]));
             }
         }
         //between number and number
@@ -181,14 +186,40 @@ public class Parse {
                         }
         else{
             //if word is lowercase - check for uppercase in the first letter in the terms map
-            if(terms.containsKey(docText[index].substring(0,1).toUpperCase()+docText[index].substring(1))){
-                terms.remove(docText[index].substring(0,1).toUpperCase()+docText[index].substring(1));
+            if(testAllLowerCase(docText[index]) &&
+                    (terms.containsKey(docText[index].substring(0,1).toUpperCase()+docText[index].substring(1))
+                     || terms.containsKey(docText[index].toUpperCase()))){
+                if(terms.containsKey(docText[index].substring(0,1).toUpperCase()+docText[index].substring(1))){
+                    tempTerm = terms.remove(docText[index].substring(0,1).toUpperCase()+docText[index].substring(1));
+                    System.out.println(docText[index]);
+                    tempTerm.setName(docText[index]);
+                }
+                else{
+                    tempTerm = terms.remove(docText[index].toUpperCase());
+                    System.out.println(docText[index]);
+                    tempTerm.setName(docText[index]);
+                }
+
+            }
+            else if(testAllLowerCase(docText[index]) && terms.containsKey(docText[index].toUpperCase())){
+                    return; //dont add lowercase wh
+            }
+
+            else{
                 tempTerm.setName(docText[index]);
             }
 //            else if()
-            tempTerm.setName(docText[index]);
         }
              handleTerm(tempTerm);
+    }
+    public  boolean testAllLowerCase(String str){
+        for(int i=0; i<str.length(); i++){
+            char c = str.charAt(i);
+            if(c >= 65 && c <= 90) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean isNotOutBound(int i){
