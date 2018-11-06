@@ -14,15 +14,15 @@ public class ReadFile {
     }
 
     public void updateDocList(String path) throws IOException {
-        URL url = getClass().getResource(path);
-        File file = new File(url.getPath());
-        FileReader fr = new FileReader(file);
+        File file = new File(path);
+        FileReader fr = new FileReader(file.getAbsolutePath());
         BufferedReader bufferedReader = new BufferedReader(fr);
         StringBuffer stringBuffer = new StringBuffer();
         String line;
 
         while ((line = bufferedReader.readLine()) != null) {
             stringBuffer.append(line);
+            int i=8;
             stringBuffer.append("\n");
         }
         String File = stringBuffer.toString();
@@ -30,6 +30,16 @@ public class ReadFile {
         fr.close();
         for (int j = 1; j < Docs.length ; j++) {
             CreateDocFromString(Docs[j]);
+        }
+        try {
+            Parse p = new Parse(docList.get(0));
+            p.ParseDoc();
+            for (int i = 1; i<docList.size(); i++){
+                p.setDoc(docList.get(i));
+                p.ParseDoc();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
@@ -45,7 +55,6 @@ public class ReadFile {
         Text = str.split("<TEXT>")[1].split("</TEXT>")[0];
         Document document = new Document(DocNo,Date,Header,Text);
         docList.add(document);
-        document.toString();
     }
 
 //    public void CreateDocFromString(String str){
