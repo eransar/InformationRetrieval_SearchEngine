@@ -21,6 +21,7 @@ public class Parse {
     private String[] docText;
     private enum wordType {NUMBER, SYMBOL, WORD,NULL;};
     private HashMap <String,Integer> months;
+    private HashMap<String,String> replace;
 
 
 
@@ -34,9 +35,25 @@ public class Parse {
         this.terms=new HashMap<String,Term>();
         this.stopWords=new HashSet<String>();
         this.months=months();
+        this.replace=new HashMap<String,String>();
         initStopwords();
+        initreplace();
 
 
+    }
+
+    private void initreplace() {
+        replace.put(",","");
+        replace.put("\n"," ");
+        replace.put("\n\n"," ");
+        replace.put("\\r\\n"," ");
+        replace.put("\t"," ");
+        replace.put("."+"\n"," ");
+        replace.put (".)","");
+        replace.put(") "," ");
+        replace.put(" ("," ");
+        replace.put(" '","");
+        replace.put("' ","");
     }
 
     /**
@@ -44,12 +61,12 @@ public class Parse {
      */
     public void ParseDoc(){
         String text=doc.getTEXT();
-        text=text.replace("."+"\n"," ");
+//        text=text.replace("."+"\n"," ");
 //        text=text.replace(System.lineSeparator()," ");
-        text=text.replace("\n"," ").replace("\r"," ");
-        text=text.replace(", "," ");
-        text=text.replace("\t"," ");
-        text=text.replace("\\r\\n","");
+//        text=text.replace("\n"," ").replace("\r"," ");
+//        text=text.replace(", "," ");
+//        text=text.replace("\t"," ");
+//        text=text.replace("\\r\\n"," ");
 //        text=text.replace(".)","");
 //        text=text.replace(") "," ");
 //        text=text.replace(" ("," ");
@@ -58,6 +75,28 @@ public class Parse {
         docText=(text.split(" "));
         startParse();
 //        printTerm();
+    }
+
+    private String replaceReplace(String text) {
+
+        StringBuilder sb = new StringBuilder(text);
+        for (Map.Entry<String, String> entry : replace.entrySet()) {
+
+            String key = entry.getKey();
+            String value = entry.getValue();
+
+            if((text.charAt(0)=='$' && key.equals("$"))){
+                continue;
+            }
+            int start = sb.indexOf(key, 0);
+            while (start > -1) {
+                int end = start + key.length();
+                int nextSearchStart = start + value.length();
+                sb.replace(start, end, value);
+                start = sb.indexOf(key, nextSearchStart);
+            }
+        }
+        return sb.toString();
     }
 
     public void initStopwords() throws IOException {
@@ -90,13 +129,17 @@ public class Parse {
         long startTime;
         for (index = 1; index < docText.length; index++) {
             //if it's a line seperator. increase line number
-//
-             if(docText[index].equals("") || docText[index].equals("-")){
+
+             if(docText[index].length()==0 || docText[index].equals("-")){
                 continue;
             }
 
-            else {
 
+            else {
+                 docText[index]=replaceReplace(docText[index]);
+                 if(docText[index].length()==0 || docText[index].equals(" ")){
+                     continue;
+                 }
                 wordType type = identifyDoc(docText[index]); // identifying the word
 
                 if (type == wordType.NUMBER) {
@@ -230,11 +273,14 @@ public class Parse {
                 if (isSymbol(str)) {
 //                    System.out.println("Symbol : " + str);
                     return wordType.SYMBOL;
+                }
+                else if(str.charAt(0)<48 || str.charAt(0)>57 ) {
 
-                } else if (isNumber(str)) {
+                    return wordType.WORD;
+                }
+                else if (isNumber(str)) {
 //                    System.out.println("Number : " + str);
                     return wordType.NUMBER;
-
                 }
             } catch (ParseException e) {
 //                System.out.println("Word : " + str);
@@ -264,11 +310,14 @@ public class Parse {
     }
 
     private boolean isNumber(String str) throws ParseException {
-
-        NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
-        Number number = format.parse(str);
-        double test=number.doubleValue();
-        return true;
+        if(str.charAt(0) >=48 && str.charAt(0) <=57){
+            return true;
+        }
+        return false;
+//        NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
+//        Number number = format.parse(str);
+//        double test=number.doubleValue();
+//        return true;
     }
 
     private boolean isFraction(String str) {
