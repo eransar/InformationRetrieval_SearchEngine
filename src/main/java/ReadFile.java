@@ -48,15 +48,37 @@ public class ReadFile {
 
   private void jparse(File file) throws IOException {
     Document doc;
-      doc = Jsoup.parse(file, "UTF-8");
+    doc = Jsoup.parse(file, "UTF-8");
 
 
+    String DOCNO = "";
+    String DATE = "";
+    String HEADER = "";
+    String TEXT = "";
 
-    Elements docno = doc.select("DOCNO");
-    Elements date = doc.select("DATE1");
-    Elements header = doc.select("HEADER");
+    Elements doctags = doc.select("DOC");
+    for (Element jdoc : doctags) {
+      DOCNO = jdoc.select("DOCNO").text();
+      DATE = jdoc.select("DATE1").text();
+      HEADER = jdoc.select("HEADER").text();
+      TEXT = jdoc.select("TEXT").text();
+      if(DATE.equals("")){
+          DATE=jdoc.select("DATE").text();
+      }
+      if (DOCNO.equals("FT924-11838")) {
+        System.out.println(DOCNO);
+      }
+      parse.setDoc(new Doc(DOCNO,DATE,HEADER,TEXT));
+      parse.ParseDoc();
+    }
+
+    Elements DOCNOo = doc.select("DOCNO");
+//    Elements header = doc.select("HEADER");
     Elements text = doc.select("TEXT");
 
+//    if(DOCNOo.size() != text.size()){
+//        System.out.println("YEA");
+//    }
 
 
             /*
@@ -67,15 +89,16 @@ public class ReadFile {
     private String TEXT;
              */
 //
-    if(docno.size()!=text.size()){
-      System.out.println("different");
-      System.out.println(file.toString());
-    }
-    for (int i = 0; i <docno.size() ; i++) {
-      parse.setDoc(new Doc(docno.get(i).text(),text.get(i).text()));
-      parse.ParseDoc();
-    }
-//    parse.setDoc(new Doc(docno.text(),date.text(),header.text(),text.text()));
-    parse.ParseDoc();
+//    if(doctags.size()!=text.size()){
+//      System.out.println("different");
+//      System.out.println(file.toString());
+//    }
+//    for (int i = 0; i <doctags.size() ; i++) {
+//      parse.setDoc(new Doc(doctags.get(i).text(),text.get(i).text()));
+//      parse.ParseDoc();
+//    }
+////    parse.setDoc(new Doc(docno.text(),date.text(),header.text(),text.text()));
+//    parse.ParseDoc();
+//  }
   }
 }

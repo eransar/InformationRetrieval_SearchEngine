@@ -11,7 +11,7 @@ import java.util.Locale;
 public class testMain {
     public static void main(String[] args) throws IOException, ParseException {
         float start = System.nanoTime();
-        ReadFile rf = new ReadFile("D:\\corpus\\corpus");
+        ReadFile rf = new ReadFile("/Users/erans/Downloads/corpus/corpus/");
         rf.start();
         float end = System.nanoTime();
         System.out.println(end-start);
