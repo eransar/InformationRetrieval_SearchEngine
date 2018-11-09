@@ -10,29 +10,35 @@ import java.util.Locale;
 
 public class testMain {
     public static void main(String[] args) throws IOException, ParseException {
+        float start = System.nanoTime();
+        ReadFile rf = new ReadFile("D:\\corpus\\corpus");
+        rf.start();
+        float end = System.nanoTime();
+        System.out.println(end-start);
+        System.out.println(rf.parse.terms_size());
 
-        ReadFile readFile = new ReadFile();
-        int i=0;
-        File directory = new File("D:\\corpus");
-        File[] fList2 = directory.listFiles();
-        // get all the files from a directory
-        File[] fList = fList2[0].listFiles();
-
-        for (File file : fList) {
-            if (file.isFile()) {
-                readFile.updateDocList(file.getAbsolutePath());
-            } else if (file.isDirectory()) {
-                File file2 = new File(file.getAbsolutePath());
-                File[] fList1 = file2.listFiles();
-                for (File file1 : fList1) {
-                    if (file1.isFile()) {
-                        readFile.updateDocList(file1.getAbsolutePath());
-
-                        System.out.println(file1.getAbsolutePath());
-                    }
-                }
-            }
-        }
+//        ReadFile readFile = new ReadFile();
+//        int i=0;
+//        File directory = new File("D:\\corpus");
+//        File[] fList2 = directory.listFiles();
+//        // get all the files from a directory
+//        File[] fList = fList2[0].listFiles();
+//
+//        for (File file : fList) {
+//            if (file.isFile()) {
+//                readFile.updateDocList(file.getAbsolutePath());
+//            } else if (file.isDirectory()) {
+//                File file2 = new File(file.getAbsolutePath());
+//                File[] fList1 = file2.listFiles();
+//                for (File file1 : fList1) {
+//                    if (file1.isFile()) {
+//                        readFile.updateDocList(file1.getAbsolutePath());
+//
+//                        System.out.println(file1.getAbsolutePath());
+//                    }
+//                }
+//            }
+//        }
         /*float startTime = System.nanoTime();
         ReadFile rf = new ReadFile();
         rf.updateDocList("D:\\documents\\users\\eransar\\Downloads\\IR\\IR\\src\\main\\resources\\FB396001");
@@ -54,11 +60,11 @@ public class testMain {
 //        double d = number.doubleValue();
 //        parse.printTerms();
 
-//        Document doc = new Document("1","2","33","$100 billion");
+//        Doc doc = new Doc("1","2","33","$100 billion");
 //        parse.setDoc(doc);
 //        parse.ParseDocument(doc);
 
-//        Parse parse = new Parse(new Document("1","2","33","May 1994"));
+//        Parse parse = new Parse(new Doc("1","2","33","May 1994"));
 //        parse.ParseDoc();
 
 

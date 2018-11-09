@@ -1,8 +1,5 @@
 
 
-import com.sun.xml.internal.ws.util.StringUtils;
-
-import javax.print.Doc;
 import java.io.*;
 import java.net.URL;
 import java.text.NumberFormat;
@@ -14,7 +11,7 @@ import java.util.regex.Pattern;
 public class Parse {
     private HashSet<String> stopWords;
     private HashMap<String,Term> terms;
-    private Document doc;
+    private Doc doc;
     private int lineNumber;
     private int wordPosition;
     private int index;
@@ -25,9 +22,20 @@ public class Parse {
 
 
 
-    public Parse(Document doc) throws IOException {
+    public Parse() throws IOException {
         this.stopWords=new HashSet<String>();
-//        this.termsInfo=new HashMap<Term,HashMap<Document,Integer>>();
+        this.doc=doc;
+        this.lineNumber=0;
+        this.wordPosition=0;
+        this.index=1;
+        this.terms=new HashMap<String,Term>();
+        this.months=months();
+        this.replace=new HashMap<String,String>();
+        initStopwords();
+        initreplace();
+    }
+    public Parse(Doc doc) throws IOException {
+//        this.termsInfo=new HashMap<Term,HashMap<Doc,Integer>>();
         this.doc=doc;
         this.lineNumber=0;
         this.wordPosition=0;
@@ -38,6 +46,8 @@ public class Parse {
         this.replace=new HashMap<String,String>();
         initStopwords();
         initreplace();
+        System.out.println(doc.getTEXT().length());
+        int i =5;
 
 
     }
@@ -73,7 +83,11 @@ public class Parse {
 //        text=text.replace(" '","");
 //        text=text.replace("' ","");
         docText=(text.split(" "));
-        startParse();
+        try {
+            startParse();
+        } catch (ParseException e) {
+
+        }
 //        printTerm();
     }
 
@@ -125,11 +139,11 @@ public class Parse {
         }
     }
 
-    private void startParse() {
+    private void startParse() throws ParseException {
         long startTime;
         for (index = 1; index < docText.length; index++) {
             //if it's a line seperator. increase line number
-
+//            System.out.println("Begin : "+docText[index]);
              if(docText[index].length()==0 || docText[index].equals("-")){
                 continue;
             }
@@ -146,8 +160,8 @@ public class Parse {
                     parseNumber(docText[index], index);
                     long endTime =  System.currentTimeMillis();
 
-                } else if (type == wordType.WORD) {
-                } else if (type == wordType.SYMBOL) {
+                }
+                else if (type == wordType.SYMBOL) {
                     parseSymbol(docText[index],index);
                 } else if (type == wordType.WORD) {
                     try {
@@ -310,21 +324,24 @@ public class Parse {
     }
 
     private boolean isNumber(String str) throws ParseException {
-        if(str.charAt(0) >=48 && str.charAt(0) <=57){
-            return true;
-        }
-        return false;
-//        NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
-//        Number number = format.parse(str);
-//        double test=number.doubleValue();
-//        return true;
+//        if(str.charAt(0) >=48 && str.charAt(0) <=57){
+//            return true;
+//        }
+//        return false;
+        NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
+        Number number = format.parse(str);
+        double test=number.doubleValue();
+        return true;
     }
 
-    private boolean isFraction(String str) {
+    public boolean isFraction(String str) {
 
         if (str.contains("/")) {
             String separator = "/";
             String[] new_str = str.split(Pattern.quote(separator));
+            if(str.length() <=2 || new_str.length<=1){
+                return false;
+            }
             NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
             try {
                 Number first = format.parse(new_str[0]);
@@ -470,7 +487,7 @@ public class Parse {
         }
 
 
-//    public HashMap<Term, HashMap<Document, Integer>> getTermsInfo() {
+//    public HashMap<Term, HashMap<Doc, Integer>> getTermsInfo() {
     public HashMap<String, Term> getTerms() {
         return terms;
     }
@@ -495,6 +512,7 @@ public class Parse {
                  doc.setDistinctwords(doc.getDistinctwords() + 1);
                  toCheck.setCorpusFrequency(toCheck.getCorpusFrequency() + 1);
                  terms.put(toCheck.getName(), toCheck);
+//                 System.out.println("New Term : "+toCheck.getName());
              }
          }
 
@@ -517,11 +535,13 @@ public class Parse {
             if(UsedTerm.getDocFrequency().get(doc)==null){
                 UsedTerm.setDf(UsedTerm.getDf()+1);
                 UsedTerm.getDocFrequency().put(doc,1);
+//                System.out.println("Used Term "+UsedTerm.getName());
 
             }
             else{
                 UsedTerm.getDocFrequency().put(doc,UsedTerm.getDocFrequency().get(doc)+1);
                 updateDocMaxTf(UsedTerm.getDocFrequency().get(doc));
+//                System.out.println("Used Term "+UsedTerm.getName());
 
             }
 
@@ -630,12 +650,12 @@ public class Parse {
         return parse_months;
     }
 
-
-    public void setDoc(Document doc) {
+    public int terms_size(){return terms.size();}
+    public void setDoc(Doc doc) {
         this.doc = doc;
     }
 
-    public Document getDoc() {
+    public Doc getDoc() {
 
         return doc;
     }

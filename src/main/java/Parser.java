@@ -10,7 +10,7 @@ import java.util.Locale;
 public class Parser {
     private HashSet<String> stopWords;
     private HashSet<String> terms;
-    private Document doc;
+    private Doc doc;
 
 
     public static String[] getTextWithoutDelimeters() {
@@ -57,7 +57,7 @@ public class Parser {
      * prepare the text to parse
      * @param doc
      */
-    public void ParseDocument(Document doc){
+    public void ParseDocument(Doc doc){
         this.doc=doc;
         String text=doc.getTEXT();
         text=text.replace("."+"\n"," ");
@@ -74,7 +74,7 @@ public class Parser {
 //        ParseWords();
     }
 
-    public void setDoc(Document doc) {
+    public void setDoc(Doc doc) {
         this.doc = doc;
     }
 

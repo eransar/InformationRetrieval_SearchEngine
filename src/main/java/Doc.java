@@ -1,7 +1,7 @@
 
 import java.util.HashMap;
 
-public class Document {
+public class Doc {
     private String CITY;
     private String DOCNO;
     private String DATE;
@@ -10,7 +10,12 @@ public class Document {
     private int maxtf;
     private int distinctwords;
 
-    public Document(String docno, String date, String header, String text){
+    public Doc(String docno,String text){
+        this.DOCNO=docno;
+        this.TEXT=text;
+    }
+
+    public Doc(String docno, String date, String header, String text){
         this.DOCNO=docno;
         this.DATE=date;
         this.HEADER=header;

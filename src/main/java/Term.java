@@ -5,14 +5,14 @@ public class Term {
     private String name;
     private int df;
     private int corpusFrequency;
-    private HashMap<Document,Integer> docFrequency;
+    private HashMap<Doc,Integer> docFrequency;
     private String type;
 
-    public void setDocFrequency(HashMap<Document, Integer> docFrequency) {
+    public void setDocFrequency(HashMap<Doc, Integer> docFrequency) {
         this.docFrequency = docFrequency;
     }
 
-    public HashMap<Document, Integer> getDocFrequency() {
+    public HashMap<Doc, Integer> getDocFrequency() {
         return docFrequency;
     }
 
@@ -20,13 +20,13 @@ public class Term {
         this.name="";
         this.df=0;
         this.tf=0;
-        this.docFrequency=new HashMap<Document,Integer>();
+        this.docFrequency=new HashMap<Doc,Integer>();
         this.corpusFrequency=0;
     }
 
     public Term(Term t){
         this.name=t.name;
-        this.docFrequency=new HashMap<Document,Integer>();
+        this.docFrequency=new HashMap<Doc,Integer>();
         this.docFrequency.putAll(t.docFrequency);
         this.df=t.df;
         this.corpusFrequency=t.corpusFrequency;

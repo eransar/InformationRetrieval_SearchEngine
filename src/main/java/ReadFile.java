@@ -1,84 +1,81 @@
-import java.io.*;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
 
 public class ReadFile {
 
-    ArrayList<Document> docList = new ArrayList<Document>();
+  private HashSet<Doc> docs;
+  private String path;
+  public Parse parse;
+  private int counter;
 
+  public ReadFile(String path) throws IOException {
+    this.path = path;
+    this.docs = new HashSet<Doc>();
+    this.parse=new Parse();
+    this.counter=1;
+  }
 
-    public ReadFile(){
-        docList=new ArrayList<Document>();
-    }
+  public void start() throws IOException {
+    File input = new File(path);
+    File[] corpus = input.listFiles();
 
-    public void updateDocList(String path) throws IOException {
-        File file = new File(path);
-        FileReader fr = new FileReader(file.getAbsolutePath());
-        BufferedReader bufferedReader = new BufferedReader(fr);
-        StringBuffer stringBuffer = new StringBuffer();
-        String line;
-
-        while ((line = bufferedReader.readLine()) != null) {
-            stringBuffer.append(line);
-            int i=8;
-            stringBuffer.append("\n");
-        }
-        String File = stringBuffer.toString();
-        String[] Docs = File.split("<DOC>");
-        fr.close();
-        for (int j = 1; j < Docs.length ; j++) {
-            CreateDocFromString(Docs[j]);
-        }
-        try {
-            Parse p = new Parse(docList.get(0));
-            p.ParseDoc();
-            for (int i = 1; i<docList.size(); i++){
-                p.setDoc(docList.get(i));
-                p.ParseDoc();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    for (int i = 0; i < corpus.length; i++) {
+      if (corpus[i].isDirectory()) {//other condition like name ends in html
+        for (int j = 0; j < corpus[i].listFiles().length ; j++) {
+          jparse(corpus[i].listFiles()[j]);
+          System.out.println(counter++);
         }
 
+      }
+      else{
+        jparse(corpus[i]);
+
+      }
     }
 
-    public void CreateDocFromString(String str){
-        String DocNo="";
-        String Date="";
-        String Header="";
-        String Text="";
 
-        DocNo = str.split("<DOCNO>")[1].split("</DOCNO>")[0];
-        Date = str.split("<DATE1>|<DATE>")[1].split("</DATE1>|</DATE>")[0];
-        Text = str.split("<TEXT>")[1].split("</TEXT>")[0];
-        Document document = new Document(DocNo,Date,Header,Text);
-        docList.add(document);
+  }
+
+  public HashSet<Doc> getDocs() {
+    return docs;
+  }
+
+  private void jparse(File file) throws IOException {
+    Document doc;
+      doc = Jsoup.parse(file, "UTF-8");
+
+
+
+    Elements docno = doc.select("DOCNO");
+    Elements date = doc.select("DATE1");
+    Elements header = doc.select("HEADER");
+    Elements text = doc.select("TEXT");
+
+
+
+            /*
+               private String CITY;
+    private String DOCNO;
+    private String DATE;
+    private String HEADER;
+    private String TEXT;
+             */
+//
+    if(docno.size()!=text.size()){
+      System.out.println("different");
+      System.out.println(file.toString());
     }
-
-//    public void CreateDocFromString(String str){
-//        String DocNo="";
-//        String Date="";
-//        String Header="";
-//        String Text="";
-//
-//        int DocNostartPosition = str.indexOf("[DOCNO]") + "[DOCNO]".length();
-//        int DocNoendPosition = str.indexOf("[/DOCNO]", DocNostartPosition);
-//        DocNo = str.substring(DocNostartPosition, DocNoendPosition);
-//
-//        System.out.println(DocNo);
-//
-//
-//
-//
-//
-//
-////        System.out.println(str);
-//
-//        docList.add(new Document(DocNo,Date,Header,Text));
-//    }
-
-
-
+    for (int i = 0; i <docno.size() ; i++) {
+      parse.setDoc(new Doc(docno.get(i).text(),text.get(i).text()));
+      parse.ParseDoc();
+    }
+//    parse.setDoc(new Doc(docno.text(),date.text(),header.text(),text.text()));
+    parse.ParseDoc();
+  }
 }
