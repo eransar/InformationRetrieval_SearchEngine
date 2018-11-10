@@ -24,7 +24,6 @@ public class Parse {
 
     public Parse() throws IOException {
         this.stopWords=new HashSet<String>();
-        this.doc=doc;
         this.lineNumber=0;
         this.wordPosition=0;
         this.index=1;
@@ -36,7 +35,6 @@ public class Parse {
     }
     public Parse(Doc doc) throws IOException {
 //        this.termsInfo=new HashMap<Term,HashMap<Doc,Integer>>();
-        this.doc=doc;
         this.lineNumber=0;
         this.wordPosition=0;
         this.index=1;
@@ -46,8 +44,6 @@ public class Parse {
         this.replace=new HashMap<String,String>();
         initStopwords();
         initreplace();
-        System.out.println(doc.getTEXT().length());
-        int i =5;
 
 
     }
@@ -69,8 +65,9 @@ public class Parse {
     /**
      * Parsing A document and filling termsInfo HashMap
      */
-    public void ParseDoc(){
-        String text=doc.getTEXT();
+    public void ParseDoc(Doc doc,String TEXT){
+        this.doc=doc;
+//        String text=doc.getTEXT();
 //        text=text.replace("."+"\n"," ");
 //        text=text.replace(System.lineSeparator()," ");
 //        text=text.replace("\n"," ").replace("\r"," ");
@@ -82,7 +79,7 @@ public class Parse {
 //        text=text.replace(" ("," ");
 //        text=text.replace(" '","");
 //        text=text.replace("' ","");
-        docText=(text.split(" "));
+        docText=(TEXT.split(" "));
         try {
             startParse();
         } catch (ParseException e) {
