@@ -50,16 +50,34 @@ public class Parse {
 
     private void initreplace() {
         replace.put(",","");
-        replace.put("\n"," ");
         replace.put("\n\n"," ");
         replace.put("\\r\\n"," ");
         replace.put("\t"," ");
         replace.put("."+"\n"," ");
         replace.put (".)","");
-        replace.put(") "," ");
-        replace.put(" ("," ");
+        replace.put(")"," ");
+        replace.put("("," ");
         replace.put(" '","");
         replace.put("' ","");
+        replace.put(": "," ");
+        replace.put(". \n"," ");
+        replace.put(". "," ");
+        replace.put(".) "," ");
+        replace.put("--"," ");
+        replace.put("- "," ");
+        replace.put(";"," ");
+        replace.put(";\n"," ");
+        replace.put("[","");
+        replace.put("]","");
+        replace.put("'","");
+        replace.put("'s","");
+        replace.put("-\n","");
+        replace.put("\"","");
+        replace.put("?","");
+        replace.put(".\"","");
+        replace.put(".,","");
+        replace.put("!","");
+        replace.put("\n"," ");
     }
 
     /**
@@ -67,18 +85,7 @@ public class Parse {
      */
     public void ParseDoc(Doc doc,String TEXT){
         this.doc=doc;
-//        String text=doc.getTEXT();
-//        text=text.replace("."+"\n"," ");
-//        text=text.replace(System.lineSeparator()," ");
-//        text=text.replace("\n"," ").replace("\r"," ");
-//        text=text.replace(", "," ");
-//        text=text.replace("\t"," ");
-//        text=text.replace("\\r\\n"," ");
-//        text=text.replace(".)","");
-//        text=text.replace(") "," ");
-//        text=text.replace(" ("," ");
-//        text=text.replace(" '","");
-//        text=text.replace("' ","");
+        TEXT=replaceReplace(TEXT);
         docText=(TEXT.split(" "));
         try {
             startParse();
@@ -96,7 +103,7 @@ public class Parse {
             String key = entry.getKey();
             String value = entry.getValue();
 
-            if((text.charAt(0)=='$' && key.equals("$"))){
+            if(text.length()==0 || (text.charAt(0)=='$' && key.equals("$"))){
                 continue;
             }
             int start = sb.indexOf(key, 0);
@@ -122,8 +129,6 @@ public class Parse {
             if(!line.equals(System.lineSeparator())){
                 stopWords.add(line);
             }
-
-
         }
     }
 
@@ -141,25 +146,26 @@ public class Parse {
         for (index = 1; index < docText.length; index++) {
             //if it's a line seperator. increase line number
 //            System.out.println("Begin : "+docText[index]);
-             if(docText[index].length()==0 || docText[index].equals("-")){
+            if (docText[index].length() == 0 || docText[index].equals("-")) {
                 continue;
             }
-
-
+            else if (stopWords.contains(docText[index]) || stopWords.contains(docText[index].toUpperCase()) || stopWords.contains(docText[index].toLowerCase())) {
+                continue;
+            }
             else {
-                 docText[index]=replaceReplace(docText[index]);
-                 if(docText[index].length()==0 || docText[index].equals(" ")){
-                     continue;
-                 }
+                //docText[index] = replaceReplace(docText[index]);
+                //System.out.println(docText[index]);
+                if (docText[index].length() == 0 || docText[index].equals(" ")) {
+                    continue;
+                }
                 wordType type = identifyDoc(docText[index]); // identifying the word
 
                 if (type == wordType.NUMBER) {
                     parseNumber(docText[index], index);
-                    long endTime =  System.currentTimeMillis();
+                    long endTime = System.currentTimeMillis();
 
-                }
-                else if (type == wordType.SYMBOL) {
-                    parseSymbol(docText[index],index);
+                } else if (type == wordType.SYMBOL) {
+                    parseSymbol(docText[index], index);
                 } else if (type == wordType.WORD) {
                     try {
                         parseWord(index);
@@ -503,18 +509,15 @@ public class Parse {
                 set doc frequency
                 set term location in doc
          */
-         if (terms.get(toCheck.getName())==null){
-             if(!stopWords.contains(toCheck.getName()) && !stopWords.contains(toCheck.getName().toUpperCase()) && !stopWords.contains(toCheck.getName().toLowerCase())) {
-                 toCheck.getDocFrequency().put(doc, 1);
-                 doc.setDistinctwords(doc.getDistinctwords() + 1);
-                 toCheck.setCorpusFrequency(toCheck.getCorpusFrequency() + 1);
-                 terms.put(toCheck.getName(), toCheck);
+        if (terms.get(toCheck.getName()) == null) {
+            //if (!stopWords.contains(toCheck.getName()) && !stopWords.contains(toCheck.getName().toUpperCase()) && !stopWords.contains(toCheck.getName().toLowerCase())) {
+                toCheck.getDocFrequency().put(doc, 1);
+                doc.setDistinctwords(doc.getDistinctwords() + 1);
+                toCheck.setCorpusFrequency(toCheck.getCorpusFrequency() + 1);
+                terms.put(toCheck.getName(), toCheck);
 //                 System.out.println("New Term : "+toCheck.getName());
-             }
-         }
-
-
-
+            //}
+        }
         // if found term already exists in the term list:
             /*
                 Get the term from the list
@@ -524,25 +527,19 @@ public class Parse {
                     if it does - increase the freq by 1, see if freq > max tf
                 add the term back to the hashmap and overwrite the old term
              */
-        else{
+        else {
 //             System.out.println(toCheck.getName());
             Term UsedTerm = terms.get(toCheck.getName());
-            UsedTerm.setCorpusFrequency(UsedTerm.getCorpusFrequency()+1);
-
-            if(UsedTerm.getDocFrequency().get(doc)==null){
-                UsedTerm.setDf(UsedTerm.getDf()+1);
-                UsedTerm.getDocFrequency().put(doc,1);
+            UsedTerm.setCorpusFrequency(UsedTerm.getCorpusFrequency() + 1);
+            if (UsedTerm.getDocFrequency().get(doc) == null) {
+                UsedTerm.setDf(UsedTerm.getDf() + 1);
+                UsedTerm.getDocFrequency().put(doc, 1);
 //                System.out.println("Used Term "+UsedTerm.getName());
-
-            }
-            else{
-                UsedTerm.getDocFrequency().put(doc,UsedTerm.getDocFrequency().get(doc)+1);
+            } else {
+                UsedTerm.getDocFrequency().put(doc, UsedTerm.getDocFrequency().get(doc) + 1);
                 updateDocMaxTf(UsedTerm.getDocFrequency().get(doc));
 //                System.out.println("Used Term "+UsedTerm.getName());
-
             }
-
-
         }
     }
 
