@@ -143,7 +143,7 @@ public class Parse {
 
     private void startParse() throws ParseException {
         long startTime;
-        for (index = 1; index < docText.length; index++) {
+        for (index = 0; index < docText.length; index++) {
             //if it's a line seperator. increase line number
 //            System.out.println("Begin : "+docText[index]);
             if (docText[index].length() == 0 || docText[index].equals("-")) {
@@ -170,6 +170,7 @@ public class Parse {
                     try {
                         parseWord(index);
                     } catch (ParseException e) {
+                        e.printStackTrace();
                         return;
                     }
                 }
@@ -253,20 +254,15 @@ public class Parse {
 
                     tempTerm.setName(docText[index]);
                 }
-
             }
             else if(testAllLowerCase(docText[index]) && terms.containsKey(docText[index].toUpperCase())){
                     return; //dont add lowercase wh
             }
-
             else{
                 tempTerm.setName(docText[index]);
             }
-//            else if()
         }
-
              handleTerm(tempTerm);
-
     }
 
     public  boolean testAllLowerCase(String str){
@@ -331,9 +327,14 @@ public class Parse {
 //            return true;
 //        }
 //        return false;
-        NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
-        Number number = format.parse(str);
-        double test=number.doubleValue();
+
+        try {
+            NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
+            Number number = format.parse(str);
+            double test=number.doubleValue();
+        } catch (ParseException e) {
+            return false;
+        }
         return true;
     }
 

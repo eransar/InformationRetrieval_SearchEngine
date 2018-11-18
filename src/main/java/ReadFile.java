@@ -16,9 +16,8 @@ public class ReadFile {
   public ReadFile(String path) throws IOException {
     this.path = path;
     this.docs = new HashSet<Doc>();
-    this.parse=new Parse();
-    this.counter=1;
-    this.parse=new Parse();
+    this.parse = new Parse();
+    this.counter = 1;
   }
 
   public void start() throws IOException {
@@ -56,49 +55,30 @@ public class ReadFile {
 
   }
 
-  public void FillDocsHashSet(String[] docs){
+  public void FillDocsHashSet(String[] docs) {
     Document doc;
     String DOCNO;
     String TEXT;
     for (int i = 0; i < docs.length; i++) {
       //parsing file by DOCNO and TEXT
       doc = Jsoup.parse(docs[i]);
-      DOCNO=doc.select("DOCNO").text();
-      TEXT=doc.select("TEXT").text();
-      this.docs.add(new Doc(DOCNO,TEXT));
+      DOCNO = doc.select("DOCNO").text();
+      TEXT = doc.select("TEXT").text();
+      this.docs.add(new Doc(DOCNO, TEXT));
     }
   }
 
-  public void sendToParse(){
-  for (Doc d : docs){
-    float start = System.nanoTime();
+  public void sendToParse() {
+    for (Doc d : docs) {
+      float start = System.nanoTime();
 
-    parse.setDoc(d);
+      parse.setDoc(d);
 //    parse.ParseDoc();
-    float end = System.nanoTime();
-    System.out.println(end-start);
+      float end = System.nanoTime();
+      System.out.println(end - start);
+    }
+    docs.clear();
   }
-  docs.clear();
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   public HashSet<Doc> getDocs() {
     return docs;
@@ -111,43 +91,23 @@ public class ReadFile {
     String DOCNO = "";
     Elements doctags = doc.select("DOC");
 
-    for (  Element element : doctags){
+    for (Element element : doctags) {
       DOCNO = element.select("DOCNO").text();
-      TEXT= element.select("TEXT").text();
-      parse.ParseDoc(new Doc(DOCNO,file.getName()),TEXT);
+      TEXT = element.select("TEXT").text();
+      parse.ParseDoc(new Doc(DOCNO, file.getName()), TEXT);
 
     }
-
-
-
-
-
-
-//    SplitFile(doctags.get(0).text());
-
-
-//      if(DATE.equals("")){
-//          DATE=jdoc.select("DATE").text();
-//      }
-//      parse.setDoc(new Doc(DOCNO,DATE,HEADER,TEXT));
-//      parse.ParseDoc();
-
-//    Elements DOCNOo = doc.select("DOCNO");
-////    Elements header = doc.select("HEADER");
-//    Elements text = doc.select("TEXT");
-
-//  }
   }
 
-  private void SplitFile(String DocText){
+  private void SplitFile(String DocText) {
 
-    String[] lines=DocText.split("\n");
+    String[] lines = DocText.split("\n");
     StringBuilder content;
-    for (int i = 0; i <DocText.length() ; i++) {
+    for (int i = 0; i < DocText.length(); i++) {
 
     }
 
   }
-//
+
 
 }
