@@ -109,7 +109,7 @@ public class ReadFile {
     doc = Jsoup.parse(file, "UTF-8");
     String TEXT = "";
     String DOCNO = "";
-    Elements doctags = doc.select("DOC").wrap("DOCNO,TEXT");
+    Elements doctags = doc.select("DOC");
 
     for (  Element element : doctags){
       DOCNO = element.select("DOCNO").text();
@@ -117,6 +117,11 @@ public class ReadFile {
       parse.ParseDoc(new Doc(DOCNO,file.getName()),TEXT);
 
     }
+
+
+
+
+
 
 //    SplitFile(doctags.get(0).text());
 
