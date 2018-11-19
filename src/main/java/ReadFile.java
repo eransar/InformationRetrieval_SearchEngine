@@ -1,9 +1,12 @@
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+
 import java.io.*;
+import java.nio.file.Files;
 import java.util.HashSet;
 
 public class ReadFile {
@@ -11,78 +14,45 @@ public class ReadFile {
   private HashSet<Doc> docs;
   private String path;
   public Parse parse;
-  private int counter;
+  private int size;
+  private int numofDocs;
 
   public ReadFile(String path) throws IOException {
     this.path = path;
     this.docs = new HashSet<Doc>();
     this.parse = new Parse();
-    this.counter = 1;
+    this.numofDocs=1;
   }
 
   public void start() throws IOException {
     File input = new File(path);
     File[] corpus = input.listFiles();
+    size = corpus.length; //get amount of files
+
 
     for (int i = 0; i < corpus.length; i++) {
       if (corpus[i].isDirectory()) {//other condition like name ends in html
         for (int j = 0; j < corpus[i].listFiles().length; j++) {
+          if(numofDocs == size /10){
+          parse.SaveToDisk();
+          System.out.println(parse.getTempfolder());
+            numofDocs=1;
+          }
           jparse(corpus[i].listFiles()[j]);
+          numofDocs++;
         }
-
       } else {
         jparse(corpus[i]);
 
       }
     }
-  }
-
-  public void FileToDocs(File file) throws IOException {
-    FileReader fr = new FileReader(file.getAbsolutePath());
-    BufferedReader bufferedReader = new BufferedReader(fr);
-    StringBuilder sb = new StringBuilder();
-    String line;
-    while ((line = bufferedReader.readLine()) != null) {
-      sb.append(line);
-      sb.append("\n");
+    if(parse.terms_size()!=0){
+      parse.SaveToDisk();
     }
-    String File = sb.toString();
-    String[] Docs = File.split("<DOC>");
-    fr.close();
-
-//    FillDocsHashSet(Docs);
-//    sendToParse();
-
+    System.out.println("Number of terms "+parse.getNumofTerm());
   }
 
-  public void FillDocsHashSet(String[] docs) {
-    Document doc;
-    String DOCNO;
-    String TEXT;
-    for (int i = 0; i < docs.length; i++) {
-      //parsing file by DOCNO and TEXT
-      doc = Jsoup.parse(docs[i]);
-      DOCNO = doc.select("DOCNO").text();
-      TEXT = doc.select("TEXT").text();
-      this.docs.add(new Doc(DOCNO, TEXT));
-    }
-  }
 
-  public void sendToParse() {
-    for (Doc d : docs) {
-      float start = System.nanoTime();
-
-      parse.setDoc(d);
-//    parse.ParseDoc();
-      float end = System.nanoTime();
-      System.out.println(end - start);
-    }
-    docs.clear();
-  }
-
-  public HashSet<Doc> getDocs() {
-    return docs;
-  }
 
   private void jparse(File file) throws IOException {
     Document doc;
@@ -99,15 +69,6 @@ public class ReadFile {
     }
   }
 
-  private void SplitFile(String DocText) {
-
-    String[] lines = DocText.split("\n");
-    StringBuilder content;
-    for (int i = 0; i < DocText.length(); i++) {
-
-    }
-
-  }
 
 
 }

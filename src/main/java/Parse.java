@@ -19,6 +19,10 @@ public class Parse {
     private enum wordType {NUMBER, SYMBOL, WORD,NULL;};
     private HashMap <String,Integer> months;
     private HashMap<String,String> replace;
+    private String tempfolder=System.getProperty("java.io.tmpdir");
+    private int numofTerm;
+
+    private int filenum;
 
 
 
@@ -33,6 +37,7 @@ public class Parse {
         initStopwords();
         initreplace();
     }
+
     public Parse(Doc doc) throws IOException {
 //        this.termsInfo=new HashMap<Term,HashMap<Doc,Integer>>();
         this.lineNumber=0;
@@ -47,7 +52,6 @@ public class Parse {
 
 
     }
-
     private void initreplace() {
         replace.put(",","");
         replace.put("\n\n"," ");
@@ -274,10 +278,10 @@ public class Parse {
         }
         return true;
     }
+
     public boolean isNotOutBound(int i){
         return i < docText.length;
     }
-
 
 
 
@@ -357,6 +361,7 @@ public class Parse {
         }
         return false;
     }
+
 
 
     /*
@@ -490,13 +495,13 @@ public class Parse {
             handleTerm(tempTerm); //
         }
 
-
 //    public HashMap<Term, HashMap<Doc, Integer>> getTermsInfo() {
+
     public HashMap<String, Term> getTerms() {
         return terms;
     }
-
     //    }
+
     private void handleTerm(Term toCheck) {
 
         /*
@@ -549,7 +554,6 @@ public class Parse {
 /*
                 Begining of Utilities functions
  */
-
     public ArrayList<String> getFirstKeyWords(){
         ArrayList<String> keywords=new ArrayList<String>();
         keywords.add("Thousand");
@@ -564,11 +568,46 @@ public class Parse {
         keywords.add("trillion");
         return keywords;
     }
+
     public void updateDocMaxTf(int term_tf){
         if(doc.getMaxtf() < term_tf){
             doc.setMaxtf(term_tf);
         }
     }
+
+    public int getNumofTerm() {
+        return numofTerm;
+    }
+
+    public void SaveToDisk() {
+        numofTerm+=terms.size();
+
+        System.out.println(terms.size());
+        try{
+            File statText = new File(tempfolder+filenum+".txt");
+            FileOutputStream is = new FileOutputStream(statText);
+            OutputStreamWriter osw = new OutputStreamWriter(is);
+            StringBuilder termdocs = new StringBuilder();
+            Writer w = new BufferedWriter(osw);
+            for (Map.Entry<String,Term> term : terms.entrySet()){
+                for(Map.Entry<Doc,Integer> doc : term.getValue().getDocFrequency().entrySet()){
+                    termdocs = new StringBuilder();
+                    termdocs.append(" "+doc.getKey().getDOCNO()+" "+doc.getValue());
+                }
+
+                w.append(term.getValue().getName()+" "+term.getValue().getDf()+" "+termdocs+System.lineSeparator());
+
+            }
+
+            w.close();
+        }
+        catch (Exception IOException){
+
+        }
+        filenum++;
+        terms.clear();
+    }
+
     /**
      * Convert Double to String without leaving Zero Trails behind
      * @param d given double
@@ -578,7 +617,6 @@ public class Parse {
         String result=""+d;
         return result=result.indexOf(".") < 0 ? result : result.replaceAll("0*$", "").replaceAll("\\.$", "");
     }
-
     /**
      * Helper function to convert double to string with additional parameters
      * @param number given double
@@ -646,12 +684,16 @@ public class Parse {
     }
 
     public int terms_size(){return terms.size();}
+
     public void setDoc(Doc doc) {
         this.doc = doc;
     }
-
     public Doc getDoc() {
 
         return doc;
+    }
+
+    public String getTempfolder() {
+        return tempfolder;
     }
 }

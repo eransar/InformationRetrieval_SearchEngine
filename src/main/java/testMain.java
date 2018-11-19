@@ -5,7 +5,7 @@ import java.text.ParseException;
 public class testMain {
     public static void main(String[] args) throws IOException, ParseException {
         float start = System.nanoTime();
-        ReadFile rf = new ReadFile("C:\\corpus\\corpus");
+        ReadFile rf = new ReadFile("d:\\documents\\users\\eransar\\Downloads\\corpus\\corpus");
         rf.start();
         float end = System.nanoTime();
         System.out.println((end-start)*Math.pow(10,-9)/60);
