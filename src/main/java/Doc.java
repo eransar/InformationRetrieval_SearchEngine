@@ -74,6 +74,10 @@ public class Doc {
     public void setDATE(String DATE) {
         this.DATE = DATE;
     }
+
+    public String getFile() {
+        return file;
+    }
 }
 //    public void setTermLocation(HashMap<Location,Term> termLocation) {
 //        this.termLocation = termLocation;

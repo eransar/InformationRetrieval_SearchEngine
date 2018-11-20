@@ -1,5 +1,9 @@
 
 
+import org.tartarus.snowball.SnowballProgram;
+import org.tartarus.snowball.SnowballStemmer;
+import org.tartarus.snowball.ext.englishStemmer;
+
 import java.io.*;
 import java.net.URL;
 import java.text.NumberFormat;
@@ -21,6 +25,9 @@ public class Parse {
     private HashMap<String,String> replace;
     private String tempfolder=System.getProperty("java.io.tmpdir");
     private int numofTerm;
+    private static Indexer indexer;
+    private SnowballStemmer stemmer;
+    private boolean isSteam;
 
     private int filenum;
 
@@ -31,9 +38,11 @@ public class Parse {
         this.lineNumber=0;
         this.wordPosition=0;
         this.index=1;
-        this.terms=new HashMap<String,Term>();
+        this.terms=new HashMap<>();
         this.months=months();
         this.replace=new HashMap<String,String>();
+        this.indexer=new Indexer();
+        this.stemmer= new englishStemmer();
         initStopwords();
         initreplace();
     }
@@ -43,7 +52,7 @@ public class Parse {
         this.lineNumber=0;
         this.wordPosition=0;
         this.index=1;
-        this.terms=new HashMap<String,Term>();
+        this.terms=new HashMap<>();
         this.stopWords=new HashSet<String>();
         this.months=months();
         this.replace=new HashMap<String,String>();
@@ -147,6 +156,7 @@ public class Parse {
 
     private void startParse() throws ParseException {
         long startTime;
+
         for (index = 0; index < docText.length; index++) {
             //if it's a line seperator. increase line number
 //            System.out.println("Begin : "+docText[index]);
@@ -502,7 +512,20 @@ public class Parse {
     }
     //    }
 
+    public void setStem(boolean steam) {
+        isSteam = steam;
+    }
+
     private void handleTerm(Term toCheck) {
+        /**
+         * Stemming
+         */
+        if(isSteam) {
+            stemmer.setCurrent(toCheck.getName());
+            if(stemmer.stem()){
+                toCheck.setName(stemmer.getCurrent());
+            }
+        }
 
         /*
             if found term not avilable in the term list && not a stop word
@@ -542,6 +565,7 @@ public class Parse {
                 UsedTerm.getDocFrequency().put(doc, 1);
 //                System.out.println("Used Term "+UsedTerm.getName());
             } else {
+
                 UsedTerm.getDocFrequency().put(doc, UsedTerm.getDocFrequency().get(doc) + 1);
                 updateDocMaxTf(UsedTerm.getDocFrequency().get(doc));
 //                System.out.println("Used Term "+UsedTerm.getName());
@@ -580,7 +604,11 @@ public class Parse {
     }
 
     public void SaveToDisk() {
+        ArrayList<String> sorted_arraylist = new ArrayList<String>(terms.keySet());
+        Collections.sort(sorted_arraylist);
+
         numofTerm+=terms.size();
+        int counter=0;
 
         System.out.println(terms.size());
         try{
@@ -589,20 +617,36 @@ public class Parse {
             OutputStreamWriter osw = new OutputStreamWriter(is);
             StringBuilder termdocs = new StringBuilder();
             Writer w = new BufferedWriter(osw);
-            for (Map.Entry<String,Term> term : terms.entrySet()){
-                for(Map.Entry<Doc,Integer> doc : term.getValue().getDocFrequency().entrySet()){
-                    termdocs = new StringBuilder();
-                    termdocs.append(" "+doc.getKey().getDOCNO()+" "+doc.getValue());
+            for(String term_name: sorted_arraylist){
+                Term temp = terms.get(term_name);
+                for(Map.Entry<Doc,Integer> doc : temp.getDocFrequency().entrySet()){
+                    termdocs.append(" "+doc.getKey().getDOCNO()+","+doc.getValue()+","+doc.getKey().getFile());
                 }
-
-                w.append(term.getValue().getName()+" "+term.getValue().getDf()+" "+termdocs+System.lineSeparator());
+                w.append(term_name+" "+temp.getDf()+" "+termdocs+System.lineSeparator());
+//
+                indexer.addToHashMap(term_name,filenum+" "+counter);
+                counter++;
+                termdocs = new StringBuilder();
 
             }
+
+
+//            for (Map.Entry<String,Term> term : terms.entrySet()){
+//                for(Map.Entry<Doc,Integer> doc : term.getValue().getDocFrequency().entrySet()){
+//                    termdocs.append(" "+doc.getKey().getDOCNO()+","+doc.getValue()+","+doc.getKey().getFile());
+//                }
+//
+//                w.append(term.getValue().getName()+" "+term.getValue().getDf()+" "+termdocs+System.lineSeparator());
+//
+//                indexer.addToHashMap(term.getKey(),filenum+" "+counter);
+//                counter++;
+//                termdocs = new StringBuilder();
+//            }
 
             w.close();
         }
         catch (Exception IOException){
-
+            IOException.printStackTrace();
         }
         filenum++;
         terms.clear();
