@@ -12,8 +12,10 @@ public class Indexer {
         if(!dictionary.containsKey(term_name)){
             dictionary.put(term_name,pointer);
         }
-
+        else{
+            StringBuilder stringBuilder = new StringBuilder(dictionary.get(term_name));
+            stringBuilder.append(" "+stringBuilder);
+            dictionary.put(term_name,stringBuilder.toString());
+        }
     }
-
-
 }

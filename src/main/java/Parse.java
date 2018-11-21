@@ -75,6 +75,7 @@ public class Parse {
         replace.put(": "," ");
         replace.put(". \n"," ");
         replace.put(". "," ");
+        replace.put(" ."," ");
         replace.put(".) "," ");
         replace.put("--"," ");
         replace.put("- "," ");
@@ -91,6 +92,17 @@ public class Parse {
         replace.put(".,","");
         replace.put("!","");
         replace.put("\n"," ");
+        replace.put("\\"," ");
+        replace.put("//"," ");
+        replace.put("/"," ");
+        replace.put("*"," ");
+        replace.put("+/"," ");
+        replace.put(" -"," ");
+        replace.put("...."," ");
+        replace.put("..."," ");
+        replace.put(".."," ");
+        replace.put("|"," ");
+        replace.put("#"," ");
     }
 
     /**
@@ -158,12 +170,15 @@ public class Parse {
         long startTime;
 
         for (index = 0; index < docText.length; index++) {
-            //if it's a line seperator. increase line number
+            //if it's a line separator. increase line number
 //            System.out.println("Begin : "+docText[index]);
             if (docText[index].length() == 0 || docText[index].equals("-")) {
                 continue;
             }
-            else if (stopWords.contains(docText[index]) || stopWords.contains(docText[index].toUpperCase()) || stopWords.contains(docText[index].toLowerCase())) {
+            if (docText[index].charAt(0)=='-' || docText[index].charAt(0)=='.' || docText[index].charAt(0)=='+'){
+                docText[index]=docText[index].substring(1);
+            }
+            if (stopWords.contains(docText[index]) || stopWords.contains(docText[index].toUpperCase()) || stopWords.contains(docText[index].toLowerCase())) {
                 continue;
             }
             else {
@@ -627,9 +642,7 @@ public class Parse {
                 indexer.addToHashMap(term_name,filenum+" "+counter);
                 counter++;
                 termdocs = new StringBuilder();
-
             }
-
 
 //            for (Map.Entry<String,Term> term : terms.entrySet()){
 //                for(Map.Entry<Doc,Integer> doc : term.getValue().getDocFrequency().entrySet()){
