@@ -12,9 +12,10 @@ public class Doc {
     private int position;
     private String file;
 
-    public Doc(String DOCNO,String file){
+    public Doc(String DOCNO,String file, String CITY){
         this.DOCNO=DOCNO;
         this.file=file;
+        this.CITY=CITY;
     }
 
     public Doc(String docno, String date, String header, String text){

@@ -4,7 +4,7 @@ import java.util.Objects;
 public class Term {
     private String name;
     private int df;
-    private int corpusFrequency;
+
     private HashMap<Doc,Integer> docFrequency;
     private String type;
 
@@ -21,7 +21,7 @@ public class Term {
         this.df=0;
         this.tf=0;
         this.docFrequency=new HashMap<Doc,Integer>();
-        this.corpusFrequency=0;
+
     }
 
     public Term(Term t){
@@ -29,20 +29,11 @@ public class Term {
         this.docFrequency=new HashMap<Doc,Integer>();
         this.docFrequency.putAll(t.docFrequency);
         this.df=t.df;
-        this.corpusFrequency=t.corpusFrequency;
         this.docFrequency=null;
         this.type="";
 
 
 
-    }
-
-    public int getCorpusFrequency() {
-        return corpusFrequency;
-    }
-
-    public void setCorpusFrequency(int corpusFrequency) {
-        this.corpusFrequency = corpusFrequency;
     }
 
 

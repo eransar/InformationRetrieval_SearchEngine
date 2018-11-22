@@ -1,68 +1,57 @@
 
 
-import org.tartarus.snowball.SnowballProgram;
 import org.tartarus.snowball.SnowballStemmer;
 import org.tartarus.snowball.ext.englishStemmer;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 
-public class Parse {
+public class Parse extends Thread {
     private HashSet<String> stopWords;
     private HashMap<String, Term> terms;
     private Doc doc;
-    private int lineNumber;
-    private int wordPosition;
     private int index;
     private String[] docText;
-
-    private enum wordType {NUMBER, SYMBOL, WORD, NULL;}
-
-    ;
+    private enum wordType {NUMBER, SYMBOL, WORD, NULL;};
     private HashMap<String, Integer> months;
     private HashMap<String, String> replace;
-    private String tempfolder = System.getProperty("java.io.tmpdir");
+    private String path = System.getProperty("java.io.tmpdir");
     private int numofTerm;
     private static Indexer indexer;
+    private static CityIndexer city_indexer;
     private SnowballStemmer stemmer;
     private boolean isSteam;
-
     private int filenum;
+    private boolean first_chunk;
+    private volatile String currentfilename;
+    private ArrayList<String> sorted_terms;
 
 
     public Parse() throws IOException {
         this.stopWords = new HashSet<String>();
-        this.lineNumber = 0;
-        this.wordPosition = 0;
         this.index = 1;
         this.terms = new HashMap<>();
         this.months = months();
         this.replace = new HashMap<String, String>();
         this.indexer = new Indexer();
         this.stemmer = new englishStemmer();
+        this.city_indexer=CityIndexer.getInstance();
+        this.first_chunk=true;
+        this.sorted_terms=new ArrayList<String>();
         initStopwords();
         initreplace();
+        city_indexer.startConnection();
     }
 
-    public Parse(Doc doc) throws IOException {
-//        this.termsInfo=new HashMap<Term,HashMap<Doc,Integer>>();
-        this.lineNumber = 0;
-        this.wordPosition = 0;
-        this.index = 1;
-        this.terms = new HashMap<>();
-        this.stopWords = new HashSet<String>();
-        this.months = months();
-        this.replace = new HashMap<String, String>();
-        initStopwords();
-        initreplace();
-
-
-    }
 
     private void initreplace() {
         replace.put(",", "");
@@ -188,7 +177,7 @@ public class Parse {
         for (index = 0; index < docText.length; index++) {
             //if it's a line separator. increase line number
 //            System.out.println("Begin : "+docText[index]);
-            if (docText[index].length() == 0 || docText[index].equals("-")) {
+            if (docText[index].length() == 0 /*empty string */ || docText[index].equals("-")) {
                 continue;
             }
             if (docText[index].charAt(0) == '-' || docText[index].charAt(0) == '.' || docText[index].charAt(0) == '+') {
@@ -200,6 +189,9 @@ public class Parse {
             } else {
                 if (docText[index].length() == 0 || docText[index].equals(" ")) {
                     continue;
+                }
+                if(docText[index].equals(doc.getCITY())){
+                    city_indexer.addToCityIndexer(doc,index);
                 }
                 //check the term type
                 wordType type = identifyDoc(docText[index]); // identifying the word
@@ -219,7 +211,6 @@ public class Parse {
                     }
                 }
             }
-            wordPosition++;
         }
 
     }
@@ -595,7 +586,7 @@ public class Parse {
             //if (!stopWords.contains(toCheck.getName()) && !stopWords.contains(toCheck.getName().toUpperCase()) && !stopWords.contains(toCheck.getName().toLowerCase())) {
             toCheck.getDocFrequency().put(doc, 1);
             doc.setDistinctwords(doc.getDistinctwords() + 1);
-            toCheck.setCorpusFrequency(toCheck.getCorpusFrequency() + 1);
+            toCheck.setDf(1);
             terms.put(toCheck.getName(), toCheck);
 //                 System.out.println("New Term : "+toCheck.getName());
             //}
@@ -612,9 +603,8 @@ public class Parse {
         else {
 //             System.out.println(toCheck.getName());
             Term UsedTerm = terms.get(toCheck.getName());
-            UsedTerm.setCorpusFrequency(UsedTerm.getCorpusFrequency() + 1);
+            UsedTerm.setDf(UsedTerm.getDf()+1);
             if (UsedTerm.getDocFrequency().get(doc) == null) {
-                UsedTerm.setDf(UsedTerm.getDf() + 1);
                 UsedTerm.getDocFrequency().put(doc, 1);
 //                System.out.println("Used Term "+UsedTerm.getName());
             } else {
@@ -665,7 +655,7 @@ public class Parse {
 
         System.out.println(terms.size());
         try {
-            File statText = new File(tempfolder + filenum + ".txt");
+            File statText = new File(path + filenum + ".txt");
             FileOutputStream is = new FileOutputStream(statText);
             OutputStreamWriter osw = new OutputStreamWriter(is);
             StringBuilder termdocs = new StringBuilder();
@@ -675,7 +665,7 @@ public class Parse {
                 for (Map.Entry<Doc, Integer> doc : temp.getDocFrequency().entrySet()) {
                     termdocs.append(" " + doc.getKey().getDOCNO() + "," + doc.getValue() + "," + doc.getKey().getFile());
                 }
-                w.append(term_name + " " + temp.getDf() + " " + termdocs + System.lineSeparator());
+                w.append(temp.getDf() + " " + termdocs + System.lineSeparator());
 //
                 indexer.addToHashMap(term_name, filenum + " " + counter);
                 counter++;
@@ -701,6 +691,79 @@ public class Parse {
         filenum++;
         terms.clear();
     }
+
+
+    public void writeToDisk(){
+        if(first_chunk){
+            indexer.initFiles(this.path);
+            first_chunk=false;
+        }
+        //sort the dictionary
+        sorted_terms = new ArrayList<String>(terms.keySet());
+        Collections.sort(sorted_terms);
+
+        //get data from files
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+        HashSet<String> file_names = indexer.getFile_names();
+        for (String file_name: file_names){
+            synchronized (path){
+                this.currentfilename=file_name;
+            }
+            pool.submit(this);
+        }
+        File path = new File("C:\\Users\\eransar\\AppData\\Local\\Temp\\0.txt");
+
+
+
+    }
+    @Override
+    public void run(){
+        String file_name=path+"\\"+currentfilename+".txt";
+        File file = new File(file_name);
+        try {
+            List<String> fileContent = new ArrayList<>(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8));
+            for (int i = 0; i <sorted_terms.size() ; i++) {
+                String pointer=indexer.isExist(sorted_terms.get(i));
+                if(pointer!=null){
+                    /** term exists in the indexer dicatioanry */
+                    pointer=pointer.split(" ")[1];
+                    String old = fileContent.get(Integer.parseInt(pointer));
+                    StringBuilder termdocs= new StringBuilder();
+                    String finalterm = "";
+                    for (String term_name : sorted_terms) {
+                        Term temp = terms.get(term_name);
+                        for (Map.Entry<Doc, Integer> doc : temp.getDocFrequency().entrySet()) {
+                            termdocs.append(" " + doc.getKey().getDOCNO() + "," + doc.getValue() + "," + doc.getKey().getFile());
+                        }
+                        finalterm= temp.getDf() + " " + termdocs + System.lineSeparator();
+                        termdocs = new StringBuilder();
+                    }
+                    String merge=sorted_terms.get(i);
+                    int old_index=findSpaceIndex(old);
+                    int merge_index=findSpaceIndex(merge);
+                    int df_sum = Integer.parseInt(old.substring(0,old_index)) + Integer.parseInt(merge.substring(0,merge_index));
+                    StringBuilder str = new StringBuilder(df_sum+old.substring(old_index,old.length())+" "+merge.substring(merge_index,merge.length()));
+                    fileContent.set(12,str.toString());
+                    Files.write(file.toPath(),fileContent,StandardCharsets.UTF_8);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public int findSpaceIndex(String str){
+        for (int i = 0; i < str.length(); i++) {
+            if(str.charAt(i) ==' '){
+                return i;
+            }
+
+        }
+        return -1;
+    }
+
+
 
     /**
      * Convert Double to String without leaving Zero Trails behind
@@ -794,7 +857,7 @@ public class Parse {
         return doc;
     }
 
-    public String getTempfolder() {
-        return tempfolder;
+    public String getPath() {
+        return path;
     }
 }

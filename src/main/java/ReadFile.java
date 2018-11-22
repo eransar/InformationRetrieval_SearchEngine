@@ -6,7 +6,6 @@ import org.jsoup.select.Elements;
 
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.HashSet;
 
 public class ReadFile {
@@ -28,7 +27,7 @@ public class ReadFile {
     File input = new File(path);
     File[] corpus = input.listFiles();
     size = corpus.length; //get amount of files
-    parse.setStem(true);
+    parse.setStem(false);
 
 
     for (int i = 0; i < corpus.length; i++) {
@@ -36,7 +35,7 @@ public class ReadFile {
         for (int j = 0; j < corpus[i].listFiles().length; j++) {
           if(numofDocs == size /10){
           parse.SaveToDisk();
-          System.out.println(parse.getTempfolder());
+          System.out.println(parse.getPath());
             numofDocs=1;
           }
           jparse(corpus[i].listFiles()[j]);
@@ -60,14 +59,42 @@ public class ReadFile {
     doc = Jsoup.parse(file, "UTF-8");
     String TEXT = "";
     String DOCNO = "";
+    String CITY ="";
     Elements doctags = doc.select("DOC");
 
+
     for (Element element : doctags) {
+      CITY=getCityFromText(element.outerHtml());
+      String [] temp_city = CITY.split(" ");
+      if(temp_city.length > 2){
+        if(CITY.startsWith("   St.")){
+          CITY=temp_city[3]+" "+temp_city[4];
+        }
+        CITY=temp_city[3];
+      }
       DOCNO = element.select("DOCNO").text();
       TEXT = element.select("TEXT").text();
-      parse.ParseDoc(new Doc(DOCNO, file.getName()), TEXT);
+      parse.ParseDoc(new Doc(DOCNO, file.getName(),CITY), TEXT);
 
     }
+  }
+
+  public String getCityFromText(String text) {
+    String[] temp_text = text.split("\n");
+    int start = 0;
+    int end = 0;
+    int counter=0;
+
+    for (int i = 0; i < temp_text.length ; i++) {
+      if (temp_text[i].startsWith(" <f p=\"104\">")) {
+        if(!temp_text[i+1].equals(" <text>")){
+//          System.out.println(temp_text[i+1]+" ____");
+          return temp_text[i+1];
+        }
+
+      }
+    }
+    return "";
   }
 
 
