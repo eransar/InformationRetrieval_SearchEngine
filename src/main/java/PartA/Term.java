@@ -1,3 +1,5 @@
+package PartA;
+
 import java.util.HashMap;
 import java.util.Objects;
 

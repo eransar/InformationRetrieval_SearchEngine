@@ -1,3 +1,5 @@
+package PartA;
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.HashSet;

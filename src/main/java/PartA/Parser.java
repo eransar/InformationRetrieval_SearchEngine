@@ -1,3 +1,5 @@
+package PartA;
+
 import java.io.*;
 import java.net.URL;
 import java.text.NumberFormat;
@@ -8,7 +10,8 @@ import java.util.Iterator;
 import java.util.Locale;
 
 public class Parser {
-//    private HashSet<String> stopWords;
+    private HashSet<String> stopWords;
+   public int index;
 //    private HashSet<String> terms;
 //    private Doc doc;
 //
@@ -21,10 +24,10 @@ public class Parser {
 //        Parser.index = index;
 //    }
 //
-//    public static int getIndex() {
-//
-//        return index;
-//    }
+    public  int getIndex() {
+
+        return index;
+    }
 //
 //    private static int index =0;
 //    public static String[] textWithoutDelimeters;

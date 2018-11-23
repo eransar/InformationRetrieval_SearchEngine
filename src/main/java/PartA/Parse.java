@@ -1,4 +1,4 @@
-
+package PartA;
 
 import org.tartarus.snowball.SnowballStemmer;
 import org.tartarus.snowball.ext.englishStemmer;

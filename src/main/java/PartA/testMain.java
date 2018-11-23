@@ -1,18 +1,7 @@
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+package PartA;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class testMain {
