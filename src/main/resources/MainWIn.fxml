@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+   <children>
+      <TextField fx:id="corpusField" layoutX="151.0" layoutY="82.0" />
+      <TextField fx:id="PostingField" layoutX="151.0" layoutY="129.0" />
+      <Button fx:id="corpusPath" layoutX="12.0" layoutY="82.0" mnemonicParsing="false" onAction="#openStopWords" text="openStopWords" />
+      <Button fx:id="PostingPath" layoutX="24.0" layoutY="130.0" mnemonicParsing="false" onAction="#SavePostingPath" text="savePosting" />
+      <Button fx:id="Run" layoutX="224.0" layoutY="305.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="118.0" text="run" />
+      <TextField fx:id="stopWordsField" layoutX="151.0" layoutY="37.0" />
+      <Button fx:id="StopW" layoutX="24.0" layoutY="38.0" mnemonicParsing="false" onAction="#openCourpus" text="openCurpos" />
+      <CheckBox fx:id="StemmingCheckBox" layoutX="389.0" layoutY="107.0" mnemonicParsing="false" onAction="#Tostemming" prefHeight="25.0" prefWidth="109.0" text="Stemming" />
+      <ChoiceBox fx:id="language" layoutX="368.0" layoutY="70.0" onMouseClicked="#Tostemming" prefWidth="150.0" />
+      <Button fx:id="reset" layoutX="186.0" layoutY="175.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="79.0" text="Reset" />
+      <Button fx:id="ShowDictionary" layoutX="24.0" layoutY="305.0" mnemonicParsing="false" onAction="#ShowDictionary" text="Show Dictionary" />
+      <Button layoutX="26.0" layoutY="351.0" mnemonicParsing="false" text="Load Dictionary" />
+   </children>
+</AnchorPane>
