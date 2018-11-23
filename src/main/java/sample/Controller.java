@@ -28,19 +28,22 @@ public class Controller implements Initializable {
     public Button corpusPath;
     public Button PostingPath;
     public Button StopW;
-    public Button Run;
+    public Button run;
     public Button reset;
+    public Button LoadDictionary;
     public Button ShowDictionary;
     public TextField corpusField;
     public TextField stopWordsField;
     public TextField PostingField;
-    public ReadFile rf;
-    public String PathOfCorpus;
-    public String StopWordsPath;
-    public String PathOfPosting;
-    public CheckBox StemmingCheckBox;
+    private CheckBox StemmingCheckBox;
     public ChoiceBox<String> language;
+    public ReadFile rf;
+    private String PathOfCorpus;
+    private String StopWordsPath;
+    public String PathOfPosting;
     private boolean Steam;
+
+
 
 
     @Override
@@ -114,10 +117,12 @@ public class Controller implements Initializable {
     }
 
     public void Reset(ActionEvent event){
-
+        //removing files?//
+        System.gc();
     }
 
     public void ShowDictionary(ActionEvent event) {
+        //if has dictionary or not?
         try {
             Stage stage = new Stage();
             stage.setTitle("Dictionary");
@@ -130,6 +135,15 @@ public class Controller implements Initializable {
         } catch (Exception e) {
 
         }
+    }
+
+    public void LoadDictionary(){
+
+    }
+
+
+    public void SetAll(ActionEvent event){
+
     }
 
 }
