@@ -7,10 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -35,13 +32,14 @@ public class Controller implements Initializable {
     public TextField corpusField;
     public TextField stopWordsField;
     public TextField PostingField;
-    private CheckBox StemmingCheckBox;
+    public CheckBox StemmingCheckBox;
     public ChoiceBox<String> language;
     public ReadFile rf;
     private String PathOfCorpus;
     private String StopWordsPath;
     public String PathOfPosting;
     private boolean Steam;
+    public Label error;
 
 
 
@@ -53,7 +51,7 @@ public class Controller implements Initializable {
                 "Chinese", "English", "עברית", "French", "German","Greek")
         );
         language.setValue("English");
-
+        error.setVisible(false);
     }
 
     /** select Corpus BY browser */
@@ -67,7 +65,7 @@ public class Controller implements Initializable {
 
     /** Select stopWords by Browser */
     public void openStopWords(ActionEvent event) {
-        String path = GetPath();
+        String path = browse();
         if (path != null) {
             StopWordsPath = path;
             stopWordsField.setText(path);
@@ -87,7 +85,7 @@ public class Controller implements Initializable {
     private String browse() {
         String path;
         FileChooser fc = new FileChooser();
-        fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("text file", "*.text"));
+        fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("text file", "*.txt"));
         File file = fc.showOpenDialog(null);
         if (file != null) {
             path = file.getPath();
@@ -143,7 +141,10 @@ public class Controller implements Initializable {
 
 
     public void SetAll(ActionEvent event){
-
+        if(stopWordsField.getText().trim().isEmpty() || corpusField.getText().trim().isEmpty() || PostingField.getText().trim().isEmpty()){
+            error.setText("Pleas fill all the fields");
+            error.setVisible(true);
+        }
     }
 
 }
