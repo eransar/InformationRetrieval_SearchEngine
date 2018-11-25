@@ -48,7 +48,7 @@ public class ReadFile {
       }
     }
     if(parse.terms_size()!=0){
-      parse.SaveToDisk();
+      parse.writeToDisk();
     }
     System.out.println("Number of terms "+parse.getNumofTerm());
   }

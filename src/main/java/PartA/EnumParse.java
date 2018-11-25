@@ -25,12 +25,12 @@ public enum EnumParse {
 //                        && isNumber(i + 1) && isNumber(i + 3)) { //check with stopWord
 //                    toReturn.add(text[i] + " " + text[i + 1] + " " + text[i + 2] + " " + text[i + 3]);
 //                }
-//                else if(months().containsKey(text[i]) && i+1<text.length && numberValue(i+1)<6000){
-//                    if(months().get(text[i])<10){
-//                        toReturn.add(text[i+1]+"-"+"0"+months().get(text[i]));
+//                else if(init_months().containsKey(text[i]) && i+1<text.length && numberValue(i+1)<6000){
+//                    if(init_months().get(text[i])<10){
+//                        toReturn.add(text[i+1]+"-"+"0"+init_months().get(text[i]));
 //                    }
 //                    else {
-//                        toReturn.add(text[i+1]+"-"+months().get(text[i]));
+//                        toReturn.add(text[i+1]+"-"+init_months().get(text[i]));
 //                    }
 //                }
 //            } catch (ParseException e) {
@@ -138,10 +138,10 @@ public enum EnumParse {
 //                    toReturn.add(text[i]);
 //                }
 //
-//            } else if (i + 1 < text.length && months().containsKey(text[i + 1])) {
-//                String month = "" + months().get(text[i + 1]);
-//                if (months().get(text[i + 1]) < 10) {
-//                    month = "0" + months().get(text[i + 1]);
+//            } else if (i + 1 < text.length && init_months().containsKey(text[i + 1])) {
+//                String month = "" + init_months().get(text[i + 1]);
+//                if (init_months().get(text[i + 1]) < 10) {
+//                    month = "0" + init_months().get(text[i + 1]);
 //                }
 //                if (number_term < 10) {
 //                    toReturn.add(month + "-" + "0" + convertDouble(number_term));
@@ -276,9 +276,9 @@ public enum EnumParse {
 //    }
 //
 //    /**
-//     * Map of months - full and in short
+//     * Map of init_months - full and in short
 //     */
-//    public HashMap<String, Integer> months(){
+//    public HashMap<String, Integer> init_months(){
 //
 //        HashMap<String,Integer> parse_months = new HashMap<String,Integer>();
 //

@@ -12,20 +12,23 @@ import java.util.HashMap;
 
 public class CityIndexer {
     private static CityIndexer ourInstance = new CityIndexer();
-    public HashMap<String,City> city_index;
+    public HashMap<String,City> dict_city;
     public Object[] parsed_json;
+    public String URL;
+
     public static CityIndexer getInstance() {
         return ourInstance;
     }
 
     private CityIndexer() {
-        city_index=new HashMap<>();
+        dict_city =new HashMap<>();
+        URL="https://restcountries.eu/rest/v2/?fields=name;capital;currencies;population";
     }
 
     public void addToCityIndexer(Doc doc,int index){
 
         /* if city not found in the index*/
-        if(city_index.get(doc.getCITY())==null){
+        if(dict_city.get(doc.getCITY())==null){
             /**
              * Create new City
              * Create new array for the city hashmap
@@ -36,10 +39,10 @@ public class CityIndexer {
             ArrayList<Integer> positions = new ArrayList<>();
             positions.add(index);
             OtherCity.docfrequency.put(doc,positions);
-            city_index.put(doc.getCITY(),OtherCity);
+            dict_city.put(doc.getCITY(),OtherCity);
         }
         else{ /* this means the city is in the hashmap */
-            City currentcity=city_index.get(doc.getCITY());
+            City currentcity= dict_city.get(doc.getCITY());
             /**
              * Check if doc found
              */
@@ -47,21 +50,19 @@ public class CityIndexer {
                 ArrayList<Integer> positions = new ArrayList<>();
                 positions.add(index);
                 currentcity.docfrequency.put(doc,positions);
-
             }
             else{
                 ArrayList<Integer> positions = currentcity.docfrequency.get(doc);
                 positions.add(index);
                 currentcity.docfrequency.put(doc,positions);
             }
-
-            city_index.put(doc.getCITY(),currentcity);
+            dict_city.put(doc.getCITY(),currentcity);
         }
 
     }
     public void startConnection(){
         OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder().url("https://restcountries.eu/rest/v2/?fields=name;capital;currencies;population").build();
+        Request request = new Request.Builder().url(URL).build();
         Response response = null;
         try {
             response = client.newCall(request).execute();

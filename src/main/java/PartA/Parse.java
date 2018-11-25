@@ -1,5 +1,7 @@
 package PartA;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 import org.tartarus.snowball.SnowballStemmer;
 import org.tartarus.snowball.ext.englishStemmer;
 
@@ -16,109 +18,74 @@ import java.util.regex.Pattern;
 
 
 public class Parse extends Thread {
-    private HashSet<String> stopWords;
-    private HashMap<String, Term> terms;
+    private HashSet<String> dict_stopWords;
+    private HashMap<String, Term> dict_terms;
+    private ArrayList<String> list_sortedTerms;
+    private List<List<String>> list_termsByAlhabet = new ArrayList<List<String>>();
+    private HashMap<String, Integer> dict_months;
+    private HashMap<String, String> dict_replaceWords;
     private Doc doc;
-    private int index;
     private String[] docText;
-    private enum wordType {NUMBER, SYMBOL, WORD, NULL;};
-    private HashMap<String, Integer> months;
-    private HashMap<String, String> replace;
+    private static Indexer indexer;
+    private static CityIndexer indexer_city;
+    private SnowballStemmer stemmer;
+    private enum wordType {NUMBER, SYMBOL, WORD, CITY, NULL;};
     private String path = System.getProperty("java.io.tmpdir");
     private int numofTerm;
-    private static Indexer indexer;
-    private static CityIndexer city_indexer;
-    private SnowballStemmer stemmer;
-    private boolean isSteam;
+    private int index;
     private int filenum;
+
+    private boolean isSteam;
     private boolean first_chunk;
     private volatile String currentfilename;
-    private ArrayList<String> sorted_terms;
+
 
 
     public Parse() throws IOException {
-        this.stopWords = new HashSet<String>();
-        this.index = 1;
-        this.terms = new HashMap<>();
-        this.months = months();
-        this.replace = new HashMap<String, String>();
+        this.dict_stopWords = new HashSet<String>();
+        this.dict_replaceWords = new HashMap<String, String>();
+        this.dict_terms = new HashMap<>();
+        this.dict_months = init_months();
+        this.list_sortedTerms = new ArrayList<String>();
+        this.list_termsByAlhabet = new ArrayList<List<String>>();
         this.indexer = new Indexer();
         this.stemmer = new englishStemmer();
-        this.city_indexer=CityIndexer.getInstance();
-        this.first_chunk=true;
-        this.sorted_terms=new ArrayList<String>();
-        initStopwords();
-        initreplace();
-        city_indexer.startConnection();
+        this.indexer_city = CityIndexer.getInstance();
+        this.index = 1;
+        this.first_chunk = true;
+        this.
+        //Initializers
+        init_stopWords();
+        init_replace();
+        indexer_city.startConnection();
     }
 
 
-    private void initreplace() {
-        replace.put(",", "");
-        replace.put("\n\n", " ");
-        replace.put("\\r\\n", " ");
-        replace.put("\t", " ");
-        replace.put("." + "\n", " ");
-        replace.put(".)", "");
-        replace.put(")", " ");
-        replace.put("(", " ");
-        replace.put(" '", "");
-        replace.put("' ", "");
-        replace.put(": ", " ");
-        replace.put(". \n", " ");
-        replace.put(". ", " ");
-        replace.put(" .", " ");
-        replace.put(".) ", " ");
-        replace.put("--", " ");
-        replace.put("- ", " ");
-        replace.put(";", " ");
-        replace.put(";\n", " ");
-        replace.put("[", "");
-        replace.put("]", "");
-        replace.put("'", "");
-        replace.put("'s", "");
-        replace.put("-\n", "");
-        replace.put("\"", "");
-        replace.put("?", "");
-        replace.put(".\"", "");
-        replace.put(".,", "");
-        replace.put("!", "");
-        replace.put("\n", " ");
-        replace.put("\\", " ");
-        replace.put("//", " ");
-        replace.put("/", " ");
-        replace.put("*", " ");
-        replace.put("+/", " ");
-        replace.put(" -", " ");
-        replace.put("....", " ");
-        replace.put("...", " ");
-        replace.put("..", " ");
-        replace.put("|", " ");
-        replace.put("#", " ");
-    }
+
+
+
 
     /**
      * Parsing A document and filling termsInfo HashMap
      */
     public void ParseDoc(Doc doc, String TEXT) {
         this.doc = doc;
-        TEXT = replaceReplace(TEXT);
+        TEXT = replaceText(TEXT);
         docText = (TEXT.split(" "));
         try {
             startParse();
         } catch (ParseException e) {
 
         }
-//        printTerm();
     }
 
     /**
      * removing the chars that not needed
      */
-    private String replaceReplace(String text) {
+    private String replaceText(String text) {
 
         StringBuilder sb = new StringBuilder(text);
-        for (Map.Entry<String, String> entry : replace.entrySet()) {
+        for (Map.Entry<String, String> entry : dict_replaceWords.entrySet()) {
 
             String key = entry.getKey();
             String value = entry.getValue();
@@ -142,8 +109,8 @@ public class Parse extends Thread {
      *
      * @throws IOException
      */
-    public void initStopwords() throws IOException {
-        URL url = getClass().getResource("stop_words.txt");
+    public void init_stopWords() throws IOException {
+        URL url = getClass().getClassLoader().getResource("stop_words.txt");
         File file = new File(url.getPath());
         FileReader fr = new FileReader(file);
         BufferedReader bufferedReader = new BufferedReader(fr);
@@ -152,14 +119,14 @@ public class Parse extends Thread {
 
         while ((line = bufferedReader.readLine()) != null) {
             if (!line.equals(System.lineSeparator())) {
-                stopWords.add(line);
+                dict_stopWords.add(line);
             }
         }
     }
 
     private void printTerm() {
         int i = 0;
-        for (String name : terms.keySet()) {
+        for (String name : dict_terms.keySet()) {
             String key = name.toString();
             System.out.println(i + ". " + key);
             i++;
@@ -184,14 +151,14 @@ public class Parse extends Thread {
                 docText[index] = docText[index].substring(1);
             }
             //not stopWord
-            if (stopWords.contains(docText[index]) || stopWords.contains(docText[index].toUpperCase()) || stopWords.contains(docText[index].toLowerCase())) {
+            if (dict_stopWords.contains(docText[index]) || dict_stopWords.contains(docText[index].toUpperCase()) || dict_stopWords.contains(docText[index].toLowerCase())) {
                 continue;
             } else {
                 if (docText[index].length() == 0 || docText[index].equals(" ")) {
                     continue;
                 }
-                if(docText[index].equals(doc.getCITY())){
-                    city_indexer.addToCityIndexer(doc,index);
+                if (docText[index].equals(doc.getCITY())) {
+                    indexer_city.addToCityIndexer(doc, index);
                 }
                 //check the term type
                 wordType type = identifyDoc(docText[index]); // identifying the word
@@ -224,9 +191,15 @@ public class Parse extends Thread {
     private void parseSymbol(String str, int index) {
         Term tempTerm = new Term();
         tempTerm.setType("Symbol");
+        if(str.length()==1){
+            tempTerm.setName(str);
+            handleTerm(tempTerm);
+            return;
+        }
         ArrayList<String> first_keywords = getFirstKeyWords();
         NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
         String substring = str.substring(1, str.length());
+
         try {
             Number number = format.parse(substring);
             double number_term = number.doubleValue();
@@ -255,25 +228,26 @@ public class Parse extends Thread {
 
     /**
      * doing parse to word(not symbol && not number)
+     *
      * @param index
      * @throws ParseException
      */
     private void parseWord(int index) throws ParseException {
         Term tempTerm = new Term();
         tempTerm.setType("Word");
-        if (stopWords.contains(docText[index])) {
+        if (dict_stopWords.contains(docText[index])) {
             return;
         }
         if (docText[index].contains("-")) {
             tempTerm.setName(docText[index]);
         }
         //month that starts with word example : MAY 19945
-        else if (months.containsKey(docText[index]) && isNotOutBound(index + 1) && isNumber(docText[index + 1])) {
-            if (months.get(docText[index]) < 10) {
-                tempTerm.setName(docText[index + 1] + "-" + "0" + months.get(docText[index]));
+        else if (dict_months.containsKey(docText[index]) && isNotOutBound(index + 1) && isNumber(docText[index + 1])) {
+            if (dict_months.get(docText[index]) < 10) {
+                tempTerm.setName(docText[index + 1] + "-" + "0" + dict_months.get(docText[index]));
             } else {
 
-                tempTerm.setName(docText[index + 1] + "-" + months.get(docText[index]));
+                tempTerm.setName(docText[index + 1] + "-" + dict_months.get(docText[index]));
             }
         }
         //between number and number
@@ -282,19 +256,19 @@ public class Parse extends Thread {
                 && isNumber(docText[index + 3])) {
             tempTerm.setName(docText[index] + " " + docText[index + 1] + " " + docText[index + 2] + " " + docText[index + 3]);
         } else {
-            //if word is lowercase - check for uppercase in the first letter in the terms map
+            //if word is lowercase - check for uppercase in the first letter in the dict_terms map
             if (testAllLowerCase(docText[index]) &&
-                    (terms.containsKey(docText[index].substring(0, 1).toUpperCase() + docText[index].substring(1))
-                            || terms.containsKey(docText[index].toUpperCase()))) {
-                if (terms.containsKey(docText[index].substring(0, 1).toUpperCase() + docText[index].substring(1))) {
-                    tempTerm = terms.remove(docText[index].substring(0, 1).toUpperCase() + docText[index].substring(1));
+                    (dict_terms.containsKey(docText[index].substring(0, 1).toUpperCase() + docText[index].substring(1))
+                            || dict_terms.containsKey(docText[index].toUpperCase()))) {
+                if (dict_terms.containsKey(docText[index].substring(0, 1).toUpperCase() + docText[index].substring(1))) {
+                    tempTerm = dict_terms.remove(docText[index].substring(0, 1).toUpperCase() + docText[index].substring(1));
                     tempTerm.setName(docText[index]);
                 } else {
-                    tempTerm = terms.remove(docText[index].toUpperCase());
+                    tempTerm = dict_terms.remove(docText[index].toUpperCase());
 
                     tempTerm.setName(docText[index]);
                 }
-            } else if (testAllLowerCase(docText[index]) && terms.containsKey(docText[index].toUpperCase())) {
+            } else if (testAllLowerCase(docText[index]) && dict_terms.containsKey(docText[index].toUpperCase())) {
                 return; //dont add lowercase wh
             } else {
                 tempTerm.setName(docText[index]);
@@ -319,6 +293,7 @@ public class Parse extends Thread {
 
     /**
      * check what is the type of the term
+     *
      * @param str
      * @return
      */
@@ -345,22 +320,31 @@ public class Parse extends Thread {
 
     /**
      * check if the term is symbol(char(0)==$)
+     *
      * @param str
      * @return
      * @throws ParseException
      */
     public boolean isSymbol(String str) throws ParseException {
 
-        ArrayList<Character> ch = new ArrayList<>();
-        ch.add('$');
+        HashSet<Character> symbols = new HashSet<>();
+        symbols.add('$');
+        symbols.add('&');
+        symbols.add('=');
         if (str.equals("")) {
             return false;
         }
-        if (ch.contains(str.charAt(0))) {
-            NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
-            String substring = str.substring(1, str.length());
-            Number number = format.parse(substring);
-            return true;
+        if (symbols.contains(str.charAt(0))) {
+            if(str.length() <2){
+                return true;
+            }
+            else{
+                NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
+                String substring = str.substring(1, str.length());
+                Number number = format.parse(substring);
+                return true;
+            }
+
         }
 
         return false;
@@ -369,6 +353,7 @@ public class Parse extends Thread {
     /**
      * check if the term is number
      * true if yes | false if not
+     *
      * @param str
      * @return
      * @throws ParseException
@@ -391,6 +376,7 @@ public class Parse extends Thread {
 
     /**
      * check if the term is fraction
+     *
      * @param str
      * @return
      */
@@ -421,7 +407,7 @@ public class Parse extends Thread {
      */
 
     /**
-     * Handles terms of type Number
+     * Handles dict_terms of type Number
      *
      * @param str given String for term
      */
@@ -515,10 +501,10 @@ public class Parse extends Thread {
 //                    toReturn.add(docText[index]);
             }
 
-        } else if (index + 1 < docText.length && months().containsKey(docText[index + 1])) {
-            String month = "" + months().get(docText[index + 1]);
-            if (months().get(docText[index + 1]) < 10) {
-                month = "0" + months().get(docText[index + 1]);
+        } else if (index + 1 < docText.length && init_months().containsKey(docText[index + 1])) {
+            String month = "" + init_months().get(docText[index + 1]);
+            if (init_months().get(docText[index + 1]) < 10) {
+                month = "0" + init_months().get(docText[index + 1]);
             }
             if (number_term < 10) {
                 tempTerm.setName(month + "-" + "0" + convertDouble(number_term));
@@ -551,8 +537,8 @@ public class Parse extends Thread {
 
 //    public HashMap<Term, HashMap<Doc, Integer>> getTermsInfo() {
 
-    public HashMap<String, Term> getTerms() {
-        return terms;
+    public HashMap<String, Term> getDict_terms() {
+        return dict_terms;
     }
     //    }
 
@@ -561,6 +547,12 @@ public class Parse extends Thread {
     }
 
     private void handleTerm(Term toCheck) {
+        if(toCheck.getName().length()==0){
+            return;
+        }
+        if(toCheck.getName().charAt(0) >=48 && toCheck.getName().charAt(0) <=57){
+            toCheck.setType("Number");
+        }
         /**
          * Stemming
          */
@@ -575,19 +567,19 @@ public class Parse extends Thread {
             if found term not avilable in the term list && not a stop word
                 set doc frequency of the term to 1
                 increase doc distnict term by 1
-                add to terms
+                add to dict_terms
                 set corpus frequency to 1
                 set df to 1
-                insert it to the terms with the document found.
+                insert it to the dict_terms with the document found.
                 set doc frequency
                 set term location in doc
          */
-        if (terms.get(toCheck.getName()) == null) {
-            //if (!stopWords.contains(toCheck.getName()) && !stopWords.contains(toCheck.getName().toUpperCase()) && !stopWords.contains(toCheck.getName().toLowerCase())) {
+        if (dict_terms.get(toCheck.getName()) == null) {
+            //if (!dict_stopWords.contains(toCheck.getName()) && !dict_stopWords.contains(toCheck.getName().toUpperCase()) && !dict_stopWords.contains(toCheck.getName().toLowerCase())) {
             toCheck.getDocFrequency().put(doc, 1);
             doc.setDistinctwords(doc.getDistinctwords() + 1);
             toCheck.setDf(1);
-            terms.put(toCheck.getName(), toCheck);
+            dict_terms.put(toCheck.getName(), toCheck);
 //                 System.out.println("New Term : "+toCheck.getName());
             //}
         }
@@ -602,8 +594,8 @@ public class Parse extends Thread {
              */
         else {
 //             System.out.println(toCheck.getName());
-            Term UsedTerm = terms.get(toCheck.getName());
-            UsedTerm.setDf(UsedTerm.getDf()+1);
+            Term UsedTerm = dict_terms.get(toCheck.getName());
+            UsedTerm.setDf(UsedTerm.getDf() + 1);
             if (UsedTerm.getDocFrequency().get(doc) == null) {
                 UsedTerm.getDocFrequency().put(doc, 1);
 //                System.out.println("Used Term "+UsedTerm.getName());
@@ -621,39 +613,21 @@ public class Parse extends Thread {
     /*
                     Begining of Utilities functions
      */
-    public ArrayList<String> getFirstKeyWords() {
-        ArrayList<String> keywords = new ArrayList<String>();
-        keywords.add("Thousand");
-        keywords.add("Million");
-        keywords.add("Trillion");
-        keywords.add("Billion");
-        keywords.add("percent");
-        keywords.add("percentage");
-        keywords.add("Dollars");
-        keywords.add("billion");
-        keywords.add("million");
-        keywords.add("trillion");
-        return keywords;
-    }
-
     public void updateDocMaxTf(int term_tf) {
         if (doc.getMaxtf() < term_tf) {
             doc.setMaxtf(term_tf);
         }
     }
 
-    public int getNumofTerm() {
-        return numofTerm;
-    }
 
     public void SaveToDisk() {
-        ArrayList<String> sorted_arraylist = new ArrayList<String>(terms.keySet());
+        ArrayList<String> sorted_arraylist = new ArrayList<String>(dict_terms.keySet());
         Collections.sort(sorted_arraylist);
 
-        numofTerm += terms.size();
+        numofTerm += dict_terms.size();
         int counter = 0;
 
-        System.out.println(terms.size());
+        System.out.println(dict_terms.size());
         try {
             File statText = new File(path + filenum + ".txt");
             FileOutputStream is = new FileOutputStream(statText);
@@ -661,7 +635,7 @@ public class Parse extends Thread {
             StringBuilder termdocs = new StringBuilder();
             Writer w = new BufferedWriter(osw);
             for (String term_name : sorted_arraylist) {
-                Term temp = terms.get(term_name);
+                Term temp = dict_terms.get(term_name);
                 for (Map.Entry<Doc, Integer> doc : temp.getDocFrequency().entrySet()) {
                     termdocs.append(" " + doc.getKey().getDOCNO() + "," + doc.getValue() + "," + doc.getKey().getFile());
                 }
@@ -672,7 +646,7 @@ public class Parse extends Thread {
                 termdocs = new StringBuilder();
             }
 
-//            for (Map.Entry<String,Term> term : terms.entrySet()){
+//            for (Map.Entry<String,Term> term : dict_terms.entrySet()){
 //                for(Map.Entry<Doc,Integer> doc : term.getValue().getDocFrequency().entrySet()){
 //                    termdocs.append(" "+doc.getKey().getDOCNO()+","+doc.getValue()+","+doc.getKey().getFile());
 //                }
@@ -689,80 +663,110 @@ public class Parse extends Thread {
             IOException.printStackTrace();
         }
         filenum++;
-        terms.clear();
+        dict_terms.clear();
     }
 
 
-    public void writeToDisk(){
-        if(first_chunk){
+    public void writeToDisk() throws IOException {
+        if (first_chunk) {
             indexer.initFiles(this.path);
-            first_chunk=false;
+            first_chunk = false;
         }
         //sort the dictionary
-        sorted_terms = new ArrayList<String>(terms.keySet());
-        Collections.sort(sorted_terms);
-
+        list_sortedTerms = new ArrayList<String>(dict_terms.keySet());
+        Collections.sort(list_sortedTerms);
+        fillAlphabetArrays(list_sortedTerms);
         //get data from files
-        ExecutorService pool = Executors.newFixedThreadPool(2);
+//        ExecutorService pool = Executors.newFixedThreadPool(2,new FileThreadFactory("n"));
         HashSet<String> file_names = indexer.getFile_names();
-        for (String file_name: file_names){
-            synchronized (path){
-                this.currentfilename=file_name;
-            }
-            pool.submit(this);
-        }
-        File path = new File("C:\\Users\\eransar\\AppData\\Local\\Temp\\0.txt");
+        for (String file_name : file_names) {
+            int place = indexer.getDict_files().get(file_name);
+            File toOpen = new File(path+File.separator+"\\"+file_name+".txt");
+            BufferedReader in = new BufferedReader(new FileReader(toOpen));
+            String str;
 
+            List<String> file_content = new ArrayList<String>();
+            while((str = in.readLine()) != null){
+                file_content.add(str);
+            }
+            in.close();
+
+            mergeArrays(list_termsByAlhabet.get(place),file_content, file_name);
+
+//            pool.submit(this);
+        }
+//        File path = new File("C:\\Users\\eransar\\AppData\\Local\\Temp\\0.txt");
 
 
     }
-    @Override
-    public void run(){
-        String file_name=path+"\\"+currentfilename+".txt";
-        File file = new File(file_name);
-        try {
-            List<String> fileContent = new ArrayList<>(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8));
-            for (int i = 0; i <sorted_terms.size() ; i++) {
-                String pointer=indexer.isExist(sorted_terms.get(i));
-                if(pointer!=null){
-                    /** term exists in the indexer dicatioanry */
-                    pointer=pointer.split(" ")[1];
-                    String old = fileContent.get(Integer.parseInt(pointer));
-                    StringBuilder termdocs= new StringBuilder();
-                    String finalterm = "";
-                    for (String term_name : sorted_terms) {
-                        Term temp = terms.get(term_name);
-                        for (Map.Entry<Doc, Integer> doc : temp.getDocFrequency().entrySet()) {
-                            termdocs.append(" " + doc.getKey().getDOCNO() + "," + doc.getValue() + "," + doc.getKey().getFile());
-                        }
-                        finalterm= temp.getDf() + " " + termdocs + System.lineSeparator();
-                        termdocs = new StringBuilder();
+
+    private void mergeArrays(List<String> chunk_content , List<String> file_content, String filename) {
+        for (int i = 0; i < chunk_content.size() ; i++) {
+            String find_location=indexer.isExist(chunk_content.get(i));
+            if(find_location==null){
+                Term OtherTerm=dict_terms.get(chunk_content.get(i));
+                file_content.add(""+dict_terms.get(OtherTerm.getDf()+" "+doc.getDOCNO()+","+doc.getFile()+","+OtherTerm.getDocFrequency().get(doc)));
+                indexer.addToHashMap(OtherTerm.getName(),filename+" "+(file_content.size()-1));
+            }
+            else {
+                //find index and change the line
+                String lineToChange = file_content.get(indexer.getLineNumber(chunk_content.get(i)));
+
+            }
+        }
+    }
+
+    private void fillAlphabetArrays(ArrayList<String> list_sortedTerms) {
+        for (int i = 0; i <31 ; i++) {
+            list_termsByAlhabet.add(new ArrayList<String>());
+        }
+        int place=0;
+        for (int i = 0; i < list_sortedTerms.size() ; i++) {
+            switch ((dict_terms.get(list_sortedTerms.get(i)).getType())){
+                case "Number":
+                    place = indexer.getDict_files().get("numbers")-1;
+                    list_termsByAlhabet.get(place).add(list_sortedTerms.get(i));
+                    break;
+                case "Symbol":
+                    place = indexer.getDict_files().get("symbols");
+                    list_termsByAlhabet.get(place).add(list_sortedTerms.get(i));
+                    break;
+                case "City":
+                    place = indexer.getDict_files().get("cities");
+                    list_termsByAlhabet.get(place).add(list_sortedTerms.get(i));
+                    break;
+                default:
+
+                    try {
+                        place = indexer.getDict_files().get(""+list_sortedTerms.get(i).toLowerCase().charAt(0));
+                    } catch (Exception e) {
+                        place = indexer.getDict_files().get("others");
                     }
-                    String merge=sorted_terms.get(i);
-                    int old_index=findSpaceIndex(old);
-                    int merge_index=findSpaceIndex(merge);
-                    int df_sum = Integer.parseInt(old.substring(0,old_index)) + Integer.parseInt(merge.substring(0,merge_index));
-                    StringBuilder str = new StringBuilder(df_sum+old.substring(old_index,old.length())+" "+merge.substring(merge_index,merge.length()));
-                    fileContent.set(12,str.toString());
-                    Files.write(file.toPath(),fileContent,StandardCharsets.UTF_8);
-                }
+
+                    list_termsByAlhabet.get(place).add(list_sortedTerms.get(i));
+
+
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
         }
+    }
+
+    @Override
+    public void run() {
+        System.out.println(Thread.currentThread().getName());
+
 
     }
 
-    public int findSpaceIndex(String str){
+    public int findSpaceIndex(String str) {
         for (int i = 0; i < str.length(); i++) {
-            if(str.charAt(i) ==' '){
+            if (str.charAt(i) == ' ') {
                 return i;
             }
 
         }
         return -1;
     }
-
 
 
     /**
@@ -791,11 +795,11 @@ public class Parse extends Thread {
     }
 
     /**
-     * List of all months by names and order
+     * List of all dict_months by names and order
      *
      * @return
      */
-    public HashMap<String, Integer> months() {
+    public HashMap<String, Integer> init_months() {
 
         HashMap<String, Integer> parse_months = new HashMap<String, Integer>();
         parse_months.put("JAN", 1);
@@ -840,12 +844,11 @@ public class Parse extends Thread {
         parse_months.put("DEC", 12);
         parse_months.put("December", 12);
         parse_months.put("DECEMBER", 12);
-
         return parse_months;
     }
 
     public int terms_size() {
-        return terms.size();
+        return dict_terms.size();
     }
 
     public void setDoc(Doc doc) {
@@ -860,4 +863,68 @@ public class Parse extends Thread {
     public String getPath() {
         return path;
     }
+
+
+    public int getNumofTerm() {
+        return numofTerm;
+    }
+
+    public ArrayList<String> getFirstKeyWords() {
+        ArrayList<String> keywords = new ArrayList<String>();
+        keywords.add("Thousand");
+        keywords.add("Million");
+        keywords.add("Trillion");
+        keywords.add("Billion");
+        keywords.add("percent");
+        keywords.add("percentage");
+        keywords.add("Dollars");
+        keywords.add("billion");
+        keywords.add("million");
+        keywords.add("trillion");
+        return keywords;
+    }
+    private void init_replace() {
+        dict_replaceWords.put(",", "");
+        dict_replaceWords.put("\n\n", " ");
+        dict_replaceWords.put("\\r\\n", " ");
+        dict_replaceWords.put("\t", " ");
+        dict_replaceWords.put("." + "\n", " ");
+        dict_replaceWords.put(".)", "");
+        dict_replaceWords.put(")", " ");
+        dict_replaceWords.put("(", " ");
+        dict_replaceWords.put(" '", "");
+        dict_replaceWords.put("' ", "");
+        dict_replaceWords.put(": ", " ");
+        dict_replaceWords.put(". \n", " ");
+        dict_replaceWords.put(". ", " ");
+        dict_replaceWords.put(" .", " ");
+        dict_replaceWords.put(".) ", " ");
+        dict_replaceWords.put("--", " ");
+        dict_replaceWords.put("- ", " ");
+        dict_replaceWords.put(";", " ");
+        dict_replaceWords.put(";\n", " ");
+        dict_replaceWords.put("[", "");
+        dict_replaceWords.put("]", "");
+        dict_replaceWords.put("'", "");
+        dict_replaceWords.put("'s", "");
+        dict_replaceWords.put("-\n", "");
+        dict_replaceWords.put("\"", "");
+        dict_replaceWords.put("?", "");
+        dict_replaceWords.put(".\"", "");
+        dict_replaceWords.put(".,", "");
+        dict_replaceWords.put("!", "");
+        dict_replaceWords.put("\n", " ");
+        dict_replaceWords.put("\\", " ");
+        dict_replaceWords.put("//", " ");
+        dict_replaceWords.put("/", " ");
+        dict_replaceWords.put("*", " ");
+        dict_replaceWords.put("+/", " ");
+        dict_replaceWords.put(" -", " ");
+        dict_replaceWords.put("....", " ");
+        dict_replaceWords.put("...", " ");
+        dict_replaceWords.put("..", " ");
+        dict_replaceWords.put("|", " ");
+        dict_replaceWords.put("#", " ");
+    }
 }
+

@@ -5,14 +5,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Indexer {
+public class Indexer implements Runnable {
 
     private ConcurrentHashMap<String,String> dictionary;
     private HashSet<String> file_names;
+    private HashMap<String,Integer> dict_files;
 
     public  Indexer(){
         dictionary=new ConcurrentHashMap<String,String>();
         file_names=new HashSet();
+        dict_files=new HashMap<>();
     }
 
     public void addToHashMap(String term_name, String pointer){
@@ -27,16 +29,34 @@ public class Indexer {
     }
 
 
-    public void initFiles(String path){
+    public HashMap<String, Integer> getDict_files() {
+        return dict_files;
+    }
 
-        file_names.add("cities");
-        file_names.add("docs");
-        file_names.add("numbers");
-        file_names.add("symbols");
+    public void initFiles(String path){
+        int counter=0;
+
         for(char alphabet = 'a'; alphabet <='z'; alphabet++ )
         {
+            dict_files.put(""+alphabet,counter);
             file_names.add(""+alphabet);
+            counter++;
         }
+
+        file_names.add("cities");
+        dict_files.put("cities",counter);
+        counter++;
+        file_names.add("docs");
+        dict_files.put("docs",counter);
+        counter++;
+        file_names.add("numbers");
+        dict_files.put("numbers",counter);
+        counter++;
+        file_names.add("symbols");
+        dict_files.put("symbols",counter);
+        counter++;
+        file_names.add("others");
+        dict_files.put("others",counter);
 
         for(String file_name: file_names)
         {
@@ -64,6 +84,18 @@ public class Indexer {
     }
     public synchronized String isExist(String term_name){
         return dictionary.get(term_name);
+
+    }
+    public int getLineNumber(String term_name){
+        String dict_data=this.dictionary.get(term_name);
+        String line_number = dict_data.split(" ")[1];
+
+        return Integer.parseInt(line_number);
+
+    }
+
+    @Override
+    public void run() {
 
     }
 }
