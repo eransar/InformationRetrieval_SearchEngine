@@ -35,7 +35,7 @@ public class ReadFile {
       if (corpus[i].isDirectory()) {//other condition like name ends in html
         for (int j = 0; j < corpus[i].listFiles().length; j++) {
           if(numofDocs == size /10){
-          parse.SaveToDisk();
+          parse.writeToDisk();
           System.out.println(parse.getPath());
             numofDocs=1;
           }

@@ -674,46 +674,94 @@ public class Parse extends Thread {
         }
         //sort the dictionary
         list_sortedTerms = new ArrayList<String>(dict_terms.keySet());
-        Collections.sort(list_sortedTerms);
+//        Collections.sort(list_sortedTerms);
+
         fillAlphabetArrays(list_sortedTerms);
         //get data from files
 //        ExecutorService pool = Executors.newFixedThreadPool(2,new FileThreadFactory("n"));
         HashSet<String> file_names = indexer.getFile_names();
-        for (String file_name : file_names) {
+        for (String file_name : file_names)
+        {
             int place = indexer.getDict_files().get(file_name);
             File toOpen = new File(path+File.separator+"\\"+file_name+".txt");
             BufferedReader in = new BufferedReader(new FileReader(toOpen));
             String str;
-
+            //opening file and adding it all to array
             List<String> file_content = new ArrayList<String>();
             while((str = in.readLine()) != null){
                 file_content.add(str);
             }
             in.close();
 
-            mergeArrays(list_termsByAlhabet.get(place),file_content, file_name);
+            file_content=mergeArrays(list_termsByAlhabet.get(place),file_content, file_name);
+            FileWriter writer = new FileWriter(toOpen);
+
+            for (int i = 0; i < file_content.size() ; i++) {
+                writer.write(file_content.get(i)+System.lineSeparator());
+            }
+            writer.close();
+            int i =5;
 
 //            pool.submit(this);
         }
+//        writeDictionaryDebug();
+
+
+        dict_terms.clear();
+        list_termsByAlhabet.clear();
+        System.out.println("Dictionary size : "+indexer.getDictionary().size());
 //        File path = new File("C:\\Users\\eransar\\AppData\\Local\\Temp\\0.txt");
 
 
     }
 
-    private void mergeArrays(List<String> chunk_content , List<String> file_content, String filename) {
+    private void writeDictionaryDebug() {
+        try {
+            indexer.printTofile(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private List<String> mergeArrays(List<String> chunk_content , List<String> file_content, String filename) {
         for (int i = 0; i < chunk_content.size() ; i++) {
             String find_location=indexer.isExist(chunk_content.get(i));
             if(find_location==null){
+
                 Term OtherTerm=dict_terms.get(chunk_content.get(i));
-                file_content.add(""+dict_terms.get(OtherTerm.getDf()+" "+doc.getDOCNO()+","+doc.getFile()+","+OtherTerm.getDocFrequency().get(doc)));
+                StringBuilder termData = new StringBuilder("");
+                for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
+                    termData.append(" "+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
+                }
+                file_content.add(""+OtherTerm.getDf()+" "+termData);
                 indexer.addToHashMap(OtherTerm.getName(),filename+" "+(file_content.size()-1));
+
             }
             else {
                 //find index and change the line
-                String lineToChange = file_content.get(indexer.getLineNumber(chunk_content.get(i)));
+
+                String lineToChange = null;
+                try {
+                    lineToChange = file_content.get(indexer.getLineNumber(chunk_content.get(i)));
+                } catch (Exception e) {
+                    System.out.println(chunk_content.get(i));
+                    continue;
+                }
+                Term OtherTerm = dict_terms.get(chunk_content.get(i));
+                String[] currentline = lineToChange.split(" ");
+                int currentdf=Integer.parseInt(currentline[0]);
+                int chunkdf = OtherTerm.getDf();
+                int newdf=currentdf+chunkdf;
+                StringBuilder termData = new StringBuilder("");
+                for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
+                    termData.append(" "+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
+                }
+                file_content.set(indexer.getLineNumber(chunk_content.get(i)),newdf+" "+currentline[1]+" "+termData);
 
             }
         }
+        return file_content;
     }
 
     private void fillAlphabetArrays(ArrayList<String> list_sortedTerms) {
@@ -724,7 +772,7 @@ public class Parse extends Thread {
         for (int i = 0; i < list_sortedTerms.size() ; i++) {
             switch ((dict_terms.get(list_sortedTerms.get(i)).getType())){
                 case "Number":
-                    place = indexer.getDict_files().get("numbers")-1;
+                    place = indexer.getDict_files().get("numbers");
                     list_termsByAlhabet.get(place).add(list_sortedTerms.get(i));
                     break;
                 case "Symbol":

@@ -3,6 +3,7 @@ package PartA;
 import java.io.*;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Indexer implements Runnable {
@@ -62,16 +63,10 @@ public class Indexer implements Runnable {
         {
             String path_toWrite =path+"\\"+file_name+".txt";
             File alphabet_file = new File(path_toWrite);
-            FileOutputStream is = null;
             try {
-                is = new FileOutputStream(alphabet_file);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            OutputStreamWriter osw = new OutputStreamWriter(is);
-            Writer w = new BufferedWriter(osw);
-            try {
-                w.close();
+                FileWriter fileWriter=new FileWriter(alphabet_file);
+                BufferedWriter bf = new BufferedWriter(fileWriter);
+                bf.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -92,6 +87,23 @@ public class Indexer implements Runnable {
 
         return Integer.parseInt(line_number);
 
+    }
+
+    public ConcurrentHashMap<String, String> getDictionary() {
+        return dictionary;
+    }
+
+    public void printTofile(String path) throws IOException {
+        File f = new File(path+File.separator+dictionary+".txt");
+        FileWriter writer = new FileWriter(f);
+        BufferedWriter bf = new BufferedWriter(writer);
+
+
+
+        for (Map.Entry<String,String> str: dictionary.entrySet()){
+            writer.write(str.getKey()+" "+str.getValue()+System.lineSeparator());
+        }
+        writer.close();
     }
 
     @Override
