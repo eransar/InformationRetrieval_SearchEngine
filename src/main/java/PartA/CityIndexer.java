@@ -4,11 +4,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class CityIndexer {
     private static CityIndexer ourInstance = new CityIndexer();
@@ -23,6 +23,7 @@ public class CityIndexer {
     private CityIndexer() {
         dict_city =new HashMap<>();
         URL="https://restcountries.eu/rest/v2/?fields=name;capital;currencies;population";
+
     }
 
     public void addToCityIndexer(Doc doc,int index){
@@ -78,8 +79,19 @@ public class CityIndexer {
                 e.printStackTrace();
             }
             if(obj != null){
+                String s1="",s2="",s3="";
+                Long l=0L;
                 parsed_json= ((JSONArray) obj).toArray();
-
+                for(Object s: parsed_json){
+                    s1 = (String)((JSONObject)s).get("capital");
+                    s2 = (String)((JSONObject)s).get("name");
+                    JSONArray jsonArray = (JSONArray)(((JSONObject)s).get("currencies"));
+                    for(Object ss : jsonArray){
+                        s3 = (String)((JSONObject)ss).get("code");
+                    }
+                    l = (Long)((JSONObject)s).get("population");
+                }
+                dict_city.put(s1,new City(s2,s3,l));
             }
         } catch (org.json.simple.parser.ParseException e) {
             e.printStackTrace();
