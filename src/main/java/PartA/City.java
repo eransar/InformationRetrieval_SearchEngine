@@ -11,8 +11,13 @@ public class City {
     HashMap<Doc,ArrayList<Integer>> docfrequency;
 
 
-    public City(){
+    public City(String country,String coin,Long population_size)
+    {
         docfrequency = new HashMap<>();
+
+    }
+    public City(){
+
     }
 
 }
