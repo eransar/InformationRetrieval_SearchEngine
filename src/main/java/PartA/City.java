@@ -17,6 +17,7 @@ public class City {
 
     }
     public City(){
+        docfrequency = new HashMap<>();
 
     }
 

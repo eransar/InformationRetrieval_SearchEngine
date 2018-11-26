@@ -30,10 +30,11 @@ public class Parse extends Thread {
     private static CityIndexer indexer_city;
     private SnowballStemmer stemmer;
     private enum wordType {NUMBER, SYMBOL, WORD, CITY, NULL;};
-    private String path = System.getProperty("java.io.tmpdir");
+    private String path = "/Users/erans/Documents/Studies/3rd year/IR/temp/";
     private int numofTerm;
     private int index;
     private int filenum;
+    private int debug_size;
 
     private boolean isSteam;
     private boolean first_chunk;
@@ -701,6 +702,8 @@ public class Parse extends Thread {
             }
             writer.close();
             int i =5;
+            System.out.println("File : "+file_name+" Size : "+file_content.size());
+            debug_size+=file_content.size();
 
 //            pool.submit(this);
         }
@@ -709,7 +712,11 @@ public class Parse extends Thread {
 
         dict_terms.clear();
         list_termsByAlhabet.clear();
+
+
         System.out.println("Dictionary size : "+indexer.getDictionary().size());
+        System.out.println("Number wrote to disk : "+debug_size);
+        debug_size=0;
 //        File path = new File("C:\\Users\\eransar\\AppData\\Local\\Temp\\0.txt");
 
 
@@ -735,19 +742,16 @@ public class Parse extends Thread {
                     termData.append(" "+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
                 }
                 file_content.add(""+OtherTerm.getDf()+" "+termData);
-                indexer.addToHashMap(OtherTerm.getName(),filename+" "+(file_content.size()-1));
+                indexer.getDictionary().put(OtherTerm.getName(),filename+" "+(file_content.size()-1));
+//                indexer.addToHashMap(OtherTerm.getName(),filename+" "+(file_content.size()-1));
 
             }
             else {
                 //find index and change the line
 
                 String lineToChange = null;
-                try {
-                    lineToChange = file_content.get(indexer.getLineNumber(chunk_content.get(i)));
-                } catch (Exception e) {
-                    System.out.println(chunk_content.get(i));
-                    continue;
-                }
+                lineToChange = file_content.get(indexer.getLineNumber(chunk_content.get(i)));
+
                 Term OtherTerm = dict_terms.get(chunk_content.get(i));
                 String[] currentline = lineToChange.split(" ");
                 int currentdf=Integer.parseInt(currentline[0]);
