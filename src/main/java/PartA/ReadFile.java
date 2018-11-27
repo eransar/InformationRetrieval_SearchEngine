@@ -28,7 +28,7 @@ public class ReadFile {
     File input = new File(path);
     File[] corpus = input.listFiles();
     size = corpus.length; //get amount of files
-    parse.setStem(false);
+    parse.setStem(true);
 
 
     for (int i = 0; i < corpus.length; i++) {

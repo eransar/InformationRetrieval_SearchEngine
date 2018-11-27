@@ -30,7 +30,7 @@ public class Parse extends Thread {
     private static CityIndexer indexer_city;
     private SnowballStemmer stemmer;
     private enum wordType {NUMBER, SYMBOL, WORD, CITY, NULL;};
-    private String path = "/Users/erans/Documents/Studies/3rd year/IR/temp/";
+    private String path = "d:\\documents\\users\\eransar\\Downloads\\temp";
     private int numofTerm;
     private int index;
     private int filenum;
@@ -54,7 +54,6 @@ public class Parse extends Thread {
         this.indexer_city = CityIndexer.getInstance();
         this.index = 1;
         this.first_chunk = true;
-        this.
         //Initializers
         init_stopWords();
         init_replace();
@@ -621,51 +620,51 @@ public class Parse extends Thread {
     }
 
 
-    public void SaveToDisk() {
-        ArrayList<String> sorted_arraylist = new ArrayList<String>(dict_terms.keySet());
-        Collections.sort(sorted_arraylist);
-
-        numofTerm += dict_terms.size();
-        int counter = 0;
-
-        System.out.println(dict_terms.size());
-        try {
-            File statText = new File(path + filenum + ".txt");
-            FileOutputStream is = new FileOutputStream(statText);
-            OutputStreamWriter osw = new OutputStreamWriter(is);
-            StringBuilder termdocs = new StringBuilder();
-            Writer w = new BufferedWriter(osw);
-            for (String term_name : sorted_arraylist) {
-                Term temp = dict_terms.get(term_name);
-                for (Map.Entry<Doc, Integer> doc : temp.getDocFrequency().entrySet()) {
-                    termdocs.append(" " + doc.getKey().getDOCNO() + "," + doc.getValue() + "," + doc.getKey().getFile());
-                }
-                w.append(temp.getDf() + " " + termdocs + System.lineSeparator());
+//    public void SaveToDisk() {
+//        ArrayList<String> sorted_arraylist = new ArrayList<String>(dict_terms.keySet());
+//        Collections.sort(sorted_arraylist);
 //
-                indexer.addToHashMap(term_name, filenum + " " + counter);
-                counter++;
-                termdocs = new StringBuilder();
-            }
-
-//            for (Map.Entry<String,Term> term : dict_terms.entrySet()){
-//                for(Map.Entry<Doc,Integer> doc : term.getValue().getDocFrequency().entrySet()){
-//                    termdocs.append(" "+doc.getKey().getDOCNO()+","+doc.getValue()+","+doc.getKey().getFile());
+//        numofTerm += dict_terms.size();
+//        int counter = 0;
+//
+//        System.out.println(dict_terms.size());
+//        try {
+//            File statText = new File(path + filenum + ".txt");
+//            FileOutputStream is = new FileOutputStream(statText);
+//            OutputStreamWriter osw = new OutputStreamWriter(is);
+//            StringBuilder termdocs = new StringBuilder();
+//            Writer w = new BufferedWriter(osw);
+//            for (String term_name : sorted_arraylist) {
+//                Term temp = dict_terms.get(term_name);
+//                for (Map.Entry<Doc, Integer> doc : temp.getDocFrequency().entrySet()) {
+//                    termdocs.append(" " + doc.getKey().getDOCNO() + "," + doc.getValue() + "," + doc.getKey().getFile());
 //                }
-//
-//                w.append(term.getValue().getName()+" "+term.getValue().getDf()+" "+termdocs+System.lineSeparator());
-//
-//                indexer.addToHashMap(term.getKey(),filenum+" "+counter);
+//                w.append(temp.getDf() + " " + termdocs + System.lineSeparator());
+////
+//                indexer.addToHashMap(term_name, filenum + " " + counter);
 //                counter++;
 //                termdocs = new StringBuilder();
 //            }
-
-            w.close();
-        } catch (Exception IOException) {
-            IOException.printStackTrace();
-        }
-        filenum++;
-        dict_terms.clear();
-    }
+//
+////            for (Map.Entry<String,Term> term : dict_terms.entrySet()){
+////                for(Map.Entry<Doc,Integer> doc : term.getValue().getDocFrequency().entrySet()){
+////                    termdocs.append(" "+doc.getKey().getDOCNO()+","+doc.getValue()+","+doc.getKey().getFile());
+////                }
+////
+////                w.append(term.getValue().getName()+" "+term.getValue().getDf()+" "+termdocs+System.lineSeparator());
+////
+////                indexer.addToHashMap(term.getKey(),filenum+" "+counter);
+////                counter++;
+////                termdocs = new StringBuilder();
+////            }
+//
+//            w.close();
+//        } catch (Exception IOException) {
+//            IOException.printStackTrace();
+//        }
+//        filenum++;
+//        dict_terms.clear();
+//    }
 
 
     public void writeToDisk() throws IOException {
@@ -695,7 +694,8 @@ public class Parse extends Thread {
             in.close();
 
             file_content=mergeArrays(list_termsByAlhabet.get(place),file_content, file_name);
-            FileWriter writer = new FileWriter(toOpen);
+            File toWrite = new File(path+File.separator+"\\"+file_name+".txt");
+            FileWriter writer = new FileWriter(toWrite,false);
 
             for (int i = 0; i < file_content.size() ; i++) {
                 writer.write(file_content.get(i)+System.lineSeparator());
@@ -713,7 +713,8 @@ public class Parse extends Thread {
         dict_terms.clear();
         list_termsByAlhabet.clear();
 
-
+        File p = new File(path);
+        System.out.println("Folder Size : "+FileUtils.sizeOf(p));
         System.out.println("Dictionary size : "+indexer.getDictionary().size());
         System.out.println("Number wrote to disk : "+debug_size);
         debug_size=0;
@@ -739,9 +740,9 @@ public class Parse extends Thread {
                 Term OtherTerm=dict_terms.get(chunk_content.get(i));
                 StringBuilder termData = new StringBuilder("");
                 for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
-                    termData.append(" "+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
+                    termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
                 }
-                file_content.add(""+OtherTerm.getDf()+" "+termData);
+                file_content.add(OtherTerm.getDf()+" "+termData);
                 indexer.getDictionary().put(OtherTerm.getName(),filename+" "+(file_content.size()-1));
 //                indexer.addToHashMap(OtherTerm.getName(),filename+" "+(file_content.size()-1));
 
@@ -759,9 +760,9 @@ public class Parse extends Thread {
                 int newdf=currentdf+chunkdf;
                 StringBuilder termData = new StringBuilder("");
                 for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
-                    termData.append(" "+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
+                    termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
                 }
-                file_content.set(indexer.getLineNumber(chunk_content.get(i)),newdf+" "+currentline[1]+" "+termData);
+                file_content.set(indexer.getLineNumber(chunk_content.get(i)),newdf+" "+currentline[1]+"|"+termData);
 
             }
         }
