@@ -158,37 +158,35 @@ public class Controller implements Initializable {
 
 
     public void SetAll(ActionEvent event) throws IOException {
-        newPostingPath=PathOfPosting;
+        newPostingPath = PathOfPosting;
         if (stopWordsField.getText().trim().isEmpty() || corpusField.getText().trim().isEmpty() || PostingField.getText().trim().isEmpty()) {
             error.setText("Pleas fill all the fields");
             error.setVisible(true);
-        }
-
-        if (Steam) {
-            f = new File(PathOfPosting + "\\Stem");
-            newPostingPath = PathOfPosting + "\\Stem";
-        }
-        else {
-            f = new File(PathOfPosting + "\\WithOutStem");
-            newPostingPath = PathOfPosting + "\\WithOutStem";
-        }
-        try {
-            if (f.mkdir()) {
-                System.out.println("Directory Created");
+        } else {
+            if (Steam) {
+                f = new File(PathOfPosting + "\\Stem");
+                newPostingPath = PathOfPosting + "\\Stem";
             } else {
-                System.out.println("Directory is not created");
+                f = new File(PathOfPosting + "\\WithOutStem");
+                newPostingPath = PathOfPosting + "\\WithOutStem";
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                if (f.mkdir()) {
+                    System.out.println("Directory Created");
+                } else {
+                    System.out.println("Directory is not created");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            rf = new ReadFile(PathOfCorpus, StopWordsPath, newPostingPath, Steam);
+            float start = System.nanoTime();
+            rf.start();
+            float end = System.nanoTime();
+            System.out.println((end - start) * Math.pow(10, -9) / 60);
+            int i = 5;
         }
-
-        rf = new ReadFile(PathOfCorpus, StopWordsPath, newPostingPath, Steam);
-        float start = System.nanoTime();
-        rf.start();
-        float end = System.nanoTime();
-        System.out.println((end-start)*Math.pow(10,-9)/60);
-        int i =5;
     }
-
 
 }
