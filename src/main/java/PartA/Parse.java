@@ -144,7 +144,6 @@ public class Parse extends Thread {
      * @throws ParseException
      */
     private void startParse() throws ParseException {
-        long startTime;
 
         for (index = 0; index < docText.length; index++) {
             //if it's a line separator. increase line number
@@ -582,6 +581,9 @@ public class Parse extends Thread {
         if (dict_terms.get(toCheck.getName()) == null) {
             //if (!dict_stopWords.contains(toCheck.getName()) && !dict_stopWords.contains(toCheck.getName().toUpperCase()) && !dict_stopWords.contains(toCheck.getName().toLowerCase())) {
             toCheck.getDocFrequency().put(doc, 1);
+//            ArrayList<Integer> doclocations = new ArrayList<>();
+//            doclocations.add(index);
+//            toCheck.getDoclocations().put(doc,doclocations);
             doc.setDistinctwords(doc.getDistinctwords() + 1);
             toCheck.setDf(1);
             dict_terms.put(toCheck.getName(), toCheck);
@@ -603,11 +605,17 @@ public class Parse extends Thread {
             UsedTerm.setDf(UsedTerm.getDf() + 1);
             if (UsedTerm.getDocFrequency().get(doc) == null) {
                 UsedTerm.getDocFrequency().put(doc, 1);
+//                ArrayList<Integer> doclocations = new ArrayList<>();
+//                doclocations.add(index);
+//                UsedTerm.getDoclocations().put(doc,doclocations);
 //                System.out.println("Used Term "+UsedTerm.getName());
             } else {
 
                 UsedTerm.getDocFrequency().put(doc, UsedTerm.getDocFrequency().get(doc) + 1);
                 updateDocMaxTf(UsedTerm.getDocFrequency().get(doc));
+//                ArrayList<Integer> doclocations = UsedTerm.getDoclocations().get(doc);
+//                doclocations.add(index);
+//                UsedTerm.getDoclocations().put(doc,doclocations);
 //                System.out.println("Used Term "+UsedTerm.getName());
             }
         }
@@ -706,7 +714,6 @@ public class Parse extends Thread {
                 writer.write(file_content.get(i)+System.lineSeparator());
             }
             writer.close();
-            int i =5;
             System.out.println("File : "+file_name+" Size : "+file_content.size());
             debug_size+=file_content.size();
 
@@ -739,16 +746,19 @@ public class Parse extends Thread {
 
     private List<String> mergeArrays(List<String> chunk_content , List<String> file_content, String filename) {
         for (int i = 0; i < chunk_content.size() ; i++) {
-            String find_location=indexer.isExist(chunk_content.get(i));
+
+            Pointer find_location=indexer.isExist(chunk_content.get(i));
             if(find_location==null){
 
                 Term OtherTerm=dict_terms.get(chunk_content.get(i));
                 StringBuilder termData = new StringBuilder("");
                 for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
-                    termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
+
+                    termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile()); //DOCNO,FrequencyInDoc,File Name of Doc
                 }
                 file_content.add(OtherTerm.getDf()+" "+termData);
-                indexer.getDictionary().put(OtherTerm.getName(),filename+" "+(file_content.size()-1));
+                Pointer OtherPointer = new Pointer(filename,file_content.size()-1,OtherTerm.getDf());
+                indexer.getDictionary().put(OtherTerm.getName(),OtherPointer);
 //                indexer.addToHashMap(OtherTerm.getName(),filename+" "+(file_content.size()-1));
 
             }
@@ -768,6 +778,10 @@ public class Parse extends Thread {
                     termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
                 }
                 file_content.set(indexer.getLineNumber(chunk_content.get(i)),newdf+" "+currentline[1]+"|"+termData);
+                Pointer p1 =indexer.getDictionary().get(OtherTerm.getName());
+
+
+                indexer.getDictionary().put(OtherTerm.getName(),new Pointer(filename,p1.getLine_number(),newdf));
 
             }
         }

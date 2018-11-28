@@ -8,26 +8,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Indexer implements Runnable {
 
-    private ConcurrentHashMap<String,String> dictionary;
+    private ConcurrentHashMap<String,Pointer> dictionary;
     private HashSet<String> file_names;
     private HashMap<String,Integer> dict_files;
 
     public  Indexer(){
-        dictionary=new ConcurrentHashMap<String,String>();
+        dictionary=new ConcurrentHashMap<String,Pointer>();
         file_names=new HashSet();
         dict_files=new HashMap<>();
     }
 
-    public void addToHashMap(String term_name, String pointer){
-        if(!dictionary.containsKey(term_name)){
-            dictionary.put(term_name,pointer);
-        }
-        else{
-            StringBuilder stringBuilder = new StringBuilder(dictionary.get(term_name));
-            stringBuilder.append(" "+stringBuilder);
-            dictionary.put(term_name,stringBuilder.toString());
-        }
-    }
 
 
     public HashMap<String, Integer> getDict_files() {
@@ -77,19 +67,17 @@ public class Indexer implements Runnable {
     public HashSet<String> getFile_names() {
         return file_names;
     }
-    public synchronized String isExist(String term_name){
+    public synchronized Pointer isExist(String term_name){
         return dictionary.get(term_name);
 
     }
     public int getLineNumber(String term_name){
-        String dict_data=this.dictionary.get(term_name);
-        String line_number = dict_data.split(" ")[1];
-
-        return Integer.parseInt(line_number);
+        Pointer pointer_data=this.dictionary.get(term_name);
+        return pointer_data.getLine_number();
 
     }
 
-    public ConcurrentHashMap<String, String> getDictionary() {
+    public ConcurrentHashMap<String, Pointer> getDictionary() {
         return dictionary;
     }
 
@@ -100,8 +88,8 @@ public class Indexer implements Runnable {
 
 
 
-        for (Map.Entry<String,String> str: dictionary.entrySet()){
-            writer.write(str.getKey()+" "+str.getValue()+System.lineSeparator());
+        for (Map.Entry<String,Pointer> dict_data: dictionary.entrySet()){
+            writer.write(dict_data.getKey()+" "+dict_data.getValue().getFile_name()+"|"+dict_data.getValue().getLine_number()+"|"+dict_data.getValue().getTerm_df()+System.lineSeparator());
         }
         writer.close();
     }

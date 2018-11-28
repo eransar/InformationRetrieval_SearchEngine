@@ -17,6 +17,7 @@ public class ReadFile {
   private int size;
   private int numofDocs;
   private String stopWordsPath;
+  private String path_posting;
 
   private boolean steam;
 
@@ -25,13 +26,14 @@ public class ReadFile {
   }
 
 
-  public ReadFile(String path,String StopWordsPath,String PathOfPosting,boolean steam) throws IOException {
+  public ReadFile(String path,String StopWordsPath,String path_posting,boolean steam) throws IOException {
     this.path = path;
     this.docs = new HashSet<Doc>();
     this.stopWordsPath=StopWordsPath;
-    this.parse = new Parse(StopWordsPath,PathOfPosting);
+    this.parse = new Parse(StopWordsPath,path_posting);
     this.numofDocs=1;
     this.steam = steam;
+    this.path_posting=path_posting;
   }
 
   public void start() throws IOException {
@@ -58,6 +60,8 @@ public class ReadFile {
     }
     if(parse.terms_size()!=0){
       parse.writeToDisk();
+      CityIndexer.getInstance().WriteDictionary(path_posting);
+
     }
     System.out.println("Number of terms "+parse.getNumofTerm());
   }

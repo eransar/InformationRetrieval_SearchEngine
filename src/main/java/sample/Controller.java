@@ -183,7 +183,11 @@ public class Controller implements Initializable {
         }
 
         rf = new ReadFile(PathOfCorpus, StopWordsPath, newPostingPath, Steam);
+        float start = System.nanoTime();
         rf.start();
+        float end = System.nanoTime();
+        System.out.println((end-start)*Math.pow(10,-9)/60);
+        int i =5;
     }
 
 
