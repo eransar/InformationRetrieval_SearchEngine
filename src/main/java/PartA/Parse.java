@@ -112,9 +112,9 @@ public class Parse extends Thread {
      * @throws IOException
      */
     public void init_stopWords(String path) throws IOException {
-        URL url = getClass().getClassLoader().getResource(path);
+        //URL url = getClass().getClassLoader().getResource(path);
         //URL url = getClass().getClassLoader().getResource("stop_words.txt");
-        File file = new File(url.getPath());
+        File file = new File(path);
         FileReader fr = new FileReader(file);
         BufferedReader bufferedReader = new BufferedReader(fr);
         StringBuffer stringBuffer = new StringBuffer();
