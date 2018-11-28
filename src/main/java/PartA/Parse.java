@@ -30,7 +30,8 @@ public class Parse extends Thread {
     private static CityIndexer indexer_city;
     private SnowballStemmer stemmer;
     private enum wordType {NUMBER, SYMBOL, WORD, CITY, NULL;};
-    private String path = "d:\\documents\\users\\eransar\\Downloads\\temp";
+    private String path; // corpus path
+    //private String path = "d:\\documents\\users\\eransar\\Downloads\\temp";
     private int numofTerm;
     private int index;
     private int filenum;
@@ -42,7 +43,7 @@ public class Parse extends Thread {
 
 
 
-    public Parse() throws IOException {
+    public Parse(String stopWordsPath, String PathOfPosting) throws IOException {
         this.dict_stopWords = new HashSet<String>();
         this.dict_replaceWords = new HashMap<String, String>();
         this.dict_terms = new HashMap<>();
@@ -54,8 +55,9 @@ public class Parse extends Thread {
         this.indexer_city = CityIndexer.getInstance();
         this.index = 1;
         this.first_chunk = true;
+        this.path = PathOfPosting;
         //Initializers
-        init_stopWords();
+        init_stopWords(stopWordsPath);
         init_replace();
         indexer_city.startConnection();
     }
@@ -109,8 +111,9 @@ public class Parse extends Thread {
      *
      * @throws IOException
      */
-    public void init_stopWords() throws IOException {
-        URL url = getClass().getClassLoader().getResource("stop_words.txt");
+    public void init_stopWords(String path) throws IOException {
+        URL url = getClass().getClassLoader().getResource(path);
+        //URL url = getClass().getClassLoader().getResource("stop_words.txt");
         File file = new File(url.getPath());
         FileReader fr = new FileReader(file);
         BufferedReader bufferedReader = new BufferedReader(fr);

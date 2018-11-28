@@ -16,7 +16,7 @@
       <Button fx:id="run" layoutX="224.0" layoutY="305.0" mnemonicParsing="false" onAction="#SetAll" prefHeight="58.0" prefWidth="118.0" text="run" />
       <TextField fx:id="stopWordsField" layoutX="151.0" layoutY="82.0" />
       <Button fx:id="StopW" layoutX="24.0" layoutY="38.0" mnemonicParsing="false" onAction="#openCourpus" text="Load Curpos" />
-      <CheckBox fx:id="StemmingCheckBox" layoutX="389.0" layoutY="107.0" mnemonicParsing="false" onAction="#Tostemming" prefHeight="25.0" prefWidth="109.0" text="Stemming" />
+      <CheckBox fx:id="StemmingCheckBox" layoutX="388.0" layoutY="129.0" mnemonicParsing="false" onAction="#Tostemming" prefHeight="25.0" prefWidth="109.0" text="Stemming" />
       <ChoiceBox fx:id="language" layoutX="368.0" layoutY="70.0" prefWidth="150.0" />
       <Button fx:id="reset" layoutX="186.0" layoutY="175.0" mnemonicParsing="false" onAction="#Reset" prefHeight="25.0" prefWidth="79.0" text="Reset" />
       <Button fx:id="ShowDictionary" layoutX="24.0" layoutY="305.0" mnemonicParsing="false" onAction="#ShowDictionary" text="Show Dictionary" />

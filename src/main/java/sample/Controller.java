@@ -42,19 +42,19 @@ public class Controller implements Initializable {
     public Label error;
 
 
-
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         StemmingCheckBox.setSelected(false);
         language.setItems(FXCollections.observableArrayList(
-                "Chinese", "English", "עברית", "French", "German","Greek")
+                "Chinese", "English", "עברית", "French", "German", "Greek")
         );
         language.setValue("English");
         error.setVisible(false);
     }
 
-    /** select Corpus BY browser */
+    /**
+     * select Corpus BY browser
+     */
     public void openCourpus(ActionEvent event) {
         String path = GetPath();
         if (path != null) {
@@ -63,7 +63,9 @@ public class Controller implements Initializable {
         }
     }
 
-    /** Select stopWords by Browser */
+    /**
+     * Select stopWords by Browser
+     */
     public void openStopWords(ActionEvent event) {
         String path = browse();
         if (path != null) {
@@ -72,8 +74,10 @@ public class Controller implements Initializable {
         }
     }
 
-    /** save the path to save posting */
-    public void SavePostingPath(ActionEvent event){
+    /**
+     * save the path to save posting
+     */
+    public void SavePostingPath(ActionEvent event) {
         String path = GetPath();
         if (path != null) {
             PathOfPosting = path;
@@ -81,7 +85,9 @@ public class Controller implements Initializable {
         }
     }
 
-    /** open file by source */
+    /**
+     * open file by source
+     */
     private String browse() {
         String path;
         FileChooser fc = new FileChooser();
@@ -96,25 +102,30 @@ public class Controller implements Initializable {
         }
     }
 
-    /** Get FolderPath To save */
+    /**
+     * Get FolderPath To save
+     */
     private String GetPath() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         File selectedDirectory = directoryChooser.showDialog(null);
-        if(selectedDirectory == null){
+        if (selectedDirectory == null) {
             return null;
-        }else{
+        } else {
             return selectedDirectory.getAbsolutePath();
         }
     }
-    /** To steam or not? */
-    public void Tostemming(ActionEvent event){
-        if(StemmingCheckBox.isSelected())
+
+    /**
+     * To steam or not?
+     */
+    public void Tostemming(ActionEvent event) {
+        if (StemmingCheckBox.isSelected())
             Steam = true;
         else
-            Steam= false;
+            Steam = false;
     }
 
-    public void Reset(ActionEvent event){
+    public void Reset(ActionEvent event) {
         //removing files?//
         System.gc();
     }
@@ -135,16 +146,37 @@ public class Controller implements Initializable {
         }
     }
 
-    public void LoadDictionary(){
+    public void LoadDictionary() {
 
     }
 
 
-    public void SetAll(ActionEvent event){
-        if(stopWordsField.getText().trim().isEmpty() || corpusField.getText().trim().isEmpty() || PostingField.getText().trim().isEmpty()){
+    public void SetAll(ActionEvent event) throws IOException {
+        if (stopWordsField.getText().trim().isEmpty() || corpusField.getText().trim().isEmpty() || PostingField.getText().trim().isEmpty()) {
             error.setText("Pleas fill all the fields");
             error.setVisible(true);
         }
+        File f;
+        if (Steam) {
+            f = new File(PathOfPosting + "\\Steam");
+            PathOfPosting = PathOfPosting + "\\Steam";
+        }
+        else {
+            f = new File(PathOfPosting + "\\WithOutSteam");
+            PathOfPosting = PathOfPosting + "\\WithOutSteam";
+        }
+        try {
+            if (f.mkdir()) {
+                System.out.println("Directory Created");
+            } else {
+                System.out.println("Directory is not created");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        rf = new ReadFile(PathOfCorpus, StopWordsPath, PathOfPosting, Steam);
     }
+
 
 }

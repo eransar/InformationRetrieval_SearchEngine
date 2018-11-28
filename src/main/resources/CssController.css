@@ -5,3 +5,6 @@
 .choice-box .context-menu {
     -fx-pref-width: 150; /* Your width for the context menu background shown */
 }
+#error{
+    -fx-text-fill: red;
+}

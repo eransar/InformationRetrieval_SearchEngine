@@ -16,20 +16,25 @@ public class ReadFile {
   public Parse parse;
   private int size;
   private int numofDocs;
+  private String stopWordsPath;
 
-  public ReadFile(String path) throws IOException {
+  private boolean steam;
+
+  public ReadFile(String path,String StopWordsPath,String PathOfPosting,boolean steam) throws IOException {
     this.path = path;
     this.docs = new HashSet<Doc>();
-    this.parse = new Parse();
+    this.parse = new Parse(StopWordsPath,PathOfPosting);
     this.numofDocs=1;
+    this.stopWordsPath=StopWordsPath;
+    this.steam = steam;
   }
 
   public void start() throws IOException {
     File input = new File(path);
     File[] corpus = input.listFiles();
     size = corpus.length; //get amount of files
-    parse.setStem(true);
-
+    //parse.setStem(true);
+    parse.setStem(steam);
 
     for (int i = 0; i < corpus.length; i++) {
       if (corpus[i].isDirectory()) {//other condition like name ends in html
@@ -44,7 +49,6 @@ public class ReadFile {
         }
       } else {
         jparse(corpus[i]);
-
       }
     }
     if(parse.terms_size()!=0){
