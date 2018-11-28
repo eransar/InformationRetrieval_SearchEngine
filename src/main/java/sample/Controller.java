@@ -12,6 +12,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
 import java.io.File;
@@ -40,6 +41,8 @@ public class Controller implements Initializable {
     public String PathOfPosting;
     private boolean Steam;
     public Label error;
+    private String newPostingPath="";
+    private File f;
 
 
     @Override
@@ -125,9 +128,12 @@ public class Controller implements Initializable {
             Steam = false;
     }
 
-    public void Reset(ActionEvent event) {
-        //removing files?//
-        System.gc();
+    public void Reset(ActionEvent event) throws IOException {
+        if(!newPostingPath.equals("")){
+            FileUtils.cleanDirectory(new File(PathOfPosting));
+            rf.parse.Reset();
+            System.out.println("ddd");
+        }
     }
 
     public void ShowDictionary(ActionEvent event) {
@@ -152,18 +158,19 @@ public class Controller implements Initializable {
 
 
     public void SetAll(ActionEvent event) throws IOException {
+        newPostingPath=PathOfPosting;
         if (stopWordsField.getText().trim().isEmpty() || corpusField.getText().trim().isEmpty() || PostingField.getText().trim().isEmpty()) {
             error.setText("Pleas fill all the fields");
             error.setVisible(true);
         }
-        File f;
+
         if (Steam) {
-            f = new File(PathOfPosting + "\\Steam");
-            PathOfPosting = PathOfPosting + "\\Steam";
+            f = new File(PathOfPosting + "\\Stem");
+            newPostingPath = PathOfPosting + "\\Stem";
         }
         else {
-            f = new File(PathOfPosting + "\\WithOutSteam");
-            PathOfPosting = PathOfPosting + "\\WithOutSteam";
+            f = new File(PathOfPosting + "\\WithOutStem");
+            newPostingPath = PathOfPosting + "\\WithOutStem";
         }
         try {
             if (f.mkdir()) {
@@ -175,7 +182,7 @@ public class Controller implements Initializable {
             e.printStackTrace();
         }
 
-        rf = new ReadFile(PathOfCorpus, StopWordsPath, PathOfPosting, Steam);
+        rf = new ReadFile(PathOfCorpus, StopWordsPath, newPostingPath, Steam);
         rf.start();
     }
 

@@ -64,7 +64,9 @@ public class Parse extends Thread {
 
 
 
-
+    public void Reset(){
+        indexer = new Indexer();
+    }
 
 
     /**
@@ -948,8 +950,8 @@ public class Parse extends Thread {
         dict_replaceWords.put(".)", "");
         dict_replaceWords.put(")", " ");
         dict_replaceWords.put("(", " ");
-        dict_replaceWords.put(" '", "");
-        dict_replaceWords.put("' ", "");
+        dict_replaceWords.put(" '", " ");
+        dict_replaceWords.put("' ", " ");
         dict_replaceWords.put(": ", " ");
         dict_replaceWords.put(". \n", " ");
         dict_replaceWords.put(". ", " ");
@@ -972,7 +974,6 @@ public class Parse extends Thread {
         dict_replaceWords.put("\n", " ");
         dict_replaceWords.put("\\", " ");
         dict_replaceWords.put("//", " ");
-        dict_replaceWords.put("/", " ");
         dict_replaceWords.put("*", " ");
         dict_replaceWords.put("+/", " ");
         dict_replaceWords.put(" -", " ");

@@ -20,6 +20,11 @@ public class ReadFile {
 
   private boolean steam;
 
+  public ReadFile(){
+
+  }
+
+
   public ReadFile(String path,String StopWordsPath,String PathOfPosting,boolean steam) throws IOException {
     this.path = path;
     this.docs = new HashSet<Doc>();
