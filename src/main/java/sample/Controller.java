@@ -176,6 +176,7 @@ public class Controller implements Initializable {
         }
 
         rf = new ReadFile(PathOfCorpus, StopWordsPath, PathOfPosting, Steam);
+        rf.start();
     }
 
 

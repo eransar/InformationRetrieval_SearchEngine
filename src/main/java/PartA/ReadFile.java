@@ -23,9 +23,9 @@ public class ReadFile {
   public ReadFile(String path,String StopWordsPath,String PathOfPosting,boolean steam) throws IOException {
     this.path = path;
     this.docs = new HashSet<Doc>();
+    this.stopWordsPath=StopWordsPath;
     this.parse = new Parse(StopWordsPath,PathOfPosting);
     this.numofDocs=1;
-    this.stopWordsPath=StopWordsPath;
     this.steam = steam;
   }
 
