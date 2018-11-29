@@ -1,28 +1,54 @@
 package PartA;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Indexer implements Runnable {
-
+    private static Indexer ourInstance = new Indexer();
     private ConcurrentHashMap<String,Pointer> dictionary;
     private HashSet<String> file_names;
     private HashMap<String,Integer> dict_files;
 
-    public  Indexer(){
+
+    public static Indexer getInstance() {
+        return ourInstance;
+    }
+
+    private Indexer(){
         dictionary=new ConcurrentHashMap<String,Pointer>();
         file_names=new HashSet();
         dict_files=new HashMap<>();
     }
 
-
+    public void reset(){
+        Indexer.getInstance().dictionary.clear();
+    }
 
     public HashMap<String, Integer> getDict_files() {
         return dict_files;
     }
+
+    public void InitDic(String PathOfPosting) throws IOException {
+        File f = new File(PathOfPosting + File.separator + "dictionary.txt");
+        String str="";
+        BufferedReader reader = new BufferedReader(new FileReader(f));
+        List<String> file_dic = new ArrayList<>();
+        while ((str = reader.readLine()) != null){
+            file_dic.add(str);
+        }
+        String key="";
+        for (String line: file_dic ) {
+            //dictionary
+            String [] spliteLine = line.split(" ");
+            key = spliteLine[0];
+            spliteLine = spliteLine[1].split(",");
+            Pointer p = new Pointer(spliteLine[0],Integer.parseInt(
+                    spliteLine[1]),Integer.parseInt(spliteLine[2]));
+            dictionary.put(key,p);
+        }
+    }
+
 
     public void initFiles(String path){
         int counter=0;
@@ -48,6 +74,9 @@ public class Indexer implements Runnable {
         counter++;
         file_names.add("others");
         dict_files.put("others",counter);
+        counter++;
+        file_names.add("dictionary");
+        dict_files.put("dictionary",counter);
 
         for(String file_name: file_names)
         {

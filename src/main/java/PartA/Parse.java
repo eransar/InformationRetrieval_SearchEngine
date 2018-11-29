@@ -50,7 +50,7 @@ public class Parse extends Thread {
         this.dict_months = init_months();
         this.list_sortedTerms = new ArrayList<String>();
         this.list_termsByAlhabet = new ArrayList<List<String>>();
-        this.indexer = new Indexer();
+        this.indexer = Indexer.getInstance();
         this.stemmer = new englishStemmer();
         this.indexer_city = CityIndexer.getInstance();
         this.index = 1;
@@ -65,7 +65,7 @@ public class Parse extends Thread {
 
 
     public void Reset(){
-        indexer = new Indexer();
+        indexer = Indexer.getInstance();
     }
 
 

@@ -1,5 +1,7 @@
 package sample;
 
+import PartA.Indexer;
+import PartA.Pointer;
 import PartA.ReadFile;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -15,11 +17,11 @@ import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Controller implements Initializable {
 
@@ -43,6 +45,7 @@ public class Controller implements Initializable {
     public Label error;
     private String newPostingPath="";
     private File f;
+    public Indexer indexer = Indexer.getInstance();
 
 
     @Override
@@ -131,7 +134,7 @@ public class Controller implements Initializable {
     public void Reset(ActionEvent event) throws IOException {
         if(!newPostingPath.equals("")){
             FileUtils.cleanDirectory(new File(PathOfPosting));
-            rf.parse.Reset();
+            Indexer.getInstance().reset();
             System.out.println("ddd");
         }
     }
@@ -152,8 +155,14 @@ public class Controller implements Initializable {
         }
     }
 
-    public void LoadDictionary() {
-
+    public void LoadDictionary() throws IOException {
+        if(!PathOfPosting.equals("")){
+            indexer.InitDic(PathOfPosting);
+        }
+        else{
+            error.setVisible(true);
+            error.setText("please run the program it first");
+        }
     }
 
 
