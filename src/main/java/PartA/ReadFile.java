@@ -49,6 +49,7 @@ public class ReadFile {
           if(numofDocs == size /10){
           parse.writeToDisk();
           System.out.println(parse.getPath());
+
             numofDocs=1;
           }
           jparse(corpus[i].listFiles()[j]);
@@ -61,6 +62,11 @@ public class ReadFile {
     if(parse.terms_size()!=0){
       parse.writeToDisk();
       CityIndexer.getInstance().WriteDictionary(path_posting);
+      float start = System.nanoTime();
+      parse.handleCapitalLetters();
+      float end = System.nanoTime();
+      System.out.println((end - start) * Math.pow(10, -9) / 60);
+
 
     }
     System.out.println("Number of terms "+parse.getNumofTerm());

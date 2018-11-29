@@ -10,15 +10,6 @@ public class Term {
 
     private HashMap<Doc,Integer> docFrequency;
 
-    public HashMap<Doc, ArrayList<Integer>> getDoclocations() {
-        return doclocations;
-    }
-
-    public void setDoclocations(HashMap<Doc, ArrayList<Integer>> doclocations) {
-        this.doclocations = doclocations;
-    }
-
-    private HashMap<Doc,ArrayList<Integer>> doclocations;
     private String type;
 
     public void setDocFrequency(HashMap<Doc, Integer> docFrequency) {
@@ -34,7 +25,7 @@ public class Term {
         this.df=0;
         this.tf=0;
         this.docFrequency=new HashMap<Doc,Integer>();
-        this.doclocations=new HashMap<Doc,ArrayList<Integer>>();
+
 
     }
 
@@ -45,7 +36,7 @@ public class Term {
         this.df=t.df;
         this.docFrequency=null;
         this.type="";
-        this.doclocations=new HashMap<Doc,ArrayList<Integer>>();
+
 
 
 

@@ -54,6 +54,9 @@ public class Controller implements Initializable {
         language.setItems(FXCollections.observableArrayList(
                 "Chinese", "English", "עברית", "French", "German", "Greek")
         );
+        corpusField.setText("d:\\documents\\users\\eransar\\Downloads\\corpus\\corpus");
+        stopWordsField.setText("d:\\documents\\users\\eransar\\Downloads\\aa.txt");
+        PostingField.setText("D:\\documents\\users\\eransar\\Downloads\\temp");
         language.setValue("English");
         error.setVisible(false);
     }

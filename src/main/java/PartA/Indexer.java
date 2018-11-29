@@ -97,9 +97,38 @@ public class Indexer implements Runnable {
         return file_names;
     }
     public synchronized Pointer isExist(String term_name){
+        if((term_name.charAt(0) >=65 && term_name.charAt(0)<=90) ||(term_name.charAt(0) >=97 && term_name.charAt(0)<=122)){
+            // is lower case
+//            if(term_name.charAt(0) >=97 && term_name.charAt(0)<=122){ // first char is lower case
+//                if(dictionary.contains(term_name.substring(0,1).toUpperCase()+term_name.substring(1))){
+//                    Pointer Otherpointer = dictionary.remove(term_name.substring(0,1).toUpperCase()+term_name.substring(1));
+//                    dictionary.put(term_name,Otherpointer);
+//                    return Otherpointer;
+//                }
+//                else if(dictionary.contains(term_name.toUpperCase())){
+//                    Pointer Otherpointer = dictionary.remove(term_name.toUpperCase());
+//                    dictionary.put(term_name,Otherpointer);
+//                    return Otherpointer;
+//
+//                }
+//                else if(dictionary.contains(term_name.toLowerCase())){
+//                    return dictionary.get(term_name.toLowerCase());
+//                }
+//
+//            }
+        }
         return dictionary.get(term_name);
 
     }
+    public Pointer isExist_Capital(String term_name){
+        char first_letter = Character.toLowerCase(term_name.charAt(0));
+        StringBuilder check_term = new StringBuilder(first_letter);
+        for (int i = 1; i <term_name.length() ; i++) {
+            check_term.append(term_name.charAt(i));
+        }
+        return dictionary.get(check_term);
+    }
+
     public int getLineNumber(String term_name){
         Pointer pointer_data=this.dictionary.get(term_name);
         return pointer_data.getLine_number();

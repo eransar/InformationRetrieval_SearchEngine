@@ -55,6 +55,14 @@
             <version>2.6</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.geonames/geonames -->
+        <dependency>
+            <groupId>org.geonames</groupId>
+            <artifactId>geonames</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+
 
 
 

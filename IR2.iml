@@ -17,5 +17,7 @@
     <orderEntry type="library" name="Maven: com.squareup.okio:okio:1.15.0" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.json-simple:json-simple:1.1" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.6" level="project" />
+    <orderEntry type="library" name="Maven: org.geonames:geonames:1.0" level="project" />
+    <orderEntry type="library" name="Maven: jdom:jdom:1.0" level="project" />
   </component>
 </module>

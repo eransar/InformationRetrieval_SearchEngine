@@ -79,6 +79,7 @@ public class CityIndexer {
         try {
             try {
                 obj = parser.parse(response.body().string());
+                response.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

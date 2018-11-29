@@ -20,15 +20,16 @@ import java.util.regex.Pattern;
 public class Parse extends Thread {
     private HashSet<String> dict_stopWords;
     private HashMap<String, Term> dict_terms;
-    private ArrayList<String> list_sortedTerms;
-    private List<List<String>> list_termsByAlhabet = new ArrayList<List<String>>();
     private HashMap<String, Integer> dict_months;
     private HashMap<String, String> dict_replaceWords;
+    private HashMap<String,Term> dict_capitals;
+    private ArrayList<String> list_sortedTerms;
+    private List<List<String>> list_termsByAlhabet = new ArrayList<List<String>>();
     private Doc doc;
     private String[] docText;
     private static Indexer indexer;
     private static CityIndexer indexer_city;
-    private SnowballStemmer stemmer;
+    private Stemmer stemmer;
     private enum wordType {NUMBER, SYMBOL, WORD, CITY, NULL;};
     private String path; // corpus path
     //private String path = "d:\\documents\\users\\eransar\\Downloads\\temp";
@@ -48,12 +49,13 @@ public class Parse extends Thread {
         this.dict_replaceWords = new HashMap<String, String>();
         this.dict_terms = new HashMap<>();
         this.dict_months = init_months();
+        this.dict_capitals=new HashMap<>();
         this.list_sortedTerms = new ArrayList<String>();
         this.list_termsByAlhabet = new ArrayList<List<String>>();
         this.indexer = Indexer.getInstance();
-        this.stemmer = new englishStemmer();
         this.indexer_city = CityIndexer.getInstance();
         this.index = 1;
+        this.stemmer=Stemmer.getInstance();
         this.first_chunk = true;
         this.path = PathOfPosting;
         //Initializers
@@ -566,6 +568,13 @@ public class Parse extends Thread {
                 toCheck.setName(stemmer.getCurrent());
             }
         }
+        if(toCheck.getType().equals("Word") && toCheck.getName().charAt(0) >=65 && toCheck.getName().charAt(0)<=90){
+            updateCacheDicationary(dict_capitals,toCheck);
+        }
+        else{
+            updateCacheDicationary(dict_terms,toCheck);
+        }
+
 
         /*
             if found term not avilable in the term list && not a stop word
@@ -578,7 +587,11 @@ public class Parse extends Thread {
                 set doc frequency
                 set term location in doc
          */
-        if (dict_terms.get(toCheck.getName()) == null) {
+
+    }
+
+    public void updateCacheDicationary(HashMap<String,Term> dict, Term toCheck){
+        if (dict.get(toCheck.getName()) == null) {
             //if (!dict_stopWords.contains(toCheck.getName()) && !dict_stopWords.contains(toCheck.getName().toUpperCase()) && !dict_stopWords.contains(toCheck.getName().toLowerCase())) {
             toCheck.getDocFrequency().put(doc, 1);
 //            ArrayList<Integer> doclocations = new ArrayList<>();
@@ -586,7 +599,7 @@ public class Parse extends Thread {
 //            toCheck.getDoclocations().put(doc,doclocations);
             doc.setDistinctwords(doc.getDistinctwords() + 1);
             toCheck.setDf(1);
-            dict_terms.put(toCheck.getName(), toCheck);
+            dict.put(toCheck.getName(), toCheck);
 //                 System.out.println("New Term : "+toCheck.getName());
             //}
         }
@@ -601,7 +614,7 @@ public class Parse extends Thread {
              */
         else {
 //             System.out.println(toCheck.getName());
-            Term UsedTerm = dict_terms.get(toCheck.getName());
+            Term UsedTerm = dict.get(toCheck.getName());
             UsedTerm.setDf(UsedTerm.getDf() + 1);
             if (UsedTerm.getDocFrequency().get(doc) == null) {
                 UsedTerm.getDocFrequency().put(doc, 1);
@@ -633,51 +646,6 @@ public class Parse extends Thread {
     }
 
 
-//    public void SaveToDisk() {
-//        ArrayList<String> sorted_arraylist = new ArrayList<String>(dict_terms.keySet());
-//        Collections.sort(sorted_arraylist);
-//
-//        numofTerm += dict_terms.size();
-//        int counter = 0;
-//
-//        System.out.println(dict_terms.size());
-//        try {
-//            File statText = new File(path + filenum + ".txt");
-//            FileOutputStream is = new FileOutputStream(statText);
-//            OutputStreamWriter osw = new OutputStreamWriter(is);
-//            StringBuilder termdocs = new StringBuilder();
-//            Writer w = new BufferedWriter(osw);
-//            for (String term_name : sorted_arraylist) {
-//                Term temp = dict_terms.get(term_name);
-//                for (Map.Entry<Doc, Integer> doc : temp.getDocFrequency().entrySet()) {
-//                    termdocs.append(" " + doc.getKey().getDOCNO() + "," + doc.getValue() + "," + doc.getKey().getFile());
-//                }
-//                w.append(temp.getDf() + " " + termdocs + System.lineSeparator());
-////
-//                indexer.addToHashMap(term_name, filenum + " " + counter);
-//                counter++;
-//                termdocs = new StringBuilder();
-//            }
-//
-////            for (Map.Entry<String,Term> term : dict_terms.entrySet()){
-////                for(Map.Entry<Doc,Integer> doc : term.getValue().getDocFrequency().entrySet()){
-////                    termdocs.append(" "+doc.getKey().getDOCNO()+","+doc.getValue()+","+doc.getKey().getFile());
-////                }
-////
-////                w.append(term.getValue().getName()+" "+term.getValue().getDf()+" "+termdocs+System.lineSeparator());
-////
-////                indexer.addToHashMap(term.getKey(),filenum+" "+counter);
-////                counter++;
-////                termdocs = new StringBuilder();
-////            }
-//
-//            w.close();
-//        } catch (Exception IOException) {
-//            IOException.printStackTrace();
-//        }
-//        filenum++;
-//        dict_terms.clear();
-//    }
 
 
     public void writeToDisk() throws IOException {
@@ -689,12 +657,15 @@ public class Parse extends Thread {
         list_sortedTerms = new ArrayList<String>(dict_terms.keySet());
 //        Collections.sort(list_sortedTerms);
 
-        fillAlphabetArrays(list_sortedTerms);
+        fillAlphabetArrays(dict_terms,list_sortedTerms);
         //get data from files
 //        ExecutorService pool = Executors.newFixedThreadPool(2,new FileThreadFactory("n"));
         HashSet<String> file_names = indexer.getFile_names();
         for (String file_name : file_names)
         {
+            if(file_name.equals("dictionary")){
+                continue;
+            }
             int place = indexer.getDict_files().get(file_name);
             File toOpen = new File(path+File.separator+"\\"+file_name+".txt");
             BufferedReader in = new BufferedReader(new FileReader(toOpen));
@@ -734,6 +705,122 @@ public class Parse extends Thread {
 
 
     }
+
+    public void handleCapitalLetters() throws IOException {
+        System.out.println("Start Capital Letters");
+        ArrayList<String> capitalTerms = new ArrayList<String>(dict_capitals.keySet()); //create array from list
+//        Collections.sort(list_sortedTerms);
+
+        fillAlphabetArrays(dict_capitals,capitalTerms);
+
+        //get data from files
+//
+        HashSet<String> file_names = indexer.getFile_names();
+
+        for (String file_name : file_names) {
+            if (file_name.equals("dictionary")) {
+                continue;
+            }
+            int place = indexer.getDict_files().get(file_name);
+            File toOpen = new File(path + File.separator + "\\" + file_name + ".txt");
+            BufferedReader in = new BufferedReader(new FileReader(toOpen));
+            String str;
+            //opening file and adding it all to array
+            List<String> file_content = new ArrayList<String>();
+            while ((str = in.readLine()) != null) {
+                file_content.add(str);
+            }
+            in.close();
+
+            file_content = mergeCapitals(list_termsByAlhabet.get(place), file_content, file_name);
+            File toWrite = new File(path + File.separator + "\\" + file_name + ".txt");
+            FileWriter writer = new FileWriter(toWrite, false);
+
+            for (int i = 0; i < file_content.size(); i++) {
+                writer.write(file_content.get(i) + System.lineSeparator());
+            }
+            writer.close();
+            System.out.println("File : " + file_name + " Size : " + file_content.size());
+            debug_size += file_content.size();
+
+
+
+//            pool.submit(this);
+        }
+
+        dict_capitals.clear();
+        System.out.println("End Capital Letters");
+    }
+
+        public List<String> mergeCapitals(List<String> capitalTerms ,List<String> file_content , String file_name ){
+
+            for (int i = 0; i < capitalTerms.size() ; i++) {
+                //find term in lower case first letter form
+                char first_letter = Character.toLowerCase(capitalTerms.get(i).charAt(0));
+                StringBuilder check_term = new StringBuilder(""+first_letter);
+                for (int k = 1; k <capitalTerms.get(i).length() ; k++) {
+                    check_term.append(capitalTerms.get(i).charAt(k));
+                }
+                Pointer find_location=indexer.isExist(check_term.toString());
+                if(find_location==null){
+                    Term OtherTerm=dict_capitals.get(capitalTerms.get(i));
+                    StringBuilder termData = new StringBuilder("");
+                    for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
+
+                        termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile()); //DOCNO,FrequencyInDoc,File Name of Doc
+                    }
+                    file_content.add(OtherTerm.getDf()+" "+termData);
+                    Pointer OtherPointer = new Pointer(file_name,file_content.size()-1,OtherTerm.getDf());
+                    if(OtherTerm.getName().charAt(0) >=65 && OtherTerm.getName().charAt(0)<=90){
+                        indexer.getDictionary().put(OtherTerm.getName().toUpperCase(),OtherPointer);
+                    }
+                    else{
+                        indexer.getDictionary().put(OtherTerm.getName(),OtherPointer);
+                    }
+
+
+                }
+                else{
+                    /**
+                     * is exist in the dictionary in lower case in the first letter
+                     */
+                    String lineToChange = null;
+                    lineToChange = file_content.get(find_location.getLine_number());
+
+                    Term OtherTerm = dict_capitals.get(capitalTerms.get(i));
+                    OtherTerm.setName(check_term.toString());
+                    String[] currentline = lineToChange.split(" ");
+                    int currentdf=Integer.parseInt(currentline[0]);
+                    int chunkdf = OtherTerm.getDf();
+                    int newdf=currentdf+chunkdf;
+                    StringBuilder termData = new StringBuilder("");
+                    for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
+                        termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
+                    }
+                    file_content.set(find_location.getLine_number(),newdf+" "+currentline[1]+"|"+termData);
+                    Pointer p1 =indexer.getDictionary().get(OtherTerm.getName());
+
+
+                    indexer.getDictionary().put(OtherTerm.getName(),new Pointer(file_name,p1.getLine_number(),newdf));
+
+                }
+
+            }
+            return file_content;
+
+    }
+
+    public boolean isAllUpperCase(String toCheck){
+
+        for (int i = 0; i <toCheck.length() ; i++) {
+            if(!(toCheck.charAt(0) >=65 && toCheck.charAt(0)<=90)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 
     private void writeDictionaryDebug() {
         try {
@@ -788,13 +875,13 @@ public class Parse extends Thread {
         return file_content;
     }
 
-    private void fillAlphabetArrays(ArrayList<String> list_sortedTerms) {
+    private void fillAlphabetArrays(HashMap<String,Term> dict, ArrayList<String> list_sortedTerms) {
         for (int i = 0; i <31 ; i++) {
             list_termsByAlhabet.add(new ArrayList<String>());
         }
         int place=0;
         for (int i = 0; i < list_sortedTerms.size() ; i++) {
-            switch ((dict_terms.get(list_sortedTerms.get(i)).getType())){
+            switch ((dict.get(list_sortedTerms.get(i)).getType())){
                 case "Number":
                     place = indexer.getDict_files().get("numbers");
                     list_termsByAlhabet.get(place).add(list_sortedTerms.get(i));
@@ -821,13 +908,6 @@ public class Parse extends Thread {
             }
 
         }
-    }
-
-    @Override
-    public void run() {
-        System.out.println(Thread.currentThread().getName());
-
-
     }
 
     public int findSpaceIndex(String str) {

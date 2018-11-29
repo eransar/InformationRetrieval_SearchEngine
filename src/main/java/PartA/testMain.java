@@ -2,10 +2,22 @@ package PartA;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class testMain {
     public  static void main(String[] args) throws IOException, ParseException {
+        HashMap<String,String> h1 = new HashMap<>();
+        h1.put("c","c");
+        print(h1);
+        changehashmap(h1);
+        print(h1);
+
+
+
+
+
        /* float start = System.nanoTime();
         ReadFile rf = new ReadFile("d:\\documents\\users\\eransar\\Downloads\\corpus\\corpus");
         rf.start();
@@ -52,6 +64,16 @@ public class testMain {
 //        ReadFile rf = new ReadFile("d:\\documents\\users\\eransar\\Downloads\\corpus\\FB396012");
 //        rf.start();
 
+    }
+
+    private static void changehashmap(HashMap<String, String> h1) {
+        h1.put("b","b");
+
+    }
+    private static void print(HashMap<String,String> h1){
+        for(Map.Entry<String, String> t : h1.entrySet()){
+            System.out.println(t.getKey()+" "+t.getValue());
+        }
     }
 
 //    public static int findSpaceIndex(String str){
