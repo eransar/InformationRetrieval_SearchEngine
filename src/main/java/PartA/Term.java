@@ -7,10 +7,10 @@ import java.util.Objects;
 public class Term {
     private String name;
     private int df;
-
+    private String type;
     private HashMap<Doc,Integer> docFrequency;
 
-    private String type;
+
 
     public void setDocFrequency(HashMap<Doc, Integer> docFrequency) {
         this.docFrequency = docFrequency;

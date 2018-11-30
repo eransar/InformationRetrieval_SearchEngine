@@ -176,11 +176,11 @@ public class Controller implements Initializable {
             error.setVisible(true);
         } else {
             if (Steam) {
-                f = new File(PathOfPosting + "\\Stem");
-                newPostingPath = PathOfPosting + "\\Stem";
+                f = new File(PathOfPosting + File.separator+"Stem");
+                newPostingPath = PathOfPosting +File.separator+"Stem";
             } else {
-                f = new File(PathOfPosting + "\\WithOutStem");
-                newPostingPath = PathOfPosting + "\\WithOutStem";
+                f = new File(PathOfPosting + File.separator+"WithOutStem");
+                newPostingPath = PathOfPosting + File.separator+"WithOutStem";
             }
             try {
                 if (f.mkdir()) {

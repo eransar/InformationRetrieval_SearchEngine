@@ -1,30 +1,20 @@
 package PartA;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
-import org.tartarus.snowball.SnowballStemmer;
-import org.tartarus.snowball.ext.englishStemmer;
 
 import java.io.*;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 
-public class Parse extends Thread {
+public class Parse {
     private HashSet<String> dict_stopWords;
-    private HashMap<String, Term> dict_terms;
+    private HashMap<String, Term> dict_cache;
     private HashMap<String, Integer> dict_months;
     private HashMap<String, String> dict_replaceWords;
     private HashMap<String,Term> dict_capitals;
-    private ArrayList<String> list_sortedTerms;
-    private List<List<String>> list_termsByAlhabet = new ArrayList<List<String>>();
     private Doc doc;
     private String[] docText;
     private static Indexer indexer;
@@ -32,31 +22,27 @@ public class Parse extends Thread {
     private Stemmer stemmer;
     private enum wordType {NUMBER, SYMBOL, WORD, CITY, NULL;};
     private String path; // corpus path
-    //private String path = "d:\\documents\\users\\eransar\\Downloads\\temp";
     private int numofTerm;
     private int index;
     private int filenum;
     private int debug_size;
 
     private boolean isSteam;
-    private boolean first_chunk;
     private volatile String currentfilename;
 
 
 
     public Parse(String stopWordsPath, String PathOfPosting) throws IOException {
+        this.indexer = Indexer.getInstance();
+        this.dict_months = init_months();
+        this.dict_cache = indexer.getDict_cache();
+        this.dict_capitals=indexer.getDict_capitals();
         this.dict_stopWords = new HashSet<String>();
         this.dict_replaceWords = new HashMap<String, String>();
-        this.dict_terms = new HashMap<>();
-        this.dict_months = init_months();
-        this.dict_capitals=new HashMap<>();
-        this.list_sortedTerms = new ArrayList<String>();
-        this.list_termsByAlhabet = new ArrayList<List<String>>();
-        this.indexer = Indexer.getInstance();
+        indexer.setPath(PathOfPosting);
         this.indexer_city = CityIndexer.getInstance();
         this.index = 1;
         this.stemmer=Stemmer.getInstance();
-        this.first_chunk = true;
         this.path = PathOfPosting;
         //Initializers
         init_stopWords(stopWordsPath);
@@ -131,17 +117,9 @@ public class Parse extends Thread {
         }
     }
 
-    private void printTerm() {
-        int i = 0;
-        for (String name : dict_terms.keySet()) {
-            String key = name.toString();
-            System.out.println(i + ". " + key);
-            i++;
-        }
-    }
 
     /**
-     * doing parse on etch term
+     * This method start the parse for the current doc.
      *
      * @throws ParseException
      */
@@ -189,7 +167,7 @@ public class Parse extends Thread {
     }
 
     /**
-     * DOING parse on symbol.
+     * After term identified as symbol this method will parse by symbol rules.
      *
      * @param str
      * @param index
@@ -233,7 +211,7 @@ public class Parse extends Thread {
     }
 
     /**
-     * doing parse to word(not symbol && not number)
+     * After term identified as word this method will parse it by word rules.
      *
      * @param index
      * @throws ParseException
@@ -262,19 +240,19 @@ public class Parse extends Thread {
                 && isNumber(docText[index + 3])) {
             tempTerm.setName(docText[index] + " " + docText[index + 1] + " " + docText[index + 2] + " " + docText[index + 3]);
         } else {
-            //if word is lowercase - check for uppercase in the first letter in the dict_terms map
+            //if word is lowercase - check for uppercase in the first letter in the dict_cache map
             if (testAllLowerCase(docText[index]) &&
-                    (dict_terms.containsKey(docText[index].substring(0, 1).toUpperCase() + docText[index].substring(1))
-                            || dict_terms.containsKey(docText[index].toUpperCase()))) {
-                if (dict_terms.containsKey(docText[index].substring(0, 1).toUpperCase() + docText[index].substring(1))) {
-                    tempTerm = dict_terms.remove(docText[index].substring(0, 1).toUpperCase() + docText[index].substring(1));
+                    (dict_cache.containsKey(docText[index].substring(0, 1).toUpperCase() + docText[index].substring(1))
+                            || dict_cache.containsKey(docText[index].toUpperCase()))) {
+                if (dict_cache.containsKey(docText[index].substring(0, 1).toUpperCase() + docText[index].substring(1))) {
+                    tempTerm = dict_cache.remove(docText[index].substring(0, 1).toUpperCase() + docText[index].substring(1));
                     tempTerm.setName(docText[index]);
                 } else {
-                    tempTerm = dict_terms.remove(docText[index].toUpperCase());
+                    tempTerm = dict_cache.remove(docText[index].toUpperCase());
 
                     tempTerm.setName(docText[index]);
                 }
-            } else if (testAllLowerCase(docText[index]) && dict_terms.containsKey(docText[index].toUpperCase())) {
+            } else if (testAllLowerCase(docText[index]) && indexer.getDict_cache().containsKey(docText[index].toUpperCase())) {
                 return; //dont add lowercase wh
             } else {
                 tempTerm.setName(docText[index]);
@@ -325,7 +303,7 @@ public class Parse extends Thread {
     }
 
     /**
-     * check if the term is symbol(char(0)==$)
+     * Check if the term is a symbol
      *
      * @param str
      * @return
@@ -357,18 +335,13 @@ public class Parse extends Thread {
     }
 
     /**
-     * check if the term is number
-     * true if yes | false if not
+     * Check if the given string is a number.
      *
-     * @param str
+     * @param str given string
      * @return
      * @throws ParseException
      */
     private boolean isNumber(String str) throws ParseException {
-//        if(str.charAt(0) >=48 && str.charAt(0) <=57){
-//            return true;
-//        }
-//        return false;
 
         try {
             NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
@@ -381,9 +354,8 @@ public class Parse extends Thread {
     }
 
     /**
-     * check if the term is fraction
-     *
-     * @param str
+     * check if a given string is a fraction
+     * @param str given string
      * @return
      */
     public boolean isFraction(String str) {
@@ -409,13 +381,13 @@ public class Parse extends Thread {
 
 
     /*
-                     Starting Parsing functions
+       ***************Starting Parsing functions*********************
      */
 
     /**
-     * Handles dict_terms of type Number
-     *
-     * @param str given String for term
+     * Parsing a string that identified as a number and send it to handleTerm.
+     * @param str given String of the term
+     * @param index given index of the term in the cache dictionary
      */
     public void parseNumber(String str, int index) {
         Term tempTerm = new Term();
@@ -488,12 +460,11 @@ public class Parse extends Thread {
         else if (index + 1 < docText.length && isFraction(docText[index + 1])) {
             if (number_term < 1000000 && index + 2 < docText.length && docText[index + 2].equals("Dollars")) {
                 tempTerm.setName(convertDouble(number_term) + " " + docText[index + 1] + " " + "Dollars");
-//                    toReturn.add(convertDouble(number_term) + " " + docText[index + 1] + " " + "Dollars");
                 index = index++; //skip the next word in the document :O
 //                    Parser.setIndex(index + 1);
             } else {
                 tempTerm.setName(convertDouble(number_term) + " " + docText[index + 1]);
-//                    toReturn.add(convertDouble(number_term) + " " + docText[index + 1]);
+
             }
 
 //                return toReturn; // ??? check why //TODO : Check why !
@@ -501,38 +472,34 @@ public class Parse extends Thread {
         } else if (fraction) {
             if (index + 1 < docText.length && first_keywords.contains(docText[index + 1])) {
                 tempTerm.setName(docText[index] + " " + docText[index + 1]);
-//                    toReturn.add(docText[index] + " " + docText[index + 1]);
+
             } else {
                 tempTerm.setName(docText[index]);
-//                    toReturn.add(docText[index]);
+
             }
 
-        } else if (index + 1 < docText.length && init_months().containsKey(docText[index + 1])) {
-            String month = "" + init_months().get(docText[index + 1]);
-            if (init_months().get(docText[index + 1]) < 10) {
-                month = "0" + init_months().get(docText[index + 1]);
+        } else if (index + 1 < docText.length && dict_months.containsKey(docText[index + 1])) {
+            String month = "" + dict_months.get(docText[index + 1]);
+            if (dict_months.get(docText[index + 1]) < 10) {
+                month = "0" + dict_months.get(docText[index + 1]);
             }
             if (number_term < 10) {
                 tempTerm.setName(month + "-" + "0" + convertDouble(number_term));
-//                    toReturn.add(month + "-" + "0" + convertDouble(number_term));
+
             } else {
                 tempTerm.setName(month + "-" + convertDouble(number_term));
-//                    toReturn.add(month + "-" + convertDouble(number_term));
+
             }
         } else {
             if (!fraction) {
                 if (number_term >= 1000 && number_term < 1000000) {
                     tempTerm.setName(convertDouble(number_term / 1000) + "K");
-//                        toReturn.add(convertDouble(number_term / 1000) + "K");
                 } else if (number_term >= 1000000 && number_term < 1000000000) {
                     tempTerm.setName(convertDouble(number_term / 1000000) + "M");
-//                        toReturn.add(convertDouble(number_term / 1000000) + "M");
                 } else if (number_term >= 1000000000) {
                     tempTerm.setName(convertDouble(number_term / 1000000000) + "B");
-//                        toReturn.add(convertDouble(number_term / 1000000000) + "B");
                 } else {
                     tempTerm.setName(convertDouble(number_term));
-//                        toReturn.add(convertDouble(number_term));
                 }
             }
 
@@ -543,8 +510,8 @@ public class Parse extends Thread {
 
 //    public HashMap<Term, HashMap<Doc, Integer>> getTermsInfo() {
 
-    public HashMap<String, Term> getDict_terms() {
-        return dict_terms;
+    public HashMap<String, Term> getDict_cache() {
+        return dict_cache;
     }
     //    }
 
@@ -572,7 +539,7 @@ public class Parse extends Thread {
             updateCacheDicationary(dict_capitals,toCheck);
         }
         else{
-            updateCacheDicationary(dict_terms,toCheck);
+            updateCacheDicationary(indexer.getDict_cache(),toCheck);
         }
 
 
@@ -580,10 +547,10 @@ public class Parse extends Thread {
             if found term not avilable in the term list && not a stop word
                 set doc frequency of the term to 1
                 increase doc distnict term by 1
-                add to dict_terms
+                add to dict_cache
                 set corpus frequency to 1
                 set df to 1
-                insert it to the dict_terms with the document found.
+                insert it to the dict_cache with the document found.
                 set doc frequency
                 set term location in doc
          */
@@ -600,7 +567,7 @@ public class Parse extends Thread {
             doc.setDistinctwords(doc.getDistinctwords() + 1);
             toCheck.setDf(1);
             dict.put(toCheck.getName(), toCheck);
-//                 System.out.println("New Term : "+toCheck.getName());
+
             //}
         }
         // if found term already exists in the term list:
@@ -621,7 +588,7 @@ public class Parse extends Thread {
 //                ArrayList<Integer> doclocations = new ArrayList<>();
 //                doclocations.add(index);
 //                UsedTerm.getDoclocations().put(doc,doclocations);
-//                System.out.println("Used Term "+UsedTerm.getName());
+
             } else {
 
                 UsedTerm.getDocFrequency().put(doc, UsedTerm.getDocFrequency().get(doc) + 1);
@@ -629,7 +596,7 @@ public class Parse extends Thread {
 //                ArrayList<Integer> doclocations = UsedTerm.getDoclocations().get(doc);
 //                doclocations.add(index);
 //                UsedTerm.getDoclocations().put(doc,doclocations);
-//                System.out.println("Used Term "+UsedTerm.getName());
+
             }
         }
     }
@@ -645,171 +612,6 @@ public class Parse extends Thread {
         }
     }
 
-
-
-
-    public void writeToDisk() throws IOException {
-        if (first_chunk) {
-            indexer.initFiles(this.path);
-            first_chunk = false;
-        }
-        //sort the dictionary
-        list_sortedTerms = new ArrayList<String>(dict_terms.keySet());
-//        Collections.sort(list_sortedTerms);
-
-        fillAlphabetArrays(dict_terms,list_sortedTerms);
-        //get data from files
-//        ExecutorService pool = Executors.newFixedThreadPool(2,new FileThreadFactory("n"));
-        HashSet<String> file_names = indexer.getFile_names();
-        for (String file_name : file_names)
-        {
-            if(file_name.equals("dictionary")){
-                continue;
-            }
-            int place = indexer.getDict_files().get(file_name);
-            File toOpen = new File(path+File.separator+"\\"+file_name+".txt");
-            BufferedReader in = new BufferedReader(new FileReader(toOpen));
-            String str;
-            //opening file and adding it all to array
-            List<String> file_content = new ArrayList<String>();
-            while((str = in.readLine()) != null){
-                file_content.add(str);
-            }
-            in.close();
-
-            file_content=mergeArrays(list_termsByAlhabet.get(place),file_content, file_name);
-            File toWrite = new File(path+File.separator+"\\"+file_name+".txt");
-            FileWriter writer = new FileWriter(toWrite,false);
-
-            for (int i = 0; i < file_content.size() ; i++) {
-                writer.write(file_content.get(i)+System.lineSeparator());
-            }
-            writer.close();
-            System.out.println("File : "+file_name+" Size : "+file_content.size());
-            debug_size+=file_content.size();
-
-//            pool.submit(this);
-        }
-//        writeDictionaryDebug();
-
-
-        dict_terms.clear();
-        list_termsByAlhabet.clear();
-
-        File p = new File(path);
-        System.out.println("Folder Size : "+FileUtils.sizeOf(p));
-        System.out.println("Dictionary size : "+indexer.getDictionary().size());
-        System.out.println("Number wrote to disk : "+debug_size);
-        debug_size=0;
-//        File path = new File("C:\\Users\\eransar\\AppData\\Local\\Temp\\0.txt");
-
-
-    }
-
-    public void handleCapitalLetters() throws IOException {
-        System.out.println("Start Capital Letters");
-        ArrayList<String> capitalTerms = new ArrayList<String>(dict_capitals.keySet()); //create array from list
-//        Collections.sort(list_sortedTerms);
-
-        fillAlphabetArrays(dict_capitals,capitalTerms);
-
-        //get data from files
-//
-        HashSet<String> file_names = indexer.getFile_names();
-
-        for (String file_name : file_names) {
-            if (file_name.equals("dictionary")) {
-                continue;
-            }
-            int place = indexer.getDict_files().get(file_name);
-            File toOpen = new File(path + File.separator + "\\" + file_name + ".txt");
-            BufferedReader in = new BufferedReader(new FileReader(toOpen));
-            String str;
-            //opening file and adding it all to array
-            List<String> file_content = new ArrayList<String>();
-            while ((str = in.readLine()) != null) {
-                file_content.add(str);
-            }
-            in.close();
-
-            file_content = mergeCapitals(list_termsByAlhabet.get(place), file_content, file_name);
-            File toWrite = new File(path + File.separator + "\\" + file_name + ".txt");
-            FileWriter writer = new FileWriter(toWrite, false);
-
-            for (int i = 0; i < file_content.size(); i++) {
-                writer.write(file_content.get(i) + System.lineSeparator());
-            }
-            writer.close();
-            System.out.println("File : " + file_name + " Size : " + file_content.size());
-            debug_size += file_content.size();
-
-
-
-//            pool.submit(this);
-        }
-
-        dict_capitals.clear();
-        System.out.println("End Capital Letters");
-    }
-
-        public List<String> mergeCapitals(List<String> capitalTerms ,List<String> file_content , String file_name ){
-
-            for (int i = 0; i < capitalTerms.size() ; i++) {
-                //find term in lower case first letter form
-                char first_letter = Character.toLowerCase(capitalTerms.get(i).charAt(0));
-                StringBuilder check_term = new StringBuilder(""+first_letter);
-                for (int k = 1; k <capitalTerms.get(i).length() ; k++) {
-                    check_term.append(capitalTerms.get(i).charAt(k));
-                }
-                Pointer find_location=indexer.isExist(check_term.toString());
-                if(find_location==null){
-                    Term OtherTerm=dict_capitals.get(capitalTerms.get(i));
-                    StringBuilder termData = new StringBuilder("");
-                    for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
-
-                        termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile()); //DOCNO,FrequencyInDoc,File Name of Doc
-                    }
-                    file_content.add(OtherTerm.getDf()+" "+termData);
-                    Pointer OtherPointer = new Pointer(file_name,file_content.size()-1,OtherTerm.getDf());
-                    if(OtherTerm.getName().charAt(0) >=65 && OtherTerm.getName().charAt(0)<=90){
-                        indexer.getDictionary().put(OtherTerm.getName().toUpperCase(),OtherPointer);
-                    }
-                    else{
-                        indexer.getDictionary().put(OtherTerm.getName(),OtherPointer);
-                    }
-
-
-                }
-                else{
-                    /**
-                     * is exist in the dictionary in lower case in the first letter
-                     */
-                    String lineToChange = null;
-                    lineToChange = file_content.get(find_location.getLine_number());
-
-                    Term OtherTerm = dict_capitals.get(capitalTerms.get(i));
-                    OtherTerm.setName(check_term.toString());
-                    String[] currentline = lineToChange.split(" ");
-                    int currentdf=Integer.parseInt(currentline[0]);
-                    int chunkdf = OtherTerm.getDf();
-                    int newdf=currentdf+chunkdf;
-                    StringBuilder termData = new StringBuilder("");
-                    for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
-                        termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
-                    }
-                    file_content.set(find_location.getLine_number(),newdf+" "+currentline[1]+"|"+termData);
-                    Pointer p1 =indexer.getDictionary().get(OtherTerm.getName());
-
-
-                    indexer.getDictionary().put(OtherTerm.getName(),new Pointer(file_name,p1.getLine_number(),newdf));
-
-                }
-
-            }
-            return file_content;
-
-    }
-
     public boolean isAllUpperCase(String toCheck){
 
         for (int i = 0; i <toCheck.length() ; i++) {
@@ -822,93 +624,6 @@ public class Parse extends Thread {
 
 
 
-    private void writeDictionaryDebug() {
-        try {
-            indexer.printTofile(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private List<String> mergeArrays(List<String> chunk_content , List<String> file_content, String filename) {
-        for (int i = 0; i < chunk_content.size() ; i++) {
-
-            Pointer find_location=indexer.isExist(chunk_content.get(i));
-            if(find_location==null){
-
-                Term OtherTerm=dict_terms.get(chunk_content.get(i));
-                StringBuilder termData = new StringBuilder("");
-                for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
-
-                    termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile()); //DOCNO,FrequencyInDoc,File Name of Doc
-                }
-                file_content.add(OtherTerm.getDf()+" "+termData);
-                Pointer OtherPointer = new Pointer(filename,file_content.size()-1,OtherTerm.getDf());
-                indexer.getDictionary().put(OtherTerm.getName(),OtherPointer);
-//                indexer.addToHashMap(OtherTerm.getName(),filename+" "+(file_content.size()-1));
-
-            }
-            else {
-                //find index and change the line
-
-                String lineToChange = null;
-                lineToChange = file_content.get(indexer.getLineNumber(chunk_content.get(i)));
-
-                Term OtherTerm = dict_terms.get(chunk_content.get(i));
-                String[] currentline = lineToChange.split(" ");
-                int currentdf=Integer.parseInt(currentline[0]);
-                int chunkdf = OtherTerm.getDf();
-                int newdf=currentdf+chunkdf;
-                StringBuilder termData = new StringBuilder("");
-                for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
-                    termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
-                }
-                file_content.set(indexer.getLineNumber(chunk_content.get(i)),newdf+" "+currentline[1]+"|"+termData);
-                Pointer p1 =indexer.getDictionary().get(OtherTerm.getName());
-
-
-                indexer.getDictionary().put(OtherTerm.getName(),new Pointer(filename,p1.getLine_number(),newdf));
-
-            }
-        }
-        return file_content;
-    }
-
-    private void fillAlphabetArrays(HashMap<String,Term> dict, ArrayList<String> list_sortedTerms) {
-        for (int i = 0; i <31 ; i++) {
-            list_termsByAlhabet.add(new ArrayList<String>());
-        }
-        int place=0;
-        for (int i = 0; i < list_sortedTerms.size() ; i++) {
-            switch ((dict.get(list_sortedTerms.get(i)).getType())){
-                case "Number":
-                    place = indexer.getDict_files().get("numbers");
-                    list_termsByAlhabet.get(place).add(list_sortedTerms.get(i));
-                    break;
-                case "Symbol":
-                    place = indexer.getDict_files().get("symbols");
-                    list_termsByAlhabet.get(place).add(list_sortedTerms.get(i));
-                    break;
-                case "City":
-                    place = indexer.getDict_files().get("cities");
-                    list_termsByAlhabet.get(place).add(list_sortedTerms.get(i));
-                    break;
-                default:
-
-                    try {
-                        place = indexer.getDict_files().get(""+list_sortedTerms.get(i).toLowerCase().charAt(0));
-                    } catch (Exception e) {
-                        place = indexer.getDict_files().get("others");
-                    }
-
-                    list_termsByAlhabet.get(place).add(list_sortedTerms.get(i));
-
-
-            }
-
-        }
-    }
 
     public int findSpaceIndex(String str) {
         for (int i = 0; i < str.length(); i++) {
@@ -1000,7 +715,7 @@ public class Parse extends Thread {
     }
 
     public int terms_size() {
-        return dict_terms.size();
+        return dict_cache.size();
     }
 
     public void setDoc(Doc doc) {

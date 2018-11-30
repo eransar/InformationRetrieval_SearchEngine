@@ -18,7 +18,7 @@ public class ReadFile {
   private int numofDocs;
   private String stopWordsPath;
   private String path_posting;
-  private Indexer indexer= Indexer.getInstance();
+  private Indexer indexer;
   private boolean steam;
 
   public ReadFile(){
@@ -34,6 +34,7 @@ public class ReadFile {
     this.numofDocs=1;
     this.steam = steam;
     this.path_posting=path_posting;
+    this.indexer=Indexer.getInstance();
   }
 
   public void start() throws IOException {
@@ -47,7 +48,7 @@ public class ReadFile {
       if (corpus[i].isDirectory()) {//other condition like name ends in html
         for (int j = 0; j < corpus[i].listFiles().length; j++) {
           if(numofDocs == size /10){
-          parse.writeToDisk();
+          indexer.writeToDisk();
           System.out.println(parse.getPath());
 
             numofDocs=1;
@@ -60,10 +61,10 @@ public class ReadFile {
       }
     }
     if(parse.terms_size()!=0){
-      parse.writeToDisk();
+      indexer.writeToDisk();
       //marge capital letters to dictionary
       float start = System.nanoTime();
-      parse.handleCapitalLetters();
+      indexer.handleCapitalLetters();
       float end = System.nanoTime();
       System.out.println((end - start) * Math.pow(10, -9) / 60);
       //sort dictionary
