@@ -139,6 +139,14 @@ public class Indexer implements Runnable {
         return dictionary;
     }
 
+    public ArrayList<String> getSortDic() {
+        return sortDic;
+    }
+
+    public void setSortDic(ArrayList<String> sortDic) {
+        this.sortDic = sortDic;
+    }
+
     public void printTofile(String path) throws IOException {
         File f = new File(path+File.separator+dictionary+".txt");
         FileWriter writer = new FileWriter(f);
@@ -155,6 +163,9 @@ public class Indexer implements Runnable {
     public void sortDictionary(){
         sortDic = new ArrayList<String>(dictionary.keySet());
         Collections.sort(sortDic);
+        for (int i = 0; i < sortDic.size(); i++) {
+            sortDic.set(i,sortDic.get(i)+" "+dictionary.get(sortDic.get(i)).getTerm_df());
+        }
     }
 
 

@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
-
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.ShowDic">
    <children>
-      <TextField fx:id="dic_show" layoutY="-1.0" prefHeight="400.0" prefWidth="602.0" />
+      <TextArea fx:id="dic_show" prefHeight="400.0" prefWidth="600.0" />
    </children>
 </AnchorPane>

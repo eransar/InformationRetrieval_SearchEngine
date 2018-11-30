@@ -80,6 +80,8 @@ public class Doc {
     public String getFile() {
         return file;
     }
+
+
 }
 //    public void setTermLocation(HashMap<Location,Term> termLocation) {
 //        this.termLocation = termLocation;

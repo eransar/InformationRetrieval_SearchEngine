@@ -54,9 +54,9 @@ public class Controller implements Initializable {
         language.setItems(FXCollections.observableArrayList(
                 "Chinese", "English", "עברית", "French", "German", "Greek")
         );
-        corpusField.setText("d:\\documents\\users\\eransar\\Downloads\\corpus\\corpus");
-        stopWordsField.setText("d:\\documents\\users\\eransar\\Downloads\\aa.txt");
-        PostingField.setText("D:\\documents\\users\\eransar\\Downloads\\temp");
+        corpusField.setText("C:\\c");
+        stopWordsField.setText("C:\\Users\\idanf\\IdeaProjects\\IR\\target\\classes\\stop_words.txt");
+        PostingField.setText("C:\\corpus\\temp");
         language.setValue("English");
         error.setVisible(false);
     }
@@ -154,7 +154,7 @@ public class Controller implements Initializable {
             scene.getStylesheets().add(getClass().getClassLoader().getResource("CssController.css").toExternalForm());
             stage.show();
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
