@@ -18,7 +18,7 @@ public class ReadFile {
   private int numofDocs;
   private String stopWordsPath;
   private String path_posting;
-
+  private Indexer indexer= Indexer.getInstance();
   private boolean steam;
 
   public ReadFile(){
@@ -61,13 +61,15 @@ public class ReadFile {
     }
     if(parse.terms_size()!=0){
       parse.writeToDisk();
-      CityIndexer.getInstance().WriteDictionary(path_posting);
+      //marge capital letters to dictionary
       float start = System.nanoTime();
       parse.handleCapitalLetters();
       float end = System.nanoTime();
       System.out.println((end - start) * Math.pow(10, -9) / 60);
-
-
+      //sort dictionary
+      indexer.sortDictionary();
+      //write cities to disc
+      CityIndexer.getInstance().WriteDictionary(path_posting);
     }
     System.out.println("Number of terms "+parse.getNumofTerm());
   }

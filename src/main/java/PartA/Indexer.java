@@ -9,7 +9,7 @@ public class Indexer implements Runnable {
     private ConcurrentHashMap<String,Pointer> dictionary;
     private HashSet<String> file_names;
     private HashMap<String,Integer> dict_files;
-
+    private ArrayList<String> sortDic;
 
     public static Indexer getInstance() {
         return ourInstance;
@@ -151,6 +151,12 @@ public class Indexer implements Runnable {
         }
         writer.close();
     }
+
+    public void sortDictionary(){
+        sortDic = new ArrayList<String>(dictionary.keySet());
+        Collections.sort(sortDic);
+    }
+
 
     @Override
     public void run() {
