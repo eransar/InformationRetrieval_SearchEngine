@@ -1,7 +1,5 @@
 package PartA;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.*;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -145,7 +143,7 @@ public class Parse {
                     indexer_city.addToCityIndexer(doc, index);
                 }
                 //check the term type
-                wordType type = identifyDoc(docText[index]); // identifying the word
+                wordType type = identifyWord(docText[index]); // identifying the word
                 //what to do by the type
                 if (type == wordType.NUMBER) {
                     parseNumber(docText[index], index);
@@ -281,7 +279,7 @@ public class Parse {
      * @param str
      * @return
      */
-    public wordType identifyDoc(String str) {
+    public wordType identifyWord(String str) {
         try {
             if (isSymbol(str)) {
 //                    System.out.println("Symbol : " + str);

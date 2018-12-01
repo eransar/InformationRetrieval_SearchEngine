@@ -71,7 +71,7 @@ public class Parser {
 //
 //
 //        textWithoutDelimeters=text.split(" ");
-//        identifyDoc();
+//        identifyWord();
 //        int i=5;
 //
 ////        ParseWords();
@@ -85,7 +85,7 @@ public class Parser {
 //    /**
 //     * to identify what type of parse to do
 //     */
-//    public void identifyDoc(){
+//    public void identifyWord(){
 //        EnumParse enumParse;
 //        for (index=0 ; index <textWithoutDelimeters.length ; index++) {
 //            try {

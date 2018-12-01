@@ -1,6 +1,7 @@
 package PartA;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Doc {
     private String CITY;
@@ -79,6 +80,10 @@ public class Doc {
 
     public String getFile() {
         return file;
+    }
+
+    public int hashCode(){
+        return Objects.hashCode(DOCNO);
     }
 
 
