@@ -392,6 +392,7 @@ public class Indexer implements Runnable {
     }
 
 
+
     private List<String> mergeArrays(List<String> chunk_content , List<String> file_content, String filename) {
         for (int i = 0; i < chunk_content.size() ; i++) {
 

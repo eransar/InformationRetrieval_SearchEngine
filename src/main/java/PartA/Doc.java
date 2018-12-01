@@ -85,6 +85,9 @@ public class Doc {
     public int hashCode(){
         return Objects.hashCode(DOCNO);
     }
+    public boolean equals(Doc d1){
+        return d1.DOCNO.equals(this.DOCNO);
+    }
 
 
 }

@@ -1,10 +1,11 @@
 package PartA;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class Term {
+public class Term implements Serializable{
     private String name;
     private int df;
     private String type;
