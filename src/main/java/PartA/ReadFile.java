@@ -69,6 +69,8 @@ public class ReadFile {
       System.out.println((end - start) * Math.pow(10, -9) / 60);
       //sort dictionary
       indexer.sortDictionary();
+      indexer.WriteDictionary();
+      //indexer.CleanDictionary();
       //write cities to disc
       CityIndexer.getInstance().WriteDictionary(path_posting);
     }

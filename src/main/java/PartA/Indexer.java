@@ -3,6 +3,9 @@ package PartA;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,8 +19,9 @@ public class Indexer implements Runnable {
     private HashMap<String,Integer> dict_files;
     private ArrayList<String> sortDic;
     private boolean first_chunk;
-    String path;
+    private String path;
     private int debug_size; // TODO : Remove debug
+    private transient TreeMap<String,Pointer> sortDicTree;
 
     public static Indexer getInstance() {
         return ourInstance;
@@ -177,14 +181,39 @@ public class Indexer implements Runnable {
     }
 
     public void sortDictionary(){
-        sortDic = new ArrayList<String>(dictionary.keySet());
+        sortDicTree = new TreeMap<>(dictionary);
+        System.out.println("ss");
+        /*sortDic = new ArrayList<String>(dictionary.keySet());
         Collections.sort(sortDic);
         for (int i = 0; i < sortDic.size(); i++) {
             sortDic.set(i,sortDic.get(i)+" "+dictionary.get(sortDic.get(i)).getTerm_df());
-        }
+        }*/
+
     }
 
+    public void WriteDictionary() throws IOException {
 
+        FileOutputStream f = new FileOutputStream(new File(path+File.separator+"dictionary.txt"));
+        ObjectOutputStream o = new ObjectOutputStream(f);
+
+        // Write objects to file
+        o.writeObject(sortDicTree);
+        o.close();
+        //Get the file reference
+        /*Path path1 = Paths.get(path+File.separator+"dictionary.txt");
+
+        //Use try-with-resource to get auto-closeable writer instance
+        try (BufferedWriter writer = Files.newBufferedWriter(path1))
+        {
+            for (String s1:sortDic) {
+                writer.write(s1);
+            }
+        }*/
+    }
+
+    public void CleanDictionary(){
+        sortDicTree.clear();
+    }
 
 
 
@@ -331,6 +360,10 @@ public class Indexer implements Runnable {
 
     public void setPath(String path){
         this.path=path;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     public void writeToDisk() throws IOException {

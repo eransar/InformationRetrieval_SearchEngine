@@ -1,9 +1,11 @@
 package PartA;
 
+import java.io.Serializable;
+
 /**
  * Pointer class of term representation.
  */
-public class Pointer {
+public class Pointer implements Serializable{
     private String file_name;
     private int line_number;
     private int term_df;
