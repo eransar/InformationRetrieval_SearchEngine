@@ -85,6 +85,7 @@ public class ReadFile {
     String DOCNO = "";
     String CITY ="";
     String HEADER="";
+    String DATE="";
     Elements doctags = doc.select("DOC");
 
 
@@ -99,9 +100,10 @@ public class ReadFile {
       }
       DOCNO = element.select("DOCNO").text();
       TEXT = element.select("TEXT").text();
-      HEADER = element.select("H3").select("TI").text();
-      parse.ParseDoc(new Doc(DOCNO, file.getName(),CITY,HEADER), TEXT);
 
+      HEADER = element.select("H3").select("TI").text();
+      DATE=element.select("DATE1").text();
+      parse.ParseDoc(new Doc(DOCNO, file.getName(),CITY,HEADER,DATE), TEXT);
     }
   }
 
