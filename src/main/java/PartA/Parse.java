@@ -217,11 +217,13 @@ public class Parse {
     private void parseWord(int index) throws ParseException {
         Term tempTerm = new Term();
         tempTerm.setType("Word");
-        if (dict_stopWords.contains(docText[index])) {
-            return;
-        }
         if (docText[index].contains("-")) {
             tempTerm.setName(docText[index]);
+        }
+        else if (docText[index].equals("Street")){
+            if((index-2)>= 0  && isNumber(docText[index-2]) && !isNumber(docText[index-1]) && !isSymbol(docText[index-1])){
+                tempTerm.setName(docText[index-2] + " "+docText[index-1]+" "+docText[index]);
+            }
         }
         //month that starts with word example : MAY 19945
         else if (dict_months.containsKey(docText[index]) && isNotOutBound(index + 1) && isNumber(docText[index + 1])) {
@@ -237,27 +239,15 @@ public class Parse {
                 && isNotOutBound(index + 2) && docText[index + 2].equals("and") && isNotOutBound(index + 3)
                 && isNumber(docText[index + 3])) {
             tempTerm.setName(docText[index] + " " + docText[index + 1] + " " + docText[index + 2] + " " + docText[index + 3]);
-        } else {
-            //if word is lowercase - check for uppercase in the first letter in the dict_cache map
-            if (testAllLowerCase(docText[index]) &&
-                    (dict_cache.containsKey(docText[index].substring(0, 1).toUpperCase() + docText[index].substring(1))
-                            || dict_cache.containsKey(docText[index].toUpperCase()))) {
-                if (dict_cache.containsKey(docText[index].substring(0, 1).toUpperCase() + docText[index].substring(1))) {
-                    tempTerm = dict_cache.remove(docText[index].substring(0, 1).toUpperCase() + docText[index].substring(1));
-                    tempTerm.setName(docText[index]);
-                } else {
-                    tempTerm = dict_cache.remove(docText[index].toUpperCase());
-
-                    tempTerm.setName(docText[index]);
-                }
-            } else if (testAllLowerCase(docText[index]) && indexer.getDict_cache().containsKey(docText[index].toUpperCase())) {
-                return; //dont add lowercase wh
-            } else {
+        }
+            //if word is lowercase - check for uppercase in the first letter in the dict_cache ma
+         else {
                 tempTerm.setName(docText[index]);
             }
-        }
         handleTerm(tempTerm);
-    }
+        }
+
+
 
     public boolean testAllLowerCase(String str) {
         for (int i = 0; i < str.length(); i++) {

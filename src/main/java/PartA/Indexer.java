@@ -204,6 +204,7 @@ public class Indexer implements Runnable {
         ObjectOutputStream o = new ObjectOutputStream(f);
         // Write objects to file
         o.writeObject(sortDicTree);
+        o.flush();
         o.close();
 
     }
