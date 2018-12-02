@@ -2,7 +2,11 @@ package sample;
 
 import PartA.Indexer;
 import PartA.Pointer;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
@@ -24,6 +28,9 @@ public class ShowDic implements Initializable {
     public Indexer indexer = Indexer.getInstance();
     public TextArea dic_show;
     public TreeMap<String,Pointer> treeMap;
+    public ListView<String> data;
+
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -31,13 +38,16 @@ public class ShowDic implements Initializable {
                 indexer.loadDictionary();
             }
             treeMap = indexer.getSortDicTree();
-            StringBuilder stringBuilder = new StringBuilder("");
+            /*StringBuilder stringBuilder = new StringBuilder("");
             for(Map.Entry<String,Pointer> entry : treeMap.entrySet()) {
                 String key = entry.getKey();
                 Pointer value = entry.getValue();
                 stringBuilder.append(key+" "+value.getTerm_df()+"\n");
+            }*/
+            for(Map.Entry<String,Pointer> entry : treeMap.entrySet()) {
+                data.getItems().add(entry.getKey() + " " + entry.getValue().getTerm_df()+"\n");
             }
-            dic_show.setText(stringBuilder.toString());
+            //dic_show.setText(stringBuilder.toString());
 
 
         /*String fileName = indexer.getPath() + "dictionary.txt";
