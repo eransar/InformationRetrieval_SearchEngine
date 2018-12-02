@@ -7,20 +7,20 @@ public class Doc {
     private String CITY;
     private String DOCNO;
     private String HEADER;
-//    private String HEADER;
-//    private String TEXT;
+    private String DATE;
     private int maxtf;
     private int distinctwords;
     private int position;
     private String file;
 
-    public Doc(String DOCNO,String file, String CITY, String HEADER){
+    public Doc(String DOCNO,String file, String CITY, String HEADER,String DATE){
         this.DOCNO=DOCNO;
         this.file=file;
         this.CITY=CITY;
         this.HEADER=HEADER;
         this.distinctwords=0;
         this.maxtf=0;
+        this.DATE=DATE;
     }
 
 
