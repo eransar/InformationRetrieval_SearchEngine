@@ -23,16 +23,14 @@ public class ShowDic implements Initializable {
     private ArrayList<String> sortDic;
     public Indexer indexer = Indexer.getInstance();
     public TextArea dic_show;
-    public TreeMap<String,Pointer> treeMap = new TreeMap<>();
+    public TreeMap<String,Pointer> treeMap;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        FileInputStream fi = null;
-        try {
-            fi = new FileInputStream(new File(indexer.getPath()+File.separator+"dictionary.txt"));
-            ObjectInputStream oi = new ObjectInputStream(fi);
-            treeMap = (TreeMap<String, Pointer>)oi.readObject();
+            if(indexer.getSortDicTree()==null || indexer.getSortDicTree().size()==0){
+                indexer.loadDictionary();
+            }
+            treeMap = indexer.getSortDicTree();
             StringBuilder stringBuilder = new StringBuilder("");
             for(Map.Entry<String,Pointer> entry : treeMap.entrySet()) {
                 String key = entry.getKey();
@@ -40,14 +38,6 @@ public class ShowDic implements Initializable {
                 stringBuilder.append(key+" "+value.getTerm_df()+"\n");
             }
             dic_show.setText(stringBuilder.toString());
-            oi.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
 
 
         /*String fileName = indexer.getPath() + "dictionary.txt";

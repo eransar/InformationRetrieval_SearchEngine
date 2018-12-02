@@ -70,7 +70,7 @@ public class ReadFile {
       //sort dictionary
       indexer.sortDictionary();
       indexer.WriteDictionary();
-      //indexer.CleanDictionary();
+      indexer.CleanDictionary();
       //write cities to disc
       CityIndexer.getInstance().WriteDictionary(path_posting);
     }

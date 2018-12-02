@@ -195,28 +195,33 @@ public class Indexer implements Runnable {
 
         FileOutputStream f = new FileOutputStream(new File(path+File.separator+"dictionary.txt"));
         ObjectOutputStream o = new ObjectOutputStream(f);
-
         // Write objects to file
         o.writeObject(sortDicTree);
         o.close();
-        //Get the file reference
-        /*Path path1 = Paths.get(path+File.separator+"dictionary.txt");
 
-        //Use try-with-resource to get auto-closeable writer instance
-        try (BufferedWriter writer = Files.newBufferedWriter(path1))
-        {
-            for (String s1:sortDic) {
-                writer.write(s1);
-            }
-        }*/
+    }
+
+    public void loadDictionary(){
+        FileInputStream fi = null;
+        try {
+            fi = new FileInputStream(new File(getPath()+File.separator+"dictionary.txt"));
+            ObjectInputStream oi = new ObjectInputStream(fi);
+            sortDicTree = (TreeMap<String, Pointer>)oi.readObject();
+            oi.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public TreeMap<String, Pointer> getSortDicTree() {
+        return sortDicTree;
     }
 
     public void CleanDictionary(){
         sortDicTree.clear();
     }
-
-
-
 
 
     private void fillAlphabetArrays(HashMap<String,Term> dict, ArrayList<String> list_sortedTerms) {

@@ -160,7 +160,7 @@ public class Controller implements Initializable {
 
     public void LoadDictionary() throws IOException {
         if(!PathOfPosting.equals("")){
-            indexer.InitDic(PathOfPosting);
+            indexer.loadDictionary();
         }
         else{
             error.setVisible(true);
