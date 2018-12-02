@@ -30,6 +30,11 @@ public class CityIndexer {
 
     }
 
+    public void reset(){
+        dict_city = new HashMap<>();
+        dict_cache = new HashMap<>();
+    }
+
     public void addToCityIndexer(Doc doc,int index){
 
         /* if city not found in the index*/

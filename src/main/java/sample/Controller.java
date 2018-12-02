@@ -1,5 +1,6 @@
 package sample;
 
+import PartA.CityIndexer;
 import PartA.Indexer;
 import PartA.Pointer;
 import PartA.ReadFile;
@@ -138,6 +139,7 @@ public class Controller implements Initializable {
         if(!newPostingPath.equals("")){
             FileUtils.cleanDirectory(new File(PathOfPosting));
             Indexer.getInstance().reset();
+            CityIndexer.getInstance().reset();
             System.out.println("ddd");
         }
     }

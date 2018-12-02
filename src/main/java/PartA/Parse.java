@@ -133,36 +133,36 @@ public class Parse {
                 docText[index] = docText[index].substring(1);
             }
             //not stopWord
-            if (dict_stopWords.contains(docText[index]) || dict_stopWords.contains(docText[index].toUpperCase()) || dict_stopWords.contains(docText[index].toLowerCase())) {
+            //if (dict_stopWords.contains(docText[index]) || dict_stopWords.contains(docText[index].toUpperCase()) || dict_stopWords.contains(docText[index].toLowerCase())) {
+            //  continue;}
+            // } else {
+            if (docText[index].length() == 0 || docText[index].equals(" ")) {
                 continue;
-            } else {
-                if (docText[index].length() == 0 || docText[index].equals(" ")) {
-                    continue;
-                }
-                if (docText[index].equals(doc.getCITY())) {
-                    indexer_city.addToCityIndexer(doc, index);
-                }
-                //check the term type
-                wordType type = identifyWord(docText[index]); // identifying the word
-                //what to do by the type
-                if (type == wordType.NUMBER) {
-                    parseNumber(docText[index], index);
-                    long endTime = System.currentTimeMillis();
+            }
+            if (docText[index].equals(doc.getCITY())) {
+                indexer_city.addToCityIndexer(doc, index);
+            }
+            //check the term type
+            wordType type = identifyWord(docText[index]); // identifying the word
+            //what to do by the type
+            if (type == wordType.NUMBER) {
+                parseNumber(docText[index], index);
+                long endTime = System.currentTimeMillis();
 
-                } else if (type == wordType.SYMBOL) {
-                    parseSymbol(docText[index], index);
-                } else if (type == wordType.WORD) {
-                    try {
-                        parseWord(index);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                        return;
-                    }
+            } else if (type == wordType.SYMBOL) {
+                parseSymbol(docText[index], index);
+            } else if (type == wordType.WORD) {
+                try {
+                    parseWord(index);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    return;
                 }
             }
         }
-
     }
+
+
 
     /**
      * After term identified as symbol this method will parse by symbol rules.
@@ -524,21 +524,22 @@ public class Parse {
         if(toCheck.getName().charAt(0) >=48 && toCheck.getName().charAt(0) <=57){
             toCheck.setType("Number");
         }
-        /**
-         * Stemming
-         */
-        if (isSteam) {
-            stemmer.setCurrent(toCheck.getName());
-            if (stemmer.stem()) {
-                toCheck.setName(stemmer.getCurrent());
+
+        if (!dict_stopWords.contains(toCheck.getName()) && !dict_stopWords.contains(toCheck.getName().toUpperCase()) && !dict_stopWords.contains(toCheck.getName().toLowerCase())) {
+            /**
+             * Stemming
+             */
+            if (isSteam) {
+                stemmer.setCurrent(toCheck.getName());
+                if (stemmer.stem()) {
+                    toCheck.setName(stemmer.getCurrent());
+                }
             }
-        }
-        if(toCheck.getType().equals("Word") && toCheck.getName().charAt(0) >=65 && toCheck.getName().charAt(0)<=90){
-            updateCacheDicationary(dict_capitals,toCheck);
-        }
-        else{
-            updateCacheDicationary(indexer.getDict_cache(),toCheck);
-        }
+            if (toCheck.getType().equals("Word") && toCheck.getName().charAt(0) >= 65 && toCheck.getName().charAt(0) <= 90) {
+                updateCacheDicationary(dict_capitals, toCheck);
+            } else {
+                updateCacheDicationary(indexer.getDict_cache(), toCheck);
+            }
 
 
         /*
@@ -552,7 +553,7 @@ public class Parse {
                 set doc frequency
                 set term location in doc
          */
-
+        }
     }
 
     public void updateCacheDicationary(HashMap<String,Term> dict, Term toCheck){
