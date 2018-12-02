@@ -41,8 +41,11 @@ public class Indexer implements Runnable {
         this.first_chunk=true;
     }
 
-    public void reset(){
-        Indexer.getInstance().dictionary.clear();
+    public void reset() {
+        dictionary = new ConcurrentHashMap<>();
+        sortDicTree = new TreeMap<>();
+        first_chunk = true;
+
     }
 
     public HashMap<String, Integer> getDict_files() {
@@ -67,6 +70,10 @@ public class Indexer implements Runnable {
                     spliteLine[1]),Integer.parseInt(spliteLine[2]));
             dictionary.put(key,p);
         }
+    }
+
+    public void setFirst_chunk(boolean first_chunk) {
+        this.first_chunk = first_chunk;
     }
 
 
@@ -220,7 +227,8 @@ public class Indexer implements Runnable {
     }
 
     public void CleanDictionary(){
-        sortDicTree.clear();
+        //sortDicTree.clear();
+        sortDicTree= new TreeMap<>();
     }
 
 
