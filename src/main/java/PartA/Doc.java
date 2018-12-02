@@ -6,7 +6,7 @@ import java.util.Objects;
 public class Doc {
     private String CITY;
     private String DOCNO;
-    private String DATE;
+    private String HEADER;
 //    private String HEADER;
 //    private String TEXT;
     private int maxtf;
@@ -14,22 +14,15 @@ public class Doc {
     private int position;
     private String file;
 
-    public Doc(String DOCNO,String file, String CITY){
+    public Doc(String DOCNO,String file, String CITY, String HEADER){
         this.DOCNO=DOCNO;
         this.file=file;
         this.CITY=CITY;
-    }
-
-    public Doc(String docno, String date, String header, String text){
-        this.DOCNO=docno;
-        this.DATE=date;
-//        this.HEADER=header;
-//        this.TEXT=text;
+        this.HEADER=HEADER;
         this.distinctwords=0;
         this.maxtf=0;
-
-//        this.termLocation=new HashMap<Location,Term>();
     }
+
 
     public void AddTermLocation(){
 
@@ -70,13 +63,6 @@ public class Doc {
         this.DOCNO = DOCNO;
     }
 
-    public String getDATE() {
-        return DATE;
-    }
-
-    public void setDATE(String DATE) {
-        this.DATE = DATE;
-    }
 
     public String getFile() {
         return file;
