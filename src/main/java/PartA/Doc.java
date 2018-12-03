@@ -8,12 +8,12 @@ public class Doc {
     private String DOCNO;
     private String HEADER;
     private String DATE;
+    private String LANGUAGE;
     private int maxtf;
     private int distinctwords;
-    private int position;
     private String file;
 
-    public Doc(String DOCNO,String file, String CITY, String HEADER,String DATE){
+    public Doc(String DOCNO, String file, String CITY, String HEADER, String DATE, String LANGUAGE){
         this.DOCNO=DOCNO;
         this.file=file;
         this.CITY=CITY;
@@ -21,6 +21,8 @@ public class Doc {
         this.distinctwords=0;
         this.maxtf=0;
         this.DATE=DATE;
+        this.LANGUAGE=LANGUAGE;
+
     }
 
 
@@ -36,8 +38,8 @@ public class Doc {
 
         return maxtf;
     }
-    //    private HashMap<Location,Term> termLocation;
 
+    //    private HashMap<Location,Term> termLocation;
 
     public String getCITY() {
         return CITY;
@@ -71,11 +73,15 @@ public class Doc {
     public int hashCode(){
         return Objects.hashCode(DOCNO);
     }
+
     public boolean equals(Doc d1){
         return d1.DOCNO.equals(this.DOCNO);
     }
 
 
+    public String getLANGUAGE() {
+        return LANGUAGE;
+    }
 }
 //    public void setTermLocation(HashMap<Location,Term> termLocation) {
 //        this.termLocation = termLocation;

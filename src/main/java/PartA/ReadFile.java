@@ -86,6 +86,7 @@ public class ReadFile {
     String CITY ="";
     String HEADER="";
     String DATE="";
+    String LANGUAGE="";
     Elements doctags = doc.select("DOC");
 
 
@@ -98,12 +99,12 @@ public class ReadFile {
         }
         CITY=temp_city[3];
       }
+      LANGUAGE=getLanguageFromCity(element.outerHtml());
       DOCNO = element.select("DOCNO").text();
       TEXT = element.select("TEXT").text();
-
       HEADER = element.select("H3").select("TI").text();
       DATE=element.select("DATE1").text();
-      parse.ParseDoc(new Doc(DOCNO, file.getName(),CITY,HEADER,DATE), TEXT);
+      parse.ParseDoc(new Doc(DOCNO, file.getName(),CITY,HEADER,DATE,LANGUAGE), TEXT);
     }
   }
 
@@ -115,6 +116,24 @@ public class ReadFile {
 
     for (int i = 0; i < temp_text.length ; i++) {
       if (temp_text[i].startsWith(" <f p=\"104\">")) {
+        if(!temp_text[i+1].equals(" <text>")){
+//          System.out.println(temp_text[i+1]+" ____");
+          return temp_text[i+1];
+        }
+
+      }
+    }
+    return "";
+  }
+
+  public String getLanguageFromCity(String text) {
+    String[] temp_text = text.split("\n");
+    int start = 0;
+    int end = 0;
+    int counter=0;
+
+    for (int i = 0; i < temp_text.length ; i++) {
+      if (temp_text[i].startsWith("  <f p=\"105\">")) {
         if(!temp_text[i+1].equals(" <text>")){
 //          System.out.println(temp_text[i+1]+" ____");
           return temp_text[i+1];

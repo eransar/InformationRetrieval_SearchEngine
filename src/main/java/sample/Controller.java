@@ -52,6 +52,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         StemmingCheckBox.setSelected(false);
+        language.setDisable(true);
         language.setItems(FXCollections.observableArrayList(
                 "Chinese", "English", "עברית", "French", "German", "Greek")
         );
@@ -136,7 +137,7 @@ public class Controller implements Initializable {
     public void Reset(ActionEvent event) throws IOException {
         if(!newPostingPath.equals("")){
             FileUtils.cleanDirectory(new File(PathOfPosting));
-            Indexer.getInstance().reset();
+            indexer.reset();
             CityIndexer.getInstance().reset();
             System.out.println("ddd");
         }
@@ -198,6 +199,9 @@ public class Controller implements Initializable {
             rf = new ReadFile(PathOfCorpus, StopWordsPath, newPostingPath, Steam);
             float start = System.nanoTime();
             rf.start();
+            HashSet<String> languages = indexer.getSet_languages();
+            language.setItems(FXCollections.observableArrayList(languages));
+            language.setDisable(false);
             float end = System.nanoTime();
             System.out.println((end - start) * Math.pow(10, -9) / 60);
             int i = 5;

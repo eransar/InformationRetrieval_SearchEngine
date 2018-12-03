@@ -18,11 +18,12 @@ public class Indexer implements Runnable {
     private HashSet<String> file_names;
     private HashMap<String,Integer> dict_files;
     private ArrayList<String> sortDic;
+    private HashSet<String> set_languages;
+
     private boolean first_chunk;
     private String path;
     private int debug_size; // TODO : Remove debug
     private transient TreeMap<String,Pointer> sortDicTree;
-
     public static Indexer getInstance() {
         return ourInstance;
     }
@@ -39,6 +40,7 @@ public class Indexer implements Runnable {
         this.dict_capitals=new HashMap<>();
         this.list_termsByAlhabet = new ArrayList<List<String>>();
         this.first_chunk=true;
+        this.set_languages = new HashSet();
     }
 
     public void reset() {
@@ -51,6 +53,7 @@ public class Indexer implements Runnable {
         this.first_chunk=true;
         sortDicTree= new TreeMap<>();
         sortDic= new ArrayList<>();
+        set_languages=new HashSet<>();
     }
 
     public HashMap<String, Integer> getDict_files() {
@@ -125,6 +128,7 @@ public class Indexer implements Runnable {
         }
 
     }
+
     public HashSet<String> getFile_names() {
         return file_names;
     }
@@ -160,7 +164,6 @@ public class Indexer implements Runnable {
         }
         return dictionary.get(check_term);
     }
-
     public int getLineNumber(String term_name){
         Pointer pointer_data=this.dictionary.get(term_name);
         return pointer_data.getLine_number();
@@ -500,5 +503,9 @@ public class Indexer implements Runnable {
     @Override
     public void run() {
 
+    }
+
+    public HashSet<String> getSet_languages() {
+        return set_languages;
     }
 }

@@ -64,6 +64,9 @@ Parse {
         } catch (ParseException e) {
 
         }
+        if(!doc.getLANGUAGE().equals("")){
+            indexer.getSet_languages().add(doc.getLANGUAGE());
+        }
     }
 
     /**
