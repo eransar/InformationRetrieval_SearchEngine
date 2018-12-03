@@ -60,7 +60,7 @@ public class ReadFile {
         jparse(corpus[i]);
       }
     }
-    if(parse.terms_size()!=0) {
+    if(indexer.getDict_cache().size()!=0) {
       indexer.writeToDisk();
     }
       //marge capital letters to dictionary
@@ -73,7 +73,7 @@ public class ReadFile {
       indexer.WriteDictionary();
       //write cities to disc
       CityIndexer.getInstance().WriteDictionary(path_posting);
-      System.out.println("Number of terms "+parse.getNumofTerm());
+
   }
 
 

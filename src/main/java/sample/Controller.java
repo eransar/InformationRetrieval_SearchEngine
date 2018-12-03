@@ -201,6 +201,7 @@ public class Controller implements Initializable {
             float end = System.nanoTime();
             System.out.println((end - start) * Math.pow(10, -9) / 60);
             int i = 5;
+            System.out.println(indexer.getSortDicTree().size());
         }
     }
 

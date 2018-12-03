@@ -10,10 +10,8 @@ import java.util.regex.Pattern;
 public class
 Parse {
     private HashSet<String> dict_stopWords;
-    private HashMap<String, Term> dict_cache;
     private HashMap<String, Integer> dict_months;
     private HashMap<String, String> dict_replaceWords;
-    private HashMap<String,Term> dict_capitals;
     private Doc doc;
     private String[] docText;
     private static Indexer indexer;
@@ -34,8 +32,6 @@ Parse {
     public Parse(String stopWordsPath, String PathOfPosting) throws IOException {
         this.indexer = Indexer.getInstance();
         this.dict_months = init_months();
-        this.dict_cache = indexer.getDict_cache();
-        this.dict_capitals=indexer.getDict_capitals();
         this.dict_stopWords = new HashSet<String>();
         this.dict_replaceWords = new HashMap<String, String>();
         indexer.setPath(PathOfPosting);
@@ -499,9 +495,7 @@ Parse {
 
 //    public HashMap<Term, HashMap<Doc, Integer>> getTermsInfo() {
 
-    public HashMap<String, Term> getDict_cache() {
-        return dict_cache;
-    }
+
     //    }
 
     public void setStem(boolean steam) {
@@ -527,7 +521,7 @@ Parse {
                 }
             }
             if (toCheck.getType().equals("Word") && toCheck.getName().charAt(0) >= 65 && toCheck.getName().charAt(0) <= 90) {
-                updateCacheDicationary(dict_capitals, toCheck);
+                updateCacheDicationary(indexer.getDict_capitals(), toCheck);
             } else {
                 updateCacheDicationary(indexer.getDict_cache(), toCheck);
             }
@@ -702,10 +696,6 @@ Parse {
         parse_months.put("December", 12);
         parse_months.put("DECEMBER", 12);
         return parse_months;
-    }
-
-    public int terms_size() {
-        return dict_cache.size();
     }
 
     public void setDoc(Doc doc) {
