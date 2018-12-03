@@ -38,12 +38,12 @@ public class ReadFile {
   }
 
   public void start() throws IOException {
+    indexer.reset();
     File input = new File(path);
     File[] corpus = input.listFiles();
     size = corpus.length; //get amount of files
     //parse.setStem(true);
     parse.setStem(steam);
-    indexer.reset();
     for (int i = 0; i < corpus.length; i++) {
       if (corpus[i].isDirectory()) {//other condition like name ends in html
         for (int j = 0; j < corpus[i].listFiles().length; j++) {
