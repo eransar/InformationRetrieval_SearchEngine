@@ -147,6 +147,9 @@ public class Controller implements Initializable {
     public void ShowDictionary(ActionEvent event) {
         //if has dictionary or not?
         try {
+            if(indexer.getSortDicTree()==null || indexer.getSortDicTree().size()==0){
+                LoadDictionary();
+            }
             Stage stage = new Stage();
             stage.setTitle("Dictionary");
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("ShowDictionary.fxml"));
@@ -161,8 +164,8 @@ public class Controller implements Initializable {
     }
 
     public void LoadDictionary() throws IOException {
-        if(!PathOfPosting.equals("")){
-            indexer.loadDictionary();
+        if(PathOfPosting !=null && !PathOfPosting.equals("")){
+            indexer.loadDictionary(PathOfPosting,Steam);
         }
         else{
             error.setVisible(true);

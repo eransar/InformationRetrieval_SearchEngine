@@ -34,9 +34,7 @@ public class ShowDic implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-            if(indexer.getSortDicTree()==null || indexer.getSortDicTree().size()==0){
-                indexer.loadDictionary();
-            }
+
             treeMap = indexer.getSortDicTree();
             /*StringBuilder stringBuilder = new StringBuilder("");
             for(Map.Entry<String,Pointer> entry : treeMap.entrySet()) {

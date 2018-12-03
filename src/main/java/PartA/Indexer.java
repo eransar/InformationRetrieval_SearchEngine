@@ -42,10 +42,15 @@ public class Indexer implements Runnable {
     }
 
     public void reset() {
-        dictionary = new ConcurrentHashMap<>();
-        sortDicTree = new TreeMap<>();
-        first_chunk = true;
-
+        dictionary=new ConcurrentHashMap<String,Pointer>();
+        dict_cache=new HashMap<>();
+        file_names=new HashSet();
+        dict_files=new HashMap<>();
+        this.dict_capitals=new HashMap<>();
+        this.list_termsByAlhabet = new ArrayList<List<String>>();
+        this.first_chunk=true;
+        sortDicTree= new TreeMap<>();
+        sortDic= new ArrayList<>();
     }
 
     public HashMap<String, Integer> getDict_files() {
@@ -209,10 +214,13 @@ public class Indexer implements Runnable {
 
     }
 
-    public void loadDictionary(){
+    public void loadDictionary(String pathPosting,boolean stem){
         FileInputStream fi = null;
         try {
-            fi = new FileInputStream(new File(getPath()+File.separator+"dictionary.txt"));
+            if(stem)
+                fi = new FileInputStream(new File(pathPosting+File.separator+"Stem"+File.separator+"dictionary.txt"));
+            else
+                fi = new FileInputStream(new File(pathPosting+File.separator+"WithOutStem"+File.separator+"dictionary.txt"));
             ObjectInputStream oi = new ObjectInputStream(fi);
             sortDicTree = (TreeMap<String, Pointer>)oi.readObject();
             oi.close();

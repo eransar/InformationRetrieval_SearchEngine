@@ -43,7 +43,7 @@ public class ReadFile {
     size = corpus.length; //get amount of files
     //parse.setStem(true);
     parse.setStem(steam);
-
+    indexer.reset();
     for (int i = 0; i < corpus.length; i++) {
       if (corpus[i].isDirectory()) {//other condition like name ends in html
         for (int j = 0; j < corpus[i].listFiles().length; j++) {
@@ -60,8 +60,9 @@ public class ReadFile {
         jparse(corpus[i]);
       }
     }
-    if(parse.terms_size()!=0){
+    if(parse.terms_size()!=0) {
       indexer.writeToDisk();
+    }
       //marge capital letters to dictionary
       float start = System.nanoTime();
       indexer.handleCapitalLetters();
@@ -72,8 +73,7 @@ public class ReadFile {
       indexer.WriteDictionary();
       //write cities to disc
       CityIndexer.getInstance().WriteDictionary(path_posting);
-    }
-    System.out.println("Number of terms "+parse.getNumofTerm());
+      System.out.println("Number of terms "+parse.getNumofTerm());
   }
 
 
