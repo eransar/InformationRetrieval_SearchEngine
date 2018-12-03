@@ -526,7 +526,7 @@ Parse {
                     toCheck.setName(stemmer.getCurrent());
                 }
             }
-            else if (toCheck.getType().equals("Word") && toCheck.getName().charAt(0) >= 65 && toCheck.getName().charAt(0) <= 90) {
+            if (toCheck.getType().equals("Word") && toCheck.getName().charAt(0) >= 65 && toCheck.getName().charAt(0) <= 90) {
                 updateCacheDicationary(dict_capitals, toCheck);
             } else {
                 updateCacheDicationary(indexer.getDict_cache(), toCheck);
