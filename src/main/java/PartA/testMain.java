@@ -2,17 +2,24 @@ package PartA;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static PartA.newParser.q5;
 
 
 public class testMain {
     public  static void main(String[] args) throws IOException, ParseException {
-        HashMap<String,String> h1 = new HashMap<>();
-        h1.put("c","c");
-        print(h1);
-        changehashmap(h1);
-        print(h1);
+
+
+        newReadFile rf = new newReadFile("d:\\documents\\users\\eransar\\Downloads\\corpus\\corpus", "d:\\documents\\users\\eransar\\Downloads\\aa.txt","d:\\documents\\users\\eransar\\Downloads\\temp\\WithOutStem",false);
+        rf.start();
+        Map<String,Integer> sortedMap = abc();
+        TreeMap<String,Integer> b=new TreeMap<>();
+        b.putAll(abc());
+
+        int i = 5;
+
 
 
 
@@ -69,6 +76,18 @@ public class testMain {
     private static void changehashmap(HashMap<String, String> h1) {
         h1.put("b","b");
 
+    }
+
+    public static Map<String,Integer> abc(){
+        TreeMap result = q5;
+        Map<String,Integer> topTen =
+                q5.entrySet().stream()
+                        .sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
+                        .limit(10)
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+        return topTen;
     }
     private static void print(HashMap<String,String> h1){
         for(Map.Entry<String, String> t : h1.entrySet()){

@@ -25,7 +25,7 @@ Parse {
     private int debug_size;
 
     private boolean isSteam;
-    private volatile String currentfilename;
+    private HashMap<String,Integer> q5;
 
 
 
@@ -43,6 +43,7 @@ Parse {
         init_stopWords(stopWordsPath);
         init_replace();
         indexer_city.startConnection();
+        this.q5 = new HashMap<>();
     }
 
 
