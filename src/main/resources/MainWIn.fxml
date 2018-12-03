@@ -21,6 +21,6 @@
       <Button fx:id="reset" layoutX="186.0" layoutY="175.0" mnemonicParsing="false" onAction="#Reset" prefHeight="25.0" prefWidth="79.0" text="Reset" />
       <Button fx:id="ShowDictionary" layoutX="24.0" layoutY="305.0" mnemonicParsing="false" onAction="#ShowDictionary" text="Show Dictionary" />
       <Button fx:id="LoadDictionary" layoutX="26.0" layoutY="351.0" mnemonicParsing="false" onAction="#LoadDictionary" text="Load Dictionary" />
-      <Label fx:id="error" layoutX="401.0" layoutY="311.0" prefHeight="34.0" prefWidth="166.0" />
+      <Label fx:id="error" layoutX="383.0" layoutY="301.0" prefHeight="66.0" prefWidth="182.0" />
    </children>
 </AnchorPane>

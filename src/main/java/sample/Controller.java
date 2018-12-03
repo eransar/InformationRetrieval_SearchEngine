@@ -55,10 +55,8 @@ public class Controller implements Initializable {
         language.setItems(FXCollections.observableArrayList(
                 "Chinese", "English", "עברית", "French", "German", "Greek")
         );
-        corpusField.setText("C:\\c");
-        stopWordsField.setText("C:\\Users\\idanf\\IdeaProjects\\IR\\target\\classes\\stop_words.txt");
-        PostingField.setText("C:\\corpus\\temp");
         language.setValue("English");
+        language.setDisable(true);
         error.setVisible(false);
     }
 
@@ -159,7 +157,7 @@ public class Controller implements Initializable {
             scene.getStylesheets().add(getClass().getClassLoader().getResource("CssController.css").toExternalForm());
             stage.show();
         } catch (Exception e) {
-            e.printStackTrace();
+            error.setText("file not found");
         }
     }
 
@@ -169,7 +167,7 @@ public class Controller implements Initializable {
         }
         else{
             error.setVisible(true);
-            error.setText("please run the program it first");
+            error.setText("please run the\nprogram it first");
         }
     }
 
