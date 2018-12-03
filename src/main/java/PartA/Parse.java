@@ -7,7 +7,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 
-public class Parse {
+public class
+Parse {
     private HashSet<String> dict_stopWords;
     private HashMap<String, Term> dict_cache;
     private HashMap<String, Integer> dict_months;
@@ -525,7 +526,7 @@ public class Parse {
                     toCheck.setName(stemmer.getCurrent());
                 }
             }
-            if (toCheck.getType().equals("Word") && toCheck.getName().charAt(0) >= 65 && toCheck.getName().charAt(0) <= 90) {
+            else if (toCheck.getType().equals("Word") && toCheck.getName().charAt(0) >= 65 && toCheck.getName().charAt(0) <= 90) {
                 updateCacheDicationary(dict_capitals, toCheck);
             } else {
                 updateCacheDicationary(indexer.getDict_cache(), toCheck);
