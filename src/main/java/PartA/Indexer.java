@@ -9,16 +9,18 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Indexer implements Runnable {
+public class Indexer {
     private static Indexer ourInstance = new Indexer();
     private HashMap<String, Term> dict_cache;
     private HashMap<String,Term> dict_capitals;
+    private HashMap<String,Integer> dict_files;
+    private HashSet<String> file_names;
+    private HashSet<String> set_languages;
+    private HashSet<Doc> set_docs;
     private ConcurrentHashMap<String,Pointer> dictionary;
     private List<List<String>> list_termsByAlhabet = new ArrayList<List<String>>();
-    private HashSet<String> file_names;
-    private HashMap<String,Integer> dict_files;
     private ArrayList<String> sortDic;
-    private HashSet<String> set_languages;
+
 
     private boolean first_chunk;
     private String path;
@@ -41,6 +43,7 @@ public class Indexer implements Runnable {
         this.list_termsByAlhabet = new ArrayList<List<String>>();
         this.first_chunk=true;
         this.set_languages = new HashSet();
+        this.set_docs=new HashSet<>();
     }
 
     public void reset() {
@@ -495,13 +498,21 @@ public class Indexer implements Runnable {
         return file_content;
     }
 
+    public void writeDocs() {
 
+        String filename = path + File.separator + "docs.txt";
+        FileWriter fw = null; //the true will append the new data
+        try {
+            fw = new FileWriter(filename, true);
+            for (Doc docs : set_docs) {
+                fw.write(docs.getDOCNO() + "|" + docs.getDistinctwords() + "|" + docs.getMaxtf()+System.lineSeparator());
+            }
+            set_docs = new HashSet<>();
+            fw.close();
 
-
-
-
-    @Override
-    public void run() {
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -510,4 +521,7 @@ public class Indexer implements Runnable {
     }
 
 
+    public HashSet<Doc> getSet_docs() {
+        return set_docs;
+    }
 }

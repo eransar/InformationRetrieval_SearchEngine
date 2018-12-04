@@ -20,6 +20,7 @@ public class ReadFile {
   private String path_posting;
   private Indexer indexer;
   private boolean steam;
+  private int countDOCs=0;
 
   public ReadFile(){
 
@@ -37,6 +38,8 @@ public class ReadFile {
     this.indexer=Indexer.getInstance();
   }
 
+
+
   public void start() throws IOException {
     indexer.reset();
     File input = new File(path);
@@ -47,6 +50,8 @@ public class ReadFile {
     for (int i = 0; i < corpus.length; i++) {
       if (corpus[i].isDirectory()) {//other condition like name ends in html
         for (int j = 0; j < corpus[i].listFiles().length; j++) {
+
+
           if(numofDocs == size /10){
           indexer.writeToDisk();
           System.out.println(parse.getPath());
@@ -62,6 +67,7 @@ public class ReadFile {
     }
     if(indexer.getDict_cache().size()!=0) {
       indexer.writeToDisk();
+      indexer.writeDocs();
     }
       //marge capital letters to dictionary
       float start = System.nanoTime();
@@ -76,6 +82,9 @@ public class ReadFile {
 
   }
 
+  public int getCountDOCs() {
+    return countDOCs;
+  }
 
 
   private void jparse(File file) throws IOException {
@@ -104,6 +113,7 @@ public class ReadFile {
       TEXT = element.select("TEXT").text();
       HEADER = element.select("H3").select("TI").text();
       DATE=element.select("DATE1").text();
+      countDOCs++;
       parse.ParseDoc(new Doc(DOCNO, file.getName(),CITY,HEADER,DATE,LANGUAGE), TEXT);
     }
   }
@@ -115,7 +125,7 @@ public class ReadFile {
     int counter=0;
 
     for (int i = 0; i < temp_text.length ; i++) {
-      if (temp_text[i].startsWith(" <f p=\"104\">")) {
+      if (temp_text[i].startsWith(" <f p=\"104\">") || temp_text[i].startsWith("  <f p=\"104\">")) {
         if(!temp_text[i+1].equals(" <text>")){
 //          System.out.println(temp_text[i+1]+" ____");
           return temp_text[i+1];

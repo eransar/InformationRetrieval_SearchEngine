@@ -11,7 +11,8 @@ public class
 Parse {
     private HashSet<String> dict_stopWords;
     private HashMap<String, Integer> dict_months;
-    private HashMap<String, String> dict_replaceWords;
+    private LinkedHashMap<String, String> dict_replaceWords;
+    private HashMap<String,Integer> dic_docterms;
     private Doc doc;
     private String[] docText;
     private static Indexer indexer;
@@ -23,6 +24,8 @@ Parse {
     private int index;
     private int filenum;
     private int debug_size;
+    private int docmaxtf;
+
 
     private boolean isSteam;
 
@@ -32,7 +35,7 @@ Parse {
         this.indexer = Indexer.getInstance();
         this.dict_months = init_months();
         this.dict_stopWords = new HashSet<String>();
-        this.dict_replaceWords = new HashMap<String, String>();
+        this.dict_replaceWords = new LinkedHashMap<>();
         indexer.setPath(PathOfPosting);
         this.indexer_city = CityIndexer.getInstance();
         this.index = 1;
@@ -56,6 +59,8 @@ Parse {
      * Parsing A document and filling termsInfo HashMap
      */
     public void ParseDoc(Doc doc, String TEXT) {
+        docmaxtf=0;
+        dic_docterms= new HashMap<>();
         this.doc = doc;
         TEXT = replaceText(TEXT);
         docText = (TEXT.split(" "));
@@ -67,6 +72,7 @@ Parse {
         if(!doc.getLANGUAGE().equals("")){
             indexer.getSet_languages().add(doc.getLANGUAGE());
         }
+        indexer.getSet_docs().add(this.doc);
     }
 
     /**
@@ -545,13 +551,19 @@ Parse {
     }
 
     public void updateCacheDicationary(HashMap<String,Term> dict, Term toCheck){
-        if (dict.get(toCheck.getName()) == null) {
-            //if (!dict_stopWords.contains(toCheck.getName()) && !dict_stopWords.contains(toCheck.getName().toUpperCase()) && !dict_stopWords.contains(toCheck.getName().toLowerCase())) {
-            toCheck.getDocFrequency().put(doc, 1);
-//            ArrayList<Integer> doclocations = new ArrayList<>();
-//            doclocations.add(index);
-//            toCheck.getDoclocations().put(doc,doclocations);
+        if(!dic_docterms.containsKey(toCheck.getName().toLowerCase())){
             doc.setDistinctwords(doc.getDistinctwords() + 1);
+            dic_docterms.put(toCheck.getName(),1);
+            updateDocMaxTf(1);
+        }
+        else{
+            int tf = dic_docterms.get(toCheck.getName().toLowerCase())+1;
+            dic_docterms.put(toCheck.getName().toLowerCase(),tf);
+            updateDocMaxTf(tf);
+        }
+
+        if (dict.get(toCheck.getName()) == null) {
+            toCheck.getDocFrequency().put(doc, 1);
             toCheck.setDf(1);
             dict.put(toCheck.getName(), toCheck);
 
@@ -567,35 +579,29 @@ Parse {
                 add the term back to the hashmap and overwrite the old term
              */
         else {
-//             System.out.println(toCheck.getName());
+
             Term UsedTerm = dict.get(toCheck.getName());
             UsedTerm.setDf(UsedTerm.getDf() + 1);
             if (UsedTerm.getDocFrequency().get(doc) == null) {
                 UsedTerm.getDocFrequency().put(doc, 1);
-//                ArrayList<Integer> doclocations = new ArrayList<>();
-//                doclocations.add(index);
-//                UsedTerm.getDoclocations().put(doc,doclocations);
 
             } else {
 
                 UsedTerm.getDocFrequency().put(doc, UsedTerm.getDocFrequency().get(doc) + 1);
                 updateDocMaxTf(UsedTerm.getDocFrequency().get(doc));
-//                ArrayList<Integer> doclocations = UsedTerm.getDoclocations().get(doc);
-//                doclocations.add(index);
-//                UsedTerm.getDoclocations().put(doc,doclocations);
 
             }
         }
     }
 
-    //        return termsInfo;
 
     /*
                     Begining of Utilities functions
      */
     public void updateDocMaxTf(int term_tf) {
-        if (doc.getMaxtf() < term_tf) {
+        if (docmaxtf < term_tf) {
             doc.setMaxtf(term_tf);
+            docmaxtf=term_tf;
         }
     }
 
@@ -734,7 +740,8 @@ Parse {
         return keywords;
     }
     private void init_replace() {
-        dict_replaceWords.put(",", "");
+        dict_replaceWords.put("'s", " ");
+        dict_replaceWords.put(",", " ");
         dict_replaceWords.put("\n\n", " ");
         dict_replaceWords.put("\\r\\n", " ");
         dict_replaceWords.put("\t", " ");

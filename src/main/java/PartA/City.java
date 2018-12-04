@@ -13,13 +13,54 @@ public class City {
     HashMap<Doc,ArrayList<Integer>> docfrequency;
 
 
-    public City(String Capital, String country,String coin,Long population_size)
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCoin() {
+        return coin;
+    }
+
+    public void setCoin(String coin) {
+        this.coin = coin;
+    }
+
+    public String getPopulation_size() {
+        return population_size;
+    }
+
+    public void setPopulation_size(String population_size) {
+        this.population_size = population_size;
+    }
+
+    public HashMap<Doc, ArrayList<Integer>> getDocfrequency() {
+        return docfrequency;
+    }
+
+    public void setDocfrequency(HashMap<Doc, ArrayList<Integer>> docfrequency) {
+        this.docfrequency = docfrequency;
+    }
+
+    public City(String Capital, String country, String coin, Long population_size)
     {
         docfrequency = new HashMap<>();
         this.country=country;
         this.coin=coin;
+
         this.population_size=population_Pattern(population_size);
-        this.name="";
+        this.name=Capital;
 
     }
     public City(String name){

@@ -1,11 +1,13 @@
 package PartA;
 
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import sun.text.normalizer.Trie;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -26,6 +28,7 @@ public class CityIndexer {
     private CityIndexer() {
         dict_city=new HashMap<>();
         dict_cache =new HashMap<>();
+
         URL="https://restcountries.eu/rest/v2/?fields=name;capital;currencies;population";
 
     }
@@ -116,7 +119,7 @@ public class CityIndexer {
         int linenumber = 1;
 
         for(Map.Entry<String, City > capitals : dict_cache.entrySet()){
-            if(!capitals.getValue().name.equals("")){
+            if(!capitals.getKey().equals("")){
                 StringBuilder doc_content = new StringBuilder("");
                 int counter=0;
                 int size=capitals.getValue().docfrequency.size();
@@ -136,13 +139,29 @@ public class CityIndexer {
                         counter++;
                     }
                 }
-                writer.write(capitals.getValue().country+"|"+capitals.getValue().population_size+"|"+capitals.getValue().coin+" "+doc_content+System.lineSeparator());
+                writer.write(capitals.getValue().name+"|"+capitals.getValue().population_size+"|"+capitals.getValue().coin+" "+doc_content+System.lineSeparator());
                 dict_city.put(capitals.getKey(),""+linenumber);
                 linenumber++;
             }
 
         }
         writer.close();
+    }
+
+    public City findMax(){
+        City TempCity = new City("");
+        ArrayList<Integer> tempI;
+        int max = 0;
+        for (City cities : dict_cache.values()){
+            for(Map.Entry<Doc,ArrayList<Integer>> citieslocation: cities.docfrequency.entrySet()){
+                if(citieslocation.getValue().size() > max ){
+                    max=citieslocation.getValue().size();
+                    TempCity=cities;
+                    tempI = citieslocation.getValue();
+                }
+            }
+        }
+        return TempCity;
     }
 
 

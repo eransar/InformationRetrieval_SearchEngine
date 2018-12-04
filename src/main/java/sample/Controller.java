@@ -15,6 +15,8 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
@@ -23,6 +25,8 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
 
 public class Controller implements Initializable {
 
@@ -199,14 +203,59 @@ public class Controller implements Initializable {
             rf = new ReadFile(PathOfCorpus, StopWordsPath, newPostingPath, Steam);
             float start = System.nanoTime();
             rf.start();
+            float end = System.nanoTime();
+            System.out.println((end - start) * Math.pow(10, -9) / 60);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText("Indexer Information");
+            alert.setContentText("Number of docs: "+rf.getCountDOCs()+"\n"
+                                    +"Number of terms: "+indexer.getDictionary().size()+"\n"
+                                    +"Time of creating inverted index: "+((end - start) * Math.pow(10, -9) / 60)+ "min");
+            alert.show();
             HashSet<String> languages = indexer.getSet_languages();
             language.setItems(FXCollections.observableArrayList(languages));
             language.setDisable(false);
-            float end = System.nanoTime();
-            System.out.println((end - start) * Math.pow(10, -9) / 60);
-            int i = 5;
+
+
             System.out.println(indexer.getSortDicTree().size());
+//            Map<String,Integer> tambal =sortedMap();
+//            createCSVFile(tambal);
+//            int i = 5;
+            CityIndexer.getInstance().findMax();
+
         }
     }
 
+
+    public Map<String,Integer> sortedMap(){
+        TreeMap<String,Integer> result = new TreeMap();
+        for (Map.Entry<String,Pointer> term : indexer.getDictionary().entrySet()){
+            result.put(term.getKey(),term.getValue().getTerm_df());
+        }
+
+
+        Map<String,Integer> topTen =
+                result.entrySet().stream()
+                        .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+        return topTen;
+
+
+    }
+
+    public void createCSVFile(Map<String,Integer> map) throws IOException {
+        FileWriter out = new FileWriter(newPostingPath+File.separator+"book_new.csv");
+        String[] HEADERS = { "term", "df"};
+        try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT
+                .withHeader(HEADERS))) {
+            map.forEach((author, title) -> {
+                try {
+                    printer.printRecord(author, title);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    }
 }
