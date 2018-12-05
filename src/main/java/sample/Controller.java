@@ -41,9 +41,9 @@ public class Controller implements Initializable {
     public CheckBox StemmingCheckBox;
     public ChoiceBox<String> language;
     public ReadFile rf;
-    private String PathOfCorpus;
-    private String StopWordsPath;
-    public String PathOfPosting;
+    private String PathOfCorpus="";
+    private String StopWordsPath="";
+    public String PathOfPosting="";
     private boolean Steam;
     public Label error;
     private String newPostingPath = "";
@@ -55,10 +55,10 @@ public class Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         StemmingCheckBox.setSelected(false);
         language.setDisable(true);
-        language.setItems(FXCollections.observableArrayList(
+        /*language.setItems(FXCollections.observableArrayList(
                 "Chinese", "English", "עברית", "French", "German", "Greek")
         );
-        language.setValue("English");
+        language.setValue("English");*/
         language.setDisable(true);
         error.setVisible(false);
     }
@@ -178,7 +178,12 @@ public class Controller implements Initializable {
 
     public void LoadDictionary() throws IOException {
         if (PathOfPosting != null && !PathOfPosting.equals("")) {
-            indexer.loadDictionary(PathOfPosting, Steam);
+            try {
+                indexer.loadDictionary(PathOfPosting, Steam);
+            } catch (ClassNotFoundException e) {
+                error.setVisible(true);
+                error.setText("please run the\nprogram it first");
+            }
         } else {
             error.setVisible(true);
             error.setText("please run the\nprogram it first");
@@ -222,6 +227,7 @@ public class Controller implements Initializable {
             alert.show();
             HashSet<String> languages = indexer.getSet_languages();
             language.setItems(FXCollections.observableArrayList(languages));
+            language.setValue(languages.iterator().next());
             language.setDisable(false);
         }
     }

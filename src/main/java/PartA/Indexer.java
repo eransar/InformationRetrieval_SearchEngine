@@ -219,9 +219,9 @@ public class Indexer {
 
     }
 
-    public void loadDictionary(String pathPosting,boolean stem){
+    public void loadDictionary(String pathPosting,boolean stem) throws IOException, ClassNotFoundException {
         FileInputStream fi = null;
-        try {
+
             if(stem)
                 fi = new FileInputStream(new File(pathPosting+File.separator+"Stem"+File.separator+"dictionary.txt"));
             else
@@ -229,11 +229,7 @@ public class Indexer {
             ObjectInputStream oi = new ObjectInputStream(fi);
             sortDicTree = (TreeMap<String, Pointer>)oi.readObject();
             oi.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+
     }
 
     public TreeMap<String, Pointer> getSortDicTree() {
