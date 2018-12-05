@@ -71,7 +71,19 @@ public class Controller implements Initializable {
         if (path != null) {
             PathOfCorpus = path;
             corpusField.setText(path);
+            File tmp = new File(PathOfCorpus + File.separator + "stop_words");
+            if (tmp.exists() && !tmp.isDirectory())
+                StopWordsPath = PathOfCorpus + File.separator + "stop_words";
+            else {
+                tmp = new File(PathOfCorpus + File.separator + "stop_words.txt");
+                if (tmp.exists() && !tmp.isDirectory())
+                    StopWordsPath = PathOfCorpus + File.separator + "stop_words.txt";
+                else
+                    error.setText("there are not stopWord file\nYou can init manually");
+            }
+
         }
+        stopWordsField.setText(StopWordsPath);
     }
 
     /**
