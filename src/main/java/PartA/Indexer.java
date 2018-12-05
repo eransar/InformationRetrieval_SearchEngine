@@ -45,6 +45,9 @@ public class Indexer {
         this.set_docs=new HashSet<>();
     }
 
+    /**
+     * Reset Indexer data.
+     */
     public void reset() {
         dictionary=new ConcurrentHashMap<String,Pointer>();
         dict_cache=new HashMap<>();
@@ -59,9 +62,6 @@ public class Indexer {
         this.set_docs=new HashSet<>();
     }
 
-    public HashMap<String, Integer> getDict_files() {
-        return dict_files;
-    }
 
     public void InitDic(String PathOfPosting) throws IOException {
         File f = new File(PathOfPosting + File.separator + "dictionary.txt");
@@ -83,11 +83,18 @@ public class Indexer {
         }
     }
 
+    /**
+     * Controling whether this is the first chunk of writing files or not
+     * @param first_chunk
+     */
     public void setFirst_chunk(boolean first_chunk) {
         this.first_chunk = first_chunk;
     }
 
-
+    /**
+     * Writing first posting files to disk
+     * @param path - given path of posting files
+     */
     public void initFiles(String path){
         int counter=0;
 
@@ -132,30 +139,12 @@ public class Indexer {
 
     }
 
-    public HashSet<String> getFile_names() {
-        return file_names;
-    }
-    public synchronized Pointer isExist(String term_name){
-        if((term_name.charAt(0) >=65 && term_name.charAt(0)<=90) ||(term_name.charAt(0) >=97 && term_name.charAt(0)<=122)){
-            // is lower case
-//            if(term_name.charAt(0) >=97 && term_name.charAt(0)<=122){ // first char is lower case
-//                if(dictionary.contains(term_name.substring(0,1).toUpperCase()+term_name.substring(1))){
-//                    Pointer Otherpointer = dictionary.remove(term_name.substring(0,1).toUpperCase()+term_name.substring(1));
-//                    dictionary.put(term_name,Otherpointer);
-//                    return Otherpointer;
-//                }
-//                else if(dictionary.contains(term_name.toUpperCase())){
-//                    Pointer Otherpointer = dictionary.remove(term_name.toUpperCase());
-//                    dictionary.put(term_name,Otherpointer);
-//                    return Otherpointer;
-//
-//                }
-//                else if(dictionary.contains(term_name.toLowerCase())){
-//                    return dictionary.get(term_name.toLowerCase());
-//                }
-//
-//            }
-        }
+    /**
+     * Find pointer in the dictionary for a given term
+     * @param term_name - given term
+     * @return pointer of the term
+     */
+    public  Pointer isExist(String term_name){
         return dictionary.get(term_name);
 
     }
@@ -173,31 +162,9 @@ public class Indexer {
 
     }
 
-    public ConcurrentHashMap<String, Pointer> getDictionary() {
-        return dictionary;
-    }
-
-    public ArrayList<String> getSortDic() {
-        return sortDic;
-    }
-
-    public void setSortDic(ArrayList<String> sortDic) {
-        this.sortDic = sortDic;
-    }
-
-    public void printTofile(String path) throws IOException {
-        File f = new File(path+File.separator+dictionary+".txt");
-        FileWriter writer = new FileWriter(f);
-        BufferedWriter bf = new BufferedWriter(writer);
-
-
-
-        for (Map.Entry<String,Pointer> dict_data: dictionary.entrySet()){
-            writer.write(dict_data.getKey()+" "+dict_data.getValue().getFile_name()+"|"+dict_data.getValue().getLine_number()+"|"+dict_data.getValue().getTerm_df()+System.lineSeparator());
-        }
-        writer.close();
-    }
-
+    /**
+     * Initialize the sorted dictionary
+     */
     public void sortDictionary(){
         sortDicTree = new TreeMap<>(dictionary);
         /*sortDic = new ArrayList<String>(dictionary.keySet());
@@ -208,6 +175,10 @@ public class Indexer {
 
     }
 
+    /**
+     * Writing the dictionary to the posting directory
+     * @throws IOException
+     */
     public void WriteDictionary() throws IOException {
 
         FileOutputStream f = new FileOutputStream(new File(path+File.separator+"dictionary.txt"));
@@ -219,6 +190,13 @@ public class Indexer {
 
     }
 
+    /**
+     * Loading the dicationary from the posting path with stemm or not
+     * @param pathPosting - posting path
+     * @param stem - boolean for stemming
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public void loadDictionary(String pathPosting,boolean stem) throws IOException, ClassNotFoundException {
         FileInputStream fi = null;
 
@@ -232,56 +210,49 @@ public class Indexer {
 
     }
 
-    public TreeMap<String, Pointer> getSortDicTree() {
-        return sortDicTree;
-    }
 
-    public void CleanDictionary(){
-        //sortDicTree.clear();
-        sortDicTree= new TreeMap<>();
-    }
-
-
-    private void fillAlphabetArrays(HashMap<String,Term> dict, ArrayList<String> list_sortedTerms) {
+    /**
+     * classifying the terms in the cached dictionary into the files they will need to be written in.
+     * @param dict
+     * @param list_terms
+     */
+    private void fillAlphabetArrays(HashMap<String,Term> dict, ArrayList<String> list_terms) {
         for (int i = 0; i <31 ; i++) {
             list_termsByAlhabet.add(new ArrayList<String>());
         }
         int place=0;
-        for (int i = 0; i < list_sortedTerms.size() ; i++) {
-            switch ((dict.get(list_sortedTerms.get(i)).getType())){
+        for (int i = 0; i < list_terms.size() ; i++) {
+            switch ((dict.get(list_terms.get(i)).getType())){
                 case "Number":
                     place = dict_files.get("numbers");
-                    list_termsByAlhabet.get(place).add(list_sortedTerms.get(i));
+                    list_termsByAlhabet.get(place).add(list_terms.get(i));
                     break;
                 case "Symbol":
                     place = dict_files.get("symbols");
-                    list_termsByAlhabet.get(place).add(list_sortedTerms.get(i));
+                    list_termsByAlhabet.get(place).add(list_terms.get(i));
                     break;
                 case "City":
                     place = dict_files.get("cities");
-                    list_termsByAlhabet.get(place).add(list_sortedTerms.get(i));
+                    list_termsByAlhabet.get(place).add(list_terms.get(i));
                     break;
                 default:
 
                     try {
-                        place = dict_files.get(""+list_sortedTerms.get(i).toLowerCase().charAt(0));
+                        place = dict_files.get(""+list_terms.get(i).toLowerCase().charAt(0));
                     } catch (Exception e) {
                         place = dict_files.get("others");
                     }
 
-                    list_termsByAlhabet.get(place).add(list_sortedTerms.get(i));
+                    list_termsByAlhabet.get(place).add(list_terms.get(i));
             }
 
         }
     }
 
-    public HashMap<String, Term> getDict_capitals() {
-        return dict_capitals;
-    }
+
 
     public void handleCapitalLetters() throws IOException {
         ArrayList<String> capitalTerms = new ArrayList<String>(dict_capitals.keySet()); //create array from list
-//        Collections.sort(list_sortedTerms);
 
         fillAlphabetArrays(dict_capitals,capitalTerms);
 
@@ -390,14 +361,13 @@ public class Indexer {
             initFiles(path);
             first_chunk = false;
         }
-        //sort the dictionary
-        ArrayList<String> list_sortedTerms = new ArrayList<>(dict_cache.keySet());
+        ArrayList<String> list_terms = new ArrayList<>(dict_cache.keySet());
 
-//        Collections.sort(list_sortedTerms);
 
-        fillAlphabetArrays(dict_cache,list_sortedTerms);
+
+        fillAlphabetArrays(dict_cache,list_terms);
         //get data from files
-//        ExecutorService pool = Executors.newFixedThreadPool(2,new FileThreadFactory("n"));
+
         for (String file_name : file_names)
         {
             if(file_name.equals("dictionary")){
@@ -429,7 +399,13 @@ public class Indexer {
     }
 
 
-
+    /**
+     * Helper function to merge the posting files with the dictionary each gradual write.
+     * @param chunk_content
+     * @param file_content
+     * @param filename
+     * @return
+     */
     private List<String> mergeArrays(List<String> chunk_content , List<String> file_content, String filename) {
         for (int i = 0; i < chunk_content.size() ; i++) {
 
@@ -474,6 +450,9 @@ public class Indexer {
         return file_content;
     }
 
+    /**
+     * Writing the docs hashset into file
+     */
     public void writeDocs() {
 
         String filename = path + File.separator + "docs.txt";
@@ -492,12 +471,38 @@ public class Indexer {
 
     }
 
+    //<editor-fold desc="Getters and setters">
+    public HashMap<String, Term> getDict_capitals() {
+        return dict_capitals;
+    }
+
     public HashSet<String> getSet_languages() {
         return set_languages;
     }
 
+    public TreeMap<String, Pointer> getSortDicTree() {
+        return sortDicTree;
+    }
 
     public HashSet<Doc> getSet_docs() {
         return set_docs;
     }
+    public HashMap<String, Integer> getDict_files() {
+        return dict_files;
+    }
+    public HashSet<String> getFile_names() {
+        return file_names;
+    }
+    public ConcurrentHashMap<String, Pointer> getDictionary() {
+        return dictionary;
+    }
+
+    public ArrayList<String> getSortDic() {
+        return sortDic;
+    }
+
+    public void setSortDic(ArrayList<String> sortDic) {
+        this.sortDic = sortDic;
+    }
+    //</editor-fold>
 }
