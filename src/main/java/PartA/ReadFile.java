@@ -9,6 +9,9 @@ import org.jsoup.select.Elements;
 import java.io.*;
 import java.util.HashSet;
 
+/**
+ * Class that reading a file and and splitting it into docs and sending it to the Parser class.
+ */
 public class ReadFile {
 
   private HashSet<Doc> docs;
@@ -39,7 +42,10 @@ public class ReadFile {
   }
 
 
-
+  /**
+   * Starting the operation of the ReadFile class.
+   * @throws IOException
+   */
   public void start() throws IOException {
     indexer.reset();
     File input = new File(path);
@@ -83,7 +89,11 @@ public class ReadFile {
     return countDOCs;
   }
 
-
+  /**
+   * Using jsoup to split the file and send it to the parser class
+   * @param file
+   * @throws IOException
+   */
   private void jparse(File file) throws IOException {
     Document doc;
     doc = Jsoup.parse(file, "UTF-8");
@@ -121,6 +131,11 @@ public class ReadFile {
     }
   }
 
+  /**
+   * Returns the City from the FP 104 in the doc
+   * @param text
+   * @return
+   */
   public String getCityFromText(String text) {
     String[] temp_text = text.split("\n");
     int start = 0;
@@ -138,6 +153,11 @@ public class ReadFile {
     return "";
   }
 
+  /**
+   * Returns the language from the FP 105 tag in the doc.
+   * @param text
+   * @return
+   */
   public String getLanguageFromCity(String text) {
     String[] temp_text = text.split("\n");
     int start = 0;

@@ -16,6 +16,7 @@ public class Pointer implements Serializable{
         this.term_df=term_df;
     }
 
+    //<editor-fold desc="Getters and Setters">
     public String getFile_name() {
         return file_name;
     }
@@ -39,4 +40,5 @@ public class Pointer implements Serializable{
     public void setTerm_df(int term_df) {
         this.term_df = term_df;
     }
+    //</editor-fold>
 }
