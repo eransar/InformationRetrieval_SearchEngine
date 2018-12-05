@@ -131,7 +131,7 @@ Parse {
 
         for (index = 0; index < docText.length; index++) {
             //if it's a line separator. increase line number
-//            System.out.println("Begin : "+docText[index]);
+
             if (docText[index].length() == 0 /*empty string */ || docText[index].equals("-")) {
                 continue;
             }
@@ -278,17 +278,14 @@ Parse {
     public wordType identifyWord(String str) {
         try {
             if (isSymbol(str)) {
-//                    System.out.println("Symbol : " + str);
                 return wordType.SYMBOL;
             } else if (str.charAt(0) < 48 || str.charAt(0) > 57) {
 
                 return wordType.WORD;
             } else if (isNumber(str)) {
-//                    System.out.println("Number : " + str);
                 return wordType.NUMBER;
             }
         } catch (ParseException e) {
-//                System.out.println("Word : " + str);
             return wordType.WORD;
 
 

@@ -54,7 +54,7 @@ public class ReadFile {
 
           if(numofDocs == size /10){
           indexer.writeToDisk();
-          System.out.println(parse.getPath());
+
 
             numofDocs=1;
           }
@@ -70,10 +70,7 @@ public class ReadFile {
       indexer.writeDocs();
     }
       //marge capital letters to dictionary
-      float start = System.nanoTime();
       indexer.handleCapitalLetters();
-      float end = System.nanoTime();
-      System.out.println((end - start) * Math.pow(10, -9) / 60);
       //sort dictionary
       indexer.sortDictionary();
       indexer.WriteDictionary();
@@ -133,7 +130,6 @@ public class ReadFile {
     for (int i = 0; i < temp_text.length ; i++) {
       if (temp_text[i].startsWith(" <f p=\"104\">") || temp_text[i].startsWith("  <f p=\"104\">")) {
         if(!temp_text[i+1].equals(" <text>")){
-//          System.out.println(temp_text[i+1]+" ____");
           return temp_text[i+1];
         }
 
@@ -151,7 +147,6 @@ public class ReadFile {
     for (int i = 0; i < temp_text.length ; i++) {
       if (temp_text[i].startsWith("  <f p=\"105\">")) {
         if(!temp_text[i+1].equals(" <text>")){
-//          System.out.println(temp_text[i+1]+" ____");
           return temp_text[i+1];
         }
 

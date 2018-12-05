@@ -15,8 +15,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
@@ -48,7 +46,7 @@ public class Controller implements Initializable {
     public String PathOfPosting;
     private boolean Steam;
     public Label error;
-    private String newPostingPath="";
+    private String newPostingPath = "";
     private File f;
     public Indexer indexer = Indexer.getInstance();
 
@@ -139,7 +137,7 @@ public class Controller implements Initializable {
     }
 
     public void Reset(ActionEvent event) throws IOException {
-        if(!newPostingPath.equals("")){
+        if (!newPostingPath.equals("")) {
             FileUtils.cleanDirectory(new File(PathOfPosting));
             indexer.reset();
             CityIndexer.getInstance().reset();
@@ -150,7 +148,7 @@ public class Controller implements Initializable {
     public void ShowDictionary(ActionEvent event) {
         //if has dictionary or not?
         try {
-            if(indexer.getSortDicTree()==null || indexer.getSortDicTree().size()==0){
+            if (indexer.getSortDicTree() == null || indexer.getSortDicTree().size() == 0) {
                 LoadDictionary();
             }
             Stage stage = new Stage();
@@ -167,10 +165,9 @@ public class Controller implements Initializable {
     }
 
     public void LoadDictionary() throws IOException {
-        if(PathOfPosting !=null && !PathOfPosting.equals("")){
-            indexer.loadDictionary(PathOfPosting,Steam);
-        }
-        else{
+        if (PathOfPosting != null && !PathOfPosting.equals("")) {
+            indexer.loadDictionary(PathOfPosting, Steam);
+        } else {
             error.setVisible(true);
             error.setText("please run the\nprogram it first");
         }
@@ -184,11 +181,11 @@ public class Controller implements Initializable {
             error.setVisible(true);
         } else {
             if (Steam) {
-                f = new File(PathOfPosting + File.separator+"Stem");
-                newPostingPath = PathOfPosting +File.separator+"Stem";
+                f = new File(PathOfPosting + File.separator + "Stem");
+                newPostingPath = PathOfPosting + File.separator + "Stem";
             } else {
-                f = new File(PathOfPosting + File.separator+"WithOutStem");
-                newPostingPath = PathOfPosting + File.separator+"WithOutStem";
+                f = new File(PathOfPosting + File.separator + "WithOutStem");
+                newPostingPath = PathOfPosting + File.separator + "WithOutStem";
             }
             try {
                 if (f.mkdir()) {
@@ -207,55 +204,17 @@ public class Controller implements Initializable {
             System.out.println((end - start) * Math.pow(10, -9) / 60);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setHeaderText("Indexer Information");
-            alert.setContentText("Number of docs: "+rf.getCountDOCs()+"\n"
-                                    +"Number of terms: "+indexer.getDictionary().size()+"\n"
-                                    +"Time of creating inverted index: "+((end - start) * Math.pow(10, -9) / 60)+ "min");
+            alert.setContentText("Number of docs: " + rf.getCountDOCs() + "\n"
+                    + "Number of terms: " + indexer.getDictionary().size() + "\n"
+                    + "Time of creating inverted index: " + ((end - start) * Math.pow(10, -9) / 60) + "min");
             alert.show();
             HashSet<String> languages = indexer.getSet_languages();
             language.setItems(FXCollections.observableArrayList(languages));
             language.setDisable(false);
-
-
-            System.out.println(indexer.getSortDicTree().size());
-//            Map<String,Integer> tambal =sortedMap();
-//            createCSVFile(tambal);
-//            int i = 5;
-            //CityIndexer.getInstance().findMax();
-
         }
     }
 
 
-    public Map<String,Integer> sortedMap(){
-        TreeMap<String,Integer> result = new TreeMap();
-        for (Map.Entry<String,Pointer> term : indexer.getDictionary().entrySet()){
-            result.put(term.getKey(),term.getValue().getTerm_df());
-        }
-
-
-        Map<String,Integer> topTen =
-                result.entrySet().stream()
-                        .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-
-        return topTen;
-
-
-    }
-
-    public void createCSVFile(Map<String,Integer> map) throws IOException {
-        FileWriter out = new FileWriter(newPostingPath+File.separator+"book_new.csv");
-        String[] HEADERS = { "term", "df"};
-        try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT
-                .withHeader(HEADERS))) {
-            map.forEach((author, title) -> {
-                try {
-                    printer.printRecord(author, title);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-        }
-    }
 }
+
+

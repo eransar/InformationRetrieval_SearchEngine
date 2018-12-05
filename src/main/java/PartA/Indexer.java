@@ -24,7 +24,6 @@ public class Indexer {
 
     private boolean first_chunk;
     private String path;
-    private int debug_size; // TODO : Remove debug
     private transient TreeMap<String,Pointer> sortDicTree;
     public static Indexer getInstance() {
         return ourInstance;
@@ -201,7 +200,6 @@ public class Indexer {
 
     public void sortDictionary(){
         sortDicTree = new TreeMap<>(dictionary);
-        System.out.println("ss");
         /*sortDic = new ArrayList<String>(dictionary.keySet());
         Collections.sort(sortDic);
         for (int i = 0; i < sortDic.size(); i++) {
@@ -286,7 +284,6 @@ public class Indexer {
     }
 
     public void handleCapitalLetters() throws IOException {
-        System.out.println("Start Capital Letters");
         ArrayList<String> capitalTerms = new ArrayList<String>(dict_capitals.keySet()); //create array from list
 //        Collections.sort(list_sortedTerms);
 
@@ -317,8 +314,6 @@ public class Indexer {
                 writer.write(file_content.get(i) + System.lineSeparator());
             }
             writer.close();
-            System.out.println("File : " + file_name + " Size : " + file_content.size());
-            debug_size += file_content.size();
 
 
 
@@ -326,7 +321,6 @@ public class Indexer {
         }
 
         dict_capitals.clear();
-        System.out.println("End Capital Letters");
     }
 
     public List<String> mergeCapitals(List<String> capitalTerms ,List<String> file_content , String file_name ){
@@ -432,25 +426,10 @@ public class Indexer {
                 writer.write(file_content.get(i)+System.lineSeparator());
             }
             writer.close();
-            System.out.println("File : "+file_name+" Size : "+file_content.size());
-            debug_size+=file_content.size();
-
-//            pool.submit(this);
         }
-//        writeDictionaryDebug();
-
-
         dict_cache.clear();
         list_termsByAlhabet.clear();
-
         File p = new File(path);
-        System.out.println("Folder Size : "+ FileUtils.sizeOf(p));
-        System.out.println("Dictionary size : "+dictionary.size());
-        System.out.println("Number wrote to disk : "+debug_size);
-        debug_size=0;
-//        File path = new File("C:\\Users\\eransar\\AppData\\Local\\Temp\\0.txt");
-
-
     }
 
 
