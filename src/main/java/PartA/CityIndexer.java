@@ -14,6 +14,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * Indexer that in charge of the city dictionary
+ */
 public class CityIndexer {
     private static CityIndexer ourInstance = new CityIndexer();
     public HashMap<String,City> dict_cache;
@@ -33,11 +36,19 @@ public class CityIndexer {
 
     }
 
+    /**
+     * Reseting the dictionary files
+     */
     public void reset(){
         dict_city = new HashMap<>();
         dict_cache = new HashMap<>();
     }
 
+    /**
+     * Function to maintain the cities in the dictionary when adding.
+     * @param doc
+     * @param index
+     */
     public void addToCityIndexer(Doc doc,int index){
 
         /* if city not found in the index*/
@@ -73,6 +84,10 @@ public class CityIndexer {
         }
 
     }
+
+    /**
+     * Connecting to REST Countires API to get data on cities
+     */
     public void startConnection(){
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(URL).build();
@@ -112,6 +127,11 @@ public class CityIndexer {
         }
     }
 
+    /**
+     * Writing dictionary to disk
+     * @param postingPath - the path we write into
+     * @throws IOException
+     */
     public void WriteDictionary(String postingPath ) throws IOException {
         File toWrite=new File(postingPath+File.separator+"cities.txt");
         FileWriter writer = null;
@@ -148,24 +168,7 @@ public class CityIndexer {
         writer.close();
     }
 
-    public City findMax(){
-        City TempCity = new City("");
-        ArrayList<Integer> tempI = new ArrayList<>();
-        int max = 0;
-        for (City cities : dict_cache.values()){
-            for(Map.Entry<Doc,ArrayList<Integer>> citieslocation: cities.docfrequency.entrySet()){
-                if(citieslocation.getValue().size() > max ){
-                    max=citieslocation.getValue().size();
-                    TempCity=cities;
-                    tempI = citieslocation.getValue();
-                }
-            }
-        }
-        for (int i = 0; i <tempI.size() ; i++) {
-            System.out.print(","+tempI.get(i));
-        }
-        return TempCity;
-    }
+
 
 
 }

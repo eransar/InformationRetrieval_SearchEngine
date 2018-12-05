@@ -8,6 +8,7 @@ import java.util.Objects;
 public class Term implements Serializable{
     private String name;
     private int df;
+    private int tf;
     private String type;
     private HashMap<Doc,Integer> docFrequency;
 
@@ -43,7 +44,25 @@ public class Term implements Serializable{
 
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Term term = (Term) o;
+        return Objects.equals(name, term.name);
+    }
 
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(name);
+    }
+    public String toString(){
+        return this.name;
+    }
+
+
+    //<editor-fold desc="Getters and Setters">
     public String getType() {
         return type;
     }
@@ -75,24 +94,5 @@ public class Term implements Serializable{
     public void setTf(int tf) {
         this.tf = tf;
     }
-
-    private int tf;
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Term term = (Term) o;
-        return Objects.equals(name, term.name);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(name);
-    }
-    public String toString(){
-        return this.name;
-    }
+    //</editor-fold>
 }
