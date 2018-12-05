@@ -26,10 +26,8 @@ public class Doc {
     }
 
 
-    public void AddTermLocation(){
 
-    }
-
+    //<editor-fold desc="Getters and Setters">
     public void setMaxtf(int maxtf) {
         this.maxtf = maxtf;
     }
@@ -82,28 +80,6 @@ public class Doc {
     public String getLANGUAGE() {
         return LANGUAGE;
     }
+    //</editor-fold>
 }
-//    public void setTermLocation(HashMap<Location,Term> termLocation) {
-//        this.termLocation = termLocation;
-//    }
 
-//    public String getHEADER() {
-//        return HEADER;
-//    }
-//
-//    public void setHEADER(String HEADER) {
-//        this.HEADER = HEADER;
-//    }
-//
-//    public String getTEXT() {
-//        return TEXT;
-//    }
-//
-//    public void setTEXT(String TEXT) {
-//        this.TEXT = TEXT;
-//    }
-//
-//    public String toString(){
-//        return "Doc No :"+DOCNO+" "+"Date :"+DATE+" "+"Header :"+HEADER+" "+"Text: "+TEXT;
-//    }
-//}

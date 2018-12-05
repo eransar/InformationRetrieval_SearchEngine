@@ -6,7 +6,9 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Pattern;
 
-
+/**
+ * Parse class is used to analyze a given text and format it by the rules of the search engine.
+ */
 public class
 Parse {
     private HashSet<String> dict_stopWords;
@@ -18,12 +20,9 @@ Parse {
     private static Indexer indexer;
     private static CityIndexer indexer_city;
     private Stemmer stemmer;
-    private enum wordType {NUMBER, SYMBOL, WORD, CITY, NULL;};
+    private enum wordType {NUMBER, SYMBOL, WORD};
     private String path; // corpus path
-    private int numofTerm;
     private int index;
-    private int filenum;
-    private int debug_size;
     private int docmaxtf;
 
 
@@ -50,9 +49,6 @@ Parse {
 
 
 
-    public void Reset(){
-        indexer = Indexer.getInstance();
-    }
 
 
     /**
@@ -254,7 +250,11 @@ Parse {
         }
 
 
-
+    /**
+     * Find if a string is all lowercase
+     * @param str
+     * @return
+     */
     public boolean testAllLowerCase(String str) {
         for (int i = 0; i < str.length(); i++) {
             char c = str.charAt(i);
@@ -265,6 +265,11 @@ Parse {
         return true;
     }
 
+    /**
+     * find if string is out of range of main string array
+     * @param i
+     * @return
+     */
     public boolean isNotOutBound(int i) {
         return i < docText.length;
     }
@@ -418,27 +423,27 @@ Parse {
                         case "Thousand":
                             number_term = number_term;
                             tempTerm.setName(convertDouble(number_term) + "K");
-//                                toReturn.add(convertDouble(number_term) + "K");
+
                             break;
                         case "Million":
                             number_term = number_term;
                             tempTerm.setName(convertDouble(number_term) + "M");
-//                                toReturn.add(convertDouble(number_term) + "M");
+
                             break;
                         case "Trillion":
                         case "Billion":
                             number_term = number_term;
                             tempTerm.setName(convertDouble(number_term) + "B");
-//                                toReturn.add(convertDouble(number_term) + "B");
+
                             break;
                         case "percent":
                         case "percentage":
                             tempTerm.setName(convertDouble(number_term) + "%");
-//                                toReturn.add(convertDouble(number_term) + "%");
+
                             break;
                         case "Dollars":
                             tempTerm.setName(transformNumber(number_term));
-//                                toReturn.add(transformNumber(number_term));
+
                             break;
 
                     }
@@ -452,13 +457,12 @@ Parse {
             if (number_term < 1000000 && index + 2 < docText.length && docText[index + 2].equals("Dollars")) {
                 tempTerm.setName(convertDouble(number_term) + " " + docText[index + 1] + " " + "Dollars");
                 index = index++; //skip the next word in the document :O
-//                    Parser.setIndex(index + 1);
+
             } else {
                 tempTerm.setName(convertDouble(number_term) + " " + docText[index + 1]);
 
             }
 
-//                return toReturn; // ??? check why //TODO : Check why !
 
         } else if (fraction) {
             if (index + 1 < docText.length && first_keywords.contains(docText[index + 1])) {
@@ -499,14 +503,8 @@ Parse {
         handleTerm(tempTerm); //
     }
 
-//    public HashMap<Term, HashMap<Doc, Integer>> getTermsInfo() {
 
 
-    //    }
-
-    public void setStem(boolean steam) {
-        isSteam = steam;
-    }
 
     private void handleTerm(Term toCheck) {
         if(toCheck.getName().length()==0){
@@ -704,24 +702,16 @@ Parse {
         return parse_months;
     }
 
-    public void setDoc(Doc doc) {
-        this.doc = doc;
-    }
 
-    public Doc getDoc() {
-
-        return doc;
-    }
 
     public String getPath() {
         return path;
     }
 
-
-    public int getNumofTerm() {
-        return numofTerm;
-    }
-
+    /**
+     * ArrayList of Keywords that needed for the parsing rules in the Parser.
+     * @return
+     */
     public ArrayList<String> getFirstKeyWords() {
         ArrayList<String> keywords = new ArrayList<String>();
         keywords.add("Thousand");
@@ -736,6 +726,10 @@ Parse {
         keywords.add("trillion");
         return keywords;
     }
+
+    /**
+     * Initialize the replace words HashMap
+     */
     private void init_replace() {
         dict_replaceWords.put("'s", " ");
         dict_replaceWords.put(",", " ");
@@ -779,5 +773,22 @@ Parse {
         dict_replaceWords.put("|", " ");
         dict_replaceWords.put("#", " ");
     }
+
+
+
+    //<editor-fold desc="Getters and Setters">
+    public void setStem(boolean steam) {
+        isSteam = steam;
+    }
+
+    public void setDoc(Doc doc) {
+        this.doc = doc;
+    }
+
+    public Doc getDoc() {
+
+        return doc;
+    }
+    //</editor-fold>
 }
 
