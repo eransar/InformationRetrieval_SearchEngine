@@ -150,7 +150,7 @@ public class CityIndexer {
 
     public City findMax(){
         City TempCity = new City("");
-        ArrayList<Integer> tempI;
+        ArrayList<Integer> tempI = new ArrayList<>();
         int max = 0;
         for (City cities : dict_cache.values()){
             for(Map.Entry<Doc,ArrayList<Integer>> citieslocation: cities.docfrequency.entrySet()){
@@ -160,6 +160,9 @@ public class CityIndexer {
                     tempI = citieslocation.getValue();
                 }
             }
+        }
+        for (int i = 0; i <tempI.size() ; i++) {
+            System.out.print(","+tempI.get(i));
         }
         return TempCity;
     }

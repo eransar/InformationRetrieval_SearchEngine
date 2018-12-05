@@ -102,12 +102,18 @@ public class ReadFile {
     for (Element element : doctags) {
       CITY=getCityFromText(element.outerHtml());
       String [] temp_city = CITY.split(" ");
-      if(temp_city.length > 2){
-        if(CITY.startsWith("   St.")){
-          CITY=temp_city[3]+" "+temp_city[4];
+      int cityindex=0;
+      if(temp_city.length > 2) {
+        if (CITY.startsWith("   St.")) {
+          CITY = temp_city[3] + " " + temp_city[4];
+        } else {
+          while(temp_city[cityindex].equals("")){
+            cityindex++;
+          }
+          CITY=temp_city[cityindex];
         }
-        CITY=temp_city[3];
       }
+
       LANGUAGE=getLanguageFromCity(element.outerHtml());
       DOCNO = element.select("DOCNO").text();
       TEXT = element.select("TEXT").text();

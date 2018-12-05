@@ -220,7 +220,7 @@ public class Controller implements Initializable {
 //            Map<String,Integer> tambal =sortedMap();
 //            createCSVFile(tambal);
 //            int i = 5;
-            CityIndexer.getInstance().findMax();
+            //CityIndexer.getInstance().findMax();
 
         }
     }

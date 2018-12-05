@@ -57,6 +57,7 @@ public class Indexer {
         sortDicTree= new TreeMap<>();
         sortDic= new ArrayList<>();
         set_languages=new HashSet<>();
+        this.set_docs=new HashSet<>();
     }
 
     public HashMap<String, Integer> getDict_files() {
