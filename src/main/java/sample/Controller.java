@@ -223,7 +223,7 @@ public class Controller implements Initializable {
             alert.setHeaderText("Indexer Information");
             alert.setContentText("Number of docs: " + rf.getCountDOCs() + "\n"
                     + "Number of terms: " + indexer.getDictionary().size() + "\n"
-                    + "Time of creating inverted index: " + ((end - start) * Math.pow(10, -9) / 60) + "min");
+                    + "Time of creating inverted index: " + ((end - start) * Math.pow(10, -9) ) + " sec");
             alert.show();
             HashSet<String> languages = indexer.getSet_languages();
             language.setItems(FXCollections.observableArrayList(languages));

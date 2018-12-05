@@ -37,7 +37,7 @@ public class ShowDic implements Initializable {
         treeMap = indexer.getSortDicTree();
 
         for (Map.Entry<String, Pointer> entry : treeMap.entrySet()) {
-            data.getItems().add(entry.getKey() + " " + entry.getValue().getTerm_df() + "\n");
+            data.getItems().add(entry.getKey() + "      " + entry.getValue().getTerm_df() + "\n");
         }
     }
 
