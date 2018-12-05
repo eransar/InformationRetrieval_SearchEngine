@@ -172,15 +172,15 @@ public class Controller implements Initializable {
             scene.getStylesheets().add(getClass().getClassLoader().getResource("CssController.css").toExternalForm());
             stage.show();
         } catch (Exception e) {
-            error.setText("file not found");
+            error.setText("file not found\nyou may need to run it first");
         }
     }
 
-    public void LoadDictionary() throws IOException {
+    public void LoadDictionary()  {
         if (PathOfPosting != null && !PathOfPosting.equals("")) {
             try {
                 indexer.loadDictionary(PathOfPosting, Steam);
-            } catch (ClassNotFoundException e) {
+            } catch (Exception e) {
                 error.setVisible(true);
                 error.setText("please run the\nprogram it first");
             }
