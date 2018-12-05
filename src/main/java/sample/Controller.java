@@ -55,10 +55,10 @@ public class Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         StemmingCheckBox.setSelected(false);
         language.setDisable(true);
-        /*language.setItems(FXCollections.observableArrayList(
-                "Chinese", "English", "עברית", "French", "German", "Greek")
+        language.setItems(FXCollections.observableArrayList(
+                "Language")
         );
-        language.setValue("English");*/
+        language.setValue("Language");
         language.setDisable(true);
         error.setVisible(false);
     }
