@@ -148,15 +148,30 @@ public class Controller implements Initializable {
             Steam = false;
     }
 
+    /**
+     * reset the system - cleaning memory
+     * @param event
+     * @throws IOException
+     */
     public void Reset(ActionEvent event) throws IOException {
         if (!newPostingPath.equals("")) {
-            FileUtils.cleanDirectory(new File(PathOfPosting));
+            FileUtils.deleteDirectory(new File(PathOfPosting + File.separator + "Stem"));
+            FileUtils.deleteDirectory(new File(PathOfPosting + File.separator + "WithOutStem"));
             indexer.reset();
             CityIndexer.getInstance().reset();
-            System.out.println("ddd");
+            language.getItems().clear();
+            language.setItems(FXCollections.observableArrayList(
+                    "Language")
+            );
+            language.setValue("Language");
+            newPostingPath="";
         }
     }
 
+    /**
+     * show the Dictionary in listView
+     * @param event
+     */
     public void ShowDictionary(ActionEvent event) {
         //if has dictionary or not?
         try {
@@ -176,6 +191,9 @@ public class Controller implements Initializable {
         }
     }
 
+    /**
+     * load the Dictionary from disc if its not load
+     */
     public void LoadDictionary()  {
         if (PathOfPosting != null && !PathOfPosting.equals("")) {
             try {
@@ -190,7 +208,11 @@ public class Controller implements Initializable {
         }
     }
 
-
+    /**
+     * running func
+     * @param event
+     * @throws IOException
+     */
     public void SetAll(ActionEvent event) throws IOException {
         newPostingPath = PathOfPosting;
         if (stopWordsField.getText().trim().isEmpty() || corpusField.getText().trim().isEmpty() || PostingField.getText().trim().isEmpty()) {
