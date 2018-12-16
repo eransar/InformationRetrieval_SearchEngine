@@ -1,7 +1,6 @@
 package PartA;
 
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
 public class Doc {
     private String CITY;
@@ -12,6 +11,9 @@ public class Doc {
     private int maxtf;
     private int distinctwords;
     private String file;
+    private HashSet<Term> set_entities;
+    private TreeSet<Term> treeset_entities;
+    private String[] arr_entities;
 
     public Doc(String DOCNO, String file, String CITY, String HEADER, String DATE, String LANGUAGE){
         this.DOCNO=DOCNO;
@@ -22,9 +24,49 @@ public class Doc {
         this.maxtf=0;
         this.DATE=DATE;
         this.LANGUAGE=LANGUAGE;
+        this.set_entities=new HashSet<>();
+        this.treeset_entities = new TreeSet(new Comparator<Term>() {
+            @Override
+            public int compare(Term t1, Term t2) {
+                        // compare t1 and t2
+                        int t1freq=t1.getDocFrequency().get(DOCNO);
+                        int t2freq=t2.getDocFrequency().get(DOCNO);
+                        if(t1freq > t2freq){
+                            return 1;
+                        }
+                        else if(t1freq==t2freq){
+                            return 0;
+                        }
+                        else{
+                            return -1;
+                        }
+            }
+        });
+        this.arr_entities=new String[5];
 
     }
+    public void AddtoEntities(Term t){
+        set_entities.add(t);
+    }
 
+    public void ClearEntitiesSet(){
+        set_entities.clear();
+    }
+
+    public void init_TreeSet(){
+        treeset_entities.addAll(set_entities);
+    }
+    public void ClearEntitiesTreeSet(){
+        treeset_entities.clear();
+    }
+    public void init_arrEntities(){
+        Iterator<Term> it= treeset_entities.descendingIterator();
+        for (int i = 0; i < arr_entities.length; i++) {
+            if(it.hasNext()){
+                arr_entities[i]=it.next().getName();
+            }
+        }
+    }
 
 
     //<editor-fold desc="Getters and Setters">

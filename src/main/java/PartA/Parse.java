@@ -68,6 +68,10 @@ Parse {
         if(!doc.getLANGUAGE().equals("")){
             indexer.getSet_languages().add(doc.getLANGUAGE());
         }
+        doc.init_TreeSet();
+        doc.init_arrEntities();
+        doc.ClearEntitiesSet();
+        doc.ClearEntitiesTreeSet();
         indexer.getSet_docs().add(this.doc);
     }
 
@@ -526,6 +530,7 @@ Parse {
             }
             if (toCheck.getType().equals("Word") && toCheck.getName().charAt(0) >= 65 && toCheck.getName().charAt(0) <= 90) {
                 updateCacheDicationary(indexer.getDict_capitals(), toCheck);
+                doc.AddtoEntities(toCheck);
             } else {
                 updateCacheDicationary(indexer.getDict_cache(), toCheck);
             }
@@ -543,6 +548,10 @@ Parse {
                 set term location in doc
          */
         }
+    }
+
+    private void insertOnlyCapitalForRank(Term toCheck) {
+
     }
 
     public void updateCacheDicationary(HashMap<String,Term> dict, Term toCheck){
