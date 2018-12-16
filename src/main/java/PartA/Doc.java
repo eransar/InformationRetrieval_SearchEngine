@@ -8,12 +8,14 @@ public class Doc {
     private String HEADER;
     private String DATE;
     private String LANGUAGE;
+    private int LENGTH;
     private int maxtf;
     private int distinctwords;
     private String file;
     private HashSet<Term> set_entities;
     private TreeSet<Term> treeset_entities;
     private String[] arr_entities;
+
 
     public Doc(String DOCNO, String file, String CITY, String HEADER, String DATE, String LANGUAGE){
         this.DOCNO=DOCNO;
@@ -68,6 +70,13 @@ public class Doc {
         }
     }
 
+    public int getLENGTH() {
+        return LENGTH;
+    }
+
+    public void setLENGTH(int LENGTH) {
+        this.LENGTH = LENGTH;
+    }
 
     //<editor-fold desc="Getters and Setters">
     public void setMaxtf(int maxtf) {

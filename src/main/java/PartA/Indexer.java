@@ -20,6 +20,7 @@ public class Indexer {
     private ConcurrentHashMap<String,Pointer> dictionary;
     private List<List<String>> list_termsByAlhabet = new ArrayList<List<String>>();
     private ArrayList<String> sortDic;
+    private int docsaverage;
 
 
     private boolean first_chunk;
@@ -469,6 +470,16 @@ public class Indexer {
             e.printStackTrace();
         }
 
+    }
+    public void addtoAvg(int size){
+        docsaverage+=size;
+    }
+    public void calculateAvg(){
+        docsaverage=docsaverage/set_docs.size();
+    }
+
+    public int getDocsaverage() {
+        return docsaverage;
     }
 
     //<editor-fold desc="Getters and setters">
