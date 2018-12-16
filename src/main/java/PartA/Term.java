@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class Term implements Serializable{
+public class Term implements Serializable, Comparable{
     private String name;
     private int df;
     private int tf;
@@ -93,6 +93,11 @@ public class Term implements Serializable{
 
     public void setTf(int tf) {
         this.tf = tf;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return 0;
     }
     //</editor-fold>
 }

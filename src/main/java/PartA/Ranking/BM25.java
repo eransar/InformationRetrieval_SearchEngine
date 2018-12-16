@@ -43,7 +43,6 @@ public class BM25 {
             int average_doc=indexer.getDocsaverage();
             result += count_wordinquery*
                     (((k+1)*count_wordindoc) /(count_wordindoc+k*(1-b+b*((doclength)/(average_doc)))))* Math.log10((M+1)/(word_df));
-
         }
         return result;
     }

@@ -27,7 +27,16 @@ public class Query {
         }
     }
 
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
     public HashMap<String, Integer> getMap_query() {
+
         return map_query;
     }
 
