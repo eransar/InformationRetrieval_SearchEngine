@@ -336,7 +336,7 @@ public class Indexer {
                 for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
                     termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
                 }
-                file_content.set(find_location.getLine_number(),newdf+" "+currentline[1]+"|"+termData);
+                file_content.set(find_location.getLine_number(),newdf+" "+currentline[1]+termData);
                 Pointer p1 =dictionary.get(OtherTerm.getName());
 
 
@@ -440,7 +440,8 @@ public class Indexer {
                 for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
                     termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
                 }
-                file_content.set(getLineNumber(chunk_content.get(i)),newdf+" "+currentline[1]+"|"+termData);
+                String s = newdf+" "+currentline[1]+termData;
+                file_content.set(getLineNumber(chunk_content.get(i)),newdf+" "+currentline[1]+termData);
                 Pointer p1 =dictionary.get(OtherTerm.getName());
 
 
