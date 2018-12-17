@@ -358,10 +358,10 @@ public class Indexer {
     }
 
     public void writeToDisk() throws IOException {
-        if (first_chunk) {
-            initFiles(path);
-            first_chunk = false;
-        }
+//        if (first_chunk) {
+//            initFiles(path);
+//            first_chunk = false;
+//        }
         ArrayList<String> list_terms = new ArrayList<>(dict_cache.keySet());
 
 

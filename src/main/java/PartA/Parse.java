@@ -217,6 +217,7 @@ Parse {
 
     }
 
+
     /**
      * After term identified as word this method will parse it by word rules.
      *
@@ -533,7 +534,13 @@ Parse {
             }
             if (toCheck.getType().equals("Word") && toCheck.getName().charAt(0) >= 65 && toCheck.getName().charAt(0) <= 90) {
                 updateCacheDicationary(indexer.getDict_capitals(), toCheck);
-                doc.AddtoEntities(toCheck);
+                if(toCheck.getName().charAt(toCheck.getName().length()-1) >= 65 && toCheck.getName().charAt(toCheck.getName().length()-1) <= 90){
+                    if(isAllUpperCase(toCheck.getName())){
+                        doc.AddtoEntities(toCheck);
+                    }
+
+                }
+
             } else {
                 updateCacheDicationary(indexer.getDict_cache(), toCheck);
             }
@@ -615,7 +622,7 @@ Parse {
     public boolean isAllUpperCase(String toCheck){
 
         for (int i = 0; i <toCheck.length() ; i++) {
-            if(!(toCheck.charAt(0) >=65 && toCheck.charAt(0)<=90)){
+            if(!(toCheck.charAt(i) >=65 && toCheck.charAt(i)<=90)){
                 return false;
             }
         }

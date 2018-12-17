@@ -37,15 +37,12 @@ public class Doc {
                         }
                          int t2freq=1;
 
-                        for (Doc d : t1.getDocFrequency().keySet()){
+                        for (Doc d : t2.getDocFrequency().keySet()){
                             t2freq=t2.getDocFrequency().get(d);
                         }
 
                         if(t1freq > t2freq){
                             return 1;
-                        }
-                        else if(t1freq==t2freq){
-                            return 0;
                         }
                         else{
                             return -1;
@@ -69,7 +66,10 @@ public class Doc {
     }
 
     public void init_TreeSet(){
-        treeset_entities.addAll(set_entities);
+        for (Term t:
+             set_entities) {
+            treeset_entities.add(t);
+        }
     }
     public void ClearEntitiesTreeSet(){
         treeset_entities.clear();
