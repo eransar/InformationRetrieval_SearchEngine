@@ -462,7 +462,6 @@ public class Indexer {
             for (Doc docs : dict_docs.values()) {
                 fw.write(docs.getDOCNO() + "|" + docs.getDistinctwords() + "|" + docs.getMaxtf()+System.lineSeparator());
             }
-            dict_docs = new HashMap<>();
             fw.close();
 
         } catch (IOException e) {

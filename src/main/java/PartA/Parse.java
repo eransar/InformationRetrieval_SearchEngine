@@ -20,13 +20,14 @@ Parse {
     private static Indexer indexer;
     private static CityIndexer indexer_city;
     private Stemmer stemmer;
-    private enum wordType {NUMBER, SYMBOL, WORD};
     private String path; // corpus path
     private int index;
     private int docmaxtf;
-
-
     private boolean isSteam;
+    public boolean use_searcher;
+    public enum wordType {NUMBER, SYMBOL, WORD};
+    private ArrayList<Term> queryTerms;
+
 
 
 
@@ -40,13 +41,31 @@ Parse {
         this.index = 1;
         this.stemmer=Stemmer.getInstance();
         this.path = PathOfPosting;
+        this.use_searcher=false;
         //Initializers
         init_stopWords(stopWordsPath);
         init_replace();
         indexer_city.startConnection();
+
+
        
     }
 
+    public Parse(boolean use_searcher){
+        this.indexer = Indexer.getInstance();
+        this.dict_months = init_months();
+        this.dict_stopWords = new HashSet<String>();
+        this.dict_replaceWords = new LinkedHashMap<>();
+        queryTerms = new ArrayList<>();
+        this.indexer_city = CityIndexer.getInstance();
+        this.index = 0;
+        this.stemmer=Stemmer.getInstance();
+        this.use_searcher=use_searcher;
+
+        //Initializers
+        init_replace();
+        indexer_city.startConnection();
+    }
 
 
 
@@ -58,8 +77,8 @@ Parse {
         int doc_size = TEXT.length();
         doc.setLENGTH(doc_size);
         indexer.addtoAvg(doc_size);
-        docmaxtf=0;
-        dic_docterms= new HashMap<>();
+        docmaxtf = 0;
+        dic_docterms = new HashMap<>();
         this.doc = doc;
         TEXT = replaceText(TEXT);
         docText = (TEXT.split(" "));
@@ -68,14 +87,45 @@ Parse {
         } catch (ParseException e) {
 
         }
-        if(!doc.getLANGUAGE().equals("")){
-            indexer.getSet_languages().add(doc.getLANGUAGE());
+        if (!use_searcher) {
+            if (!doc.getLANGUAGE().equals("")) {
+                indexer.getSet_languages().add(doc.getLANGUAGE());
+            }
+            doc.init_TreeSet();
+            doc.init_arrEntities();
+            doc.ClearEntitiesSet();
+            doc.ClearEntitiesTreeSet();
+            indexer.getDict_docs().put(this.doc.getDOCNO(), this.doc);
         }
-        doc.init_TreeSet();
-        doc.init_arrEntities();
-        doc.ClearEntitiesSet();
-        doc.ClearEntitiesTreeSet();
-        indexer.getDict_docs().put(this.doc.getDOCNO(),this.doc);
+    }
+
+    public ArrayList<Term> parseQuery(String query) {
+        query = replaceText(query);
+        String[] words = query.split(" ");
+        ArrayList terms = new ArrayList();
+        for (int i = 0; i < words.length; i++) {
+            if (words[i].length() == 0 /*empty string */ || words[i].equals("-")) {
+                return null;
+            }
+
+            if (words[i].charAt(0) == '-' || words[i].charAt(0) == '.' || words[i].charAt(0) == '+') {
+                words[i] = words[i].substring(1);
+            }
+
+            wordType wordType = identifyWord(words[i]);
+            switch (wordType) {
+                case WORD:
+//                    terms.add(parseWord(words[i]);)
+                    break;
+                case NUMBER:
+
+                    break;
+                case SYMBOL:
+            }
+        }
+
+        return null;
+
     }
 
     /**
@@ -148,7 +198,7 @@ Parse {
             if (docText[index].length() == 0 || docText[index].equals(" ")) {
                 continue;
             }
-            if (docText[index].equals(doc.getCITY())) {
+            if (!use_searcher && docText[index].equals(doc.getCITY())) {
                 indexer_city.addToCityIndexer(doc, index);
             }
             //check the term type
@@ -182,7 +232,7 @@ Parse {
     private void parseSymbol(String str, int index) {
         Term tempTerm = new Term();
         tempTerm.setType("Symbol");
-        if(str.length()==1){
+        if (str.length() == 1) {
             tempTerm.setName(str);
             handleTerm(tempTerm);
             return;
@@ -212,9 +262,11 @@ Parse {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-        handleTerm(tempTerm);
-
+        if (use_searcher) {
+            queryTerms.add(tempTerm);
+        } else {
+            handleTerm(tempTerm);
+        }
     }
 
 
@@ -229,10 +281,9 @@ Parse {
         tempTerm.setType("Word");
         if (docText[index].contains("-")) {
             tempTerm.setName(docText[index]);
-        }
-        else if (docText[index].equals("Street")){
-            if((index-2)>= 0  && isNumber(docText[index-2]) && !isNumber(docText[index-1]) && !isSymbol(docText[index-1])){
-                tempTerm.setName(docText[index-2] + " "+docText[index-1]+" "+docText[index]);
+        } else if (docText[index].equals("Street")) {
+            if ((index - 2) >= 0 && isNumber(docText[index - 2]) && !isNumber(docText[index - 1]) && !isSymbol(docText[index - 1])) {
+                tempTerm.setName(docText[index - 2] + " " + docText[index - 1] + " " + docText[index]);
             }
         }
         //month that starts with word example : MAY 19945
@@ -250,12 +301,17 @@ Parse {
                 && isNumber(docText[index + 3])) {
             tempTerm.setName(docText[index] + " " + docText[index + 1] + " " + docText[index + 2] + " " + docText[index + 3]);
         }
-            //if word is lowercase - check for uppercase in the first letter in the dict_cache ma
-         else {
-                tempTerm.setName(docText[index]);
-            }
-        handleTerm(tempTerm);
+        //if word is lowercase - check for uppercase in the first letter in the dict_cache ma
+        else {
+            tempTerm.setName(docText[index]);
         }
+        if (!use_searcher) {
+            handleTerm(tempTerm);
+        } else {
+            queryTerms.add(tempTerm);
+        }
+
+    }
 
 
     /**
@@ -508,7 +564,13 @@ Parse {
 
         }
 
-        handleTerm(tempTerm); //
+        if(use_searcher){
+            queryTerms.add(tempTerm);
+        }
+        else{
+            handleTerm(tempTerm); //
+        }
+
     }
 
 
@@ -808,6 +870,15 @@ Parse {
 
         return doc;
     }
+
+    public ArrayList<Term> getQueryTerms() {
+        return queryTerms;
+    }
+
+    public void setQueryTerms(ArrayList<Term> queryTerms) {
+        this.queryTerms = queryTerms;
+    }
+
     //</editor-fold>
 }
 
