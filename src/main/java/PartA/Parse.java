@@ -75,7 +75,7 @@ Parse {
         doc.init_arrEntities();
         doc.ClearEntitiesSet();
         doc.ClearEntitiesTreeSet();
-        indexer.getSet_docs().add(this.doc);
+        indexer.getDict_docs().put(this.doc.getDOCNO(),this.doc);
     }
 
     /**

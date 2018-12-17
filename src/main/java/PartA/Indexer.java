@@ -1,11 +1,6 @@
 package PartA;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,7 +11,10 @@ public class Indexer {
     private HashMap<String,Integer> dict_files;
     private HashSet<String> file_names;
     private HashSet<String> set_languages;
-    private HashSet<Doc> set_docs;
+
+
+
+    private HashMap<String,Doc> dict_docs;
     private ConcurrentHashMap<String,Pointer> dictionary;
     private List<List<String>> list_termsByAlhabet = new ArrayList<List<String>>();
     private ArrayList<String> sortDic;
@@ -43,7 +41,7 @@ public class Indexer {
         this.list_termsByAlhabet = new ArrayList<List<String>>();
         this.first_chunk=true;
         this.set_languages = new HashSet();
-        this.set_docs=new HashSet<>();
+        this.dict_docs =new HashMap<>();
     }
 
     /**
@@ -60,7 +58,7 @@ public class Indexer {
         sortDicTree= new TreeMap<>();
         sortDic= new ArrayList<>();
         set_languages=new HashSet<>();
-        this.set_docs=new HashSet<>();
+        this.dict_docs =new HashMap<>();
     }
 
 
@@ -461,10 +459,10 @@ public class Indexer {
         FileWriter fw = null; //the true will append the new data
         try {
             fw = new FileWriter(filename, true);
-            for (Doc docs : set_docs) {
+            for (Doc docs : dict_docs.values()) {
                 fw.write(docs.getDOCNO() + "|" + docs.getDistinctwords() + "|" + docs.getMaxtf()+System.lineSeparator());
             }
-            set_docs = new HashSet<>();
+            dict_docs = new HashMap<>();
             fw.close();
 
         } catch (IOException e) {
@@ -476,7 +474,7 @@ public class Indexer {
         docsaverage+=size;
     }
     public void calculateAvg(){
-        docsaverage=docsaverage/set_docs.size();
+        docsaverage=docsaverage/ dict_docs.size();
     }
 
     public int getDocsaverage() {
@@ -496,9 +494,10 @@ public class Indexer {
         return sortDicTree;
     }
 
-    public HashSet<Doc> getSet_docs() {
-        return set_docs;
+    public void setDict_docs(HashMap<String, Doc> dict_docs) {
+        this.dict_docs = dict_docs;
     }
+
     public HashMap<String, Integer> getDict_files() {
         return dict_files;
     }
@@ -515,6 +514,10 @@ public class Indexer {
 
     public void setSortDic(ArrayList<String> sortDic) {
         this.sortDic = sortDic;
+    }
+
+    public HashMap<String, Doc> getDict_docs() {
+        return dict_docs;
     }
     //</editor-fold>
 }
