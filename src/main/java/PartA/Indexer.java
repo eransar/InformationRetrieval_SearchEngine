@@ -309,7 +309,11 @@ public class Indexer {
                 file_content.add(OtherTerm.getDf()+" "+termData);
                 Pointer OtherPointer = new Pointer(file_name,file_content.size()-1,OtherTerm.getDf());
                 if(OtherTerm.getName().charAt(0) >=65 && OtherTerm.getName().charAt(0)<=90){
-                    dictionary.put(OtherTerm.getName().toUpperCase(),OtherPointer);
+                    OtherTerm.setName(OtherTerm.getName().toUpperCase());
+                    dictionary.put(OtherTerm.getName(),OtherPointer);
+                    for (Map.Entry<Doc,Integer> d : OtherTerm.getDocFrequency().entrySet()){
+                        dict_docs.get(d.getKey().getDOCNO()).getTreeset_entities().add(OtherTerm);
+                    }
                 }
                 else{
                     dictionary.put(OtherTerm.getName(),OtherPointer);

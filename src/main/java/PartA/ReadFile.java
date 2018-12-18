@@ -79,6 +79,10 @@ public class ReadFile {
     }
       //marge capital letters to dictionary
       indexer.handleCapitalLetters();
+      for (Doc d : indexer.getDict_docs().values()){
+        d.init_TreeSet();
+        d.init_arrEntities();
+      }
       //sort dictionary
       indexer.sortDictionary();
       indexer.WriteDictionary();

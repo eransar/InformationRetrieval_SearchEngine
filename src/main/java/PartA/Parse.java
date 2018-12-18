@@ -596,12 +596,12 @@ Parse {
             }
             if (toCheck.getType().equals("Word") && toCheck.getName().charAt(0) >= 65 && toCheck.getName().charAt(0) <= 90) {
                 updateCacheDicationary(indexer.getDict_capitals(), toCheck);
-                if(toCheck.getName().charAt(toCheck.getName().length()-1) >= 65 && toCheck.getName().charAt(toCheck.getName().length()-1) <= 90){
-                    if(isAllUpperCase(toCheck.getName())){
-                        doc.AddtoEntities(toCheck);
-                    }
+//                if(toCheck.getName().charAt(toCheck.getName().length()-1) >= 65 && toCheck.getName().charAt(toCheck.getName().length()-1) <= 90){
+//                    if(isAllUpperCase(toCheck.getName())){
+//                        doc.AddtoEntities(toCheck);
+//                    }
 
-                }
+//                }
 
             } else {
                 updateCacheDicationary(indexer.getDict_cache(), toCheck);

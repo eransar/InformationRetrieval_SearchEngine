@@ -111,6 +111,14 @@ public class Doc {
         this.CITY = CITY;
     }
 
+    public HashSet<Term> getSet_entities() {
+        return set_entities;
+    }
+
+    public TreeSet<Term> getTreeset_entities() {
+        return treeset_entities;
+    }
+
     public int getDistinctwords() {
         return distinctwords;
     }
