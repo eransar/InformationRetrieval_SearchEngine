@@ -9,40 +9,31 @@ public class BM25 {
     private ArrayList<Term> words;
     private String docno;
     private Query query;
-    private int docsaverage;
-    private int doclength;
 
 
-    private int b;
-    private int k;
-    private int M;
-
+    private final double b = 0.75;
+    private final double k = 1.2;
+    private int M ;
+    private RankingObject rankingObject;
     private Indexer indexer;
 
 
-    public BM25(ArrayList word, String docno, Query query, int doclength, int docsaverage, int b , int k , int M){
-        this.words=word;
-        this.docno=docno;
-        this.query=query;
-        this.docsaverage=docsaverage;
-        this.b=b;
-        this.k=k;
-        this.M=M;
+    public BM25(RankingObject rankingObject){
         this.indexer=Indexer.getInstance();
-        this.doclength=doclength;
-
+        this.M = indexer.getDict_docs().size();
+        this.rankingObject = rankingObject;
     }
 
 
     public double calculate(){
         double result=0;
-        for (Term word : words){
-            int count_wordinquery=countwordinTerm(word);
-            int count_wordindoc=word.getDocFrequency().get(docno);
-            int word_df=word.getDf();
+        for (RankingInstance in : rankingObject.getTerms_data().values()){
+            int count_wordinquery=in.getCount_query();
+            int count_wordindoc=in.getCount_doc();
+            int word_df= (indexer.getDictionary().get(in).getTerm_df());
             int average_doc=indexer.getDocsaverage();
             result += count_wordinquery*
-                    (((k+1)*count_wordindoc) /(count_wordindoc+k*(1-b+b*((doclength)/(average_doc)))))* Math.log10((M+1)/(word_df));
+                    (((k+1)*count_wordindoc) /(count_wordindoc+k*(1-b+b*((rankingObject.length)/(average_doc)))))* Math.log10((M+1)/(word_df));
         }
         return result;
     }
