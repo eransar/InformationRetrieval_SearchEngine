@@ -71,6 +71,19 @@ public class Doc {
             treeset_entities.add(t);
         }
     }
+    public void add_TreeSet(Term t){
+        if(treeset_entities.size()>5){
+            Iterator<Term> it =treeset_entities.iterator();
+            Term currentTerm =it.next();
+            if(currentTerm.getDocFrequency().get(this) < t.getDocFrequency().get(this)){
+                it.remove();
+                treeset_entities.add(t);
+            }
+        }
+        else{
+            treeset_entities.add(t);
+        }
+    }
     public void ClearEntitiesTreeSet(){
         treeset_entities.clear();
     }

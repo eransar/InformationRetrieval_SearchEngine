@@ -49,6 +49,10 @@ public class Searcher {
         System.out.println("jjj");
     }
 
+    public static Ranker getRanker() {
+        return ranker;
+    }
+
     /**
      * This function takes term and inserts it's data from posting to the ranker
      * @param term_name
@@ -65,13 +69,13 @@ public class Searcher {
             if(ranker.getMap_ranked_docs().get(DOCNO)!=null){
                 RankingObject o = ranker.getMap_ranked_docs().get(DOCNO);
                 if(o.getTerms_data().get(term_name)==null){
-                    o.getTerms_data().put(term_name,new RankingInstance(query.getMap_query().get(term_name),Integer.parseInt(docTF)));
+                    o.getTerms_data().put(term_name,new RankingInstance(term_name,query.getMap_query().get(term_name),Integer.parseInt(docTF)));
                     ranker.getMap_ranked_docs().put(DOCNO,o);
                 }
             }
             else{
                 RankingObject o = new RankingObject(DOCNO,File,indexer.getDict_docs().get(DOCNO).getLENGTH());
-                o.getTerms_data().put(term_name,new RankingInstance(query.getMap_query().get(term_name),Integer.parseInt(docTF)));
+                o.getTerms_data().put(term_name,new RankingInstance(term_name,query.getMap_query().get(term_name),Integer.parseInt(docTF)));
                 ranker.getMap_ranked_docs().put(DOCNO,o);
             }
         }

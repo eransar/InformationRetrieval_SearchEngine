@@ -1,22 +1,24 @@
 package PartA.Ranking;
 
+import PartA.Pointer;
+
 import java.util.HashMap;
 
-public class RankingObject {
+public class RankingObject implements Comparable {
 
     int length;
     String DOCNO;
     String file;
     String CITY;
-    int rank;
-    HashMap<String,RankingInstance> terms_data; // String is the name of the term
+    double rank;
+    HashMap<String, RankingInstance> terms_data; // String is the name of the term
 
 
-    public RankingObject(String DOCNO, String file, int length){
-        terms_data=new HashMap<>();
-        this.DOCNO=DOCNO;
-        this.file=file;
-        this.length=length;
+    public RankingObject(String DOCNO, String file, int length) {
+        terms_data = new HashMap<>();
+        this.DOCNO = DOCNO;
+        this.file = file;
+        this.length = length;
     }
 
     public int getLength() {
@@ -51,11 +53,11 @@ public class RankingObject {
         this.CITY = CITY;
     }
 
-    public int getRank() {
+    public double getRank() {
         return rank;
     }
 
-    public void setRank(int rank) {
+    public void setRank(double rank) {
         this.rank = rank;
     }
 
@@ -67,5 +69,22 @@ public class RankingObject {
         this.terms_data = terms_data;
     }
 
-    public void clear(){ terms_data=new HashMap<>();}
+    public void clear() {
+        terms_data = new HashMap<>();
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if (this == o) return 0;
+
+        if ((o instanceof RankingObject)) {
+            RankingObject OtherRakingObject = ((RankingObject) o);
+            if (this.rank > OtherRakingObject.rank) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
+        return -1;
+    }
 }

@@ -311,9 +311,9 @@ public class Indexer {
                 if(OtherTerm.getName().charAt(0) >=65 && OtherTerm.getName().charAt(0)<=90){
                     OtherTerm.setName(OtherTerm.getName().toUpperCase());
                     dictionary.put(OtherTerm.getName(),OtherPointer);
-                    for (Map.Entry<Doc,Integer> d : OtherTerm.getDocFrequency().entrySet()){
-                        dict_docs.get(d.getKey().getDOCNO()).getTreeset_entities().add(OtherTerm);
-                    }
+//                    for (Map.Entry<Doc,Integer> d : OtherTerm.getDocFrequency().entrySet()){
+//                        dict_docs.get(d.getKey().getDOCNO()).add_TreeSet(OtherTerm);
+//                    }
                 }
                 else{
                     dictionary.put(OtherTerm.getName(),OtherPointer);

@@ -30,7 +30,7 @@ public class BM25 {
         for (RankingInstance in : rankingObject.getTerms_data().values()){
             int count_wordinquery=in.getCount_query();
             int count_wordindoc=in.getCount_doc();
-            int word_df= (indexer.getDictionary().get(in).getTerm_df());
+            int word_df= (indexer.getDictionary().get(in.getTerm_name()).getTerm_df());
             int average_doc=indexer.getDocsaverage();
             result += count_wordinquery*
                     (((k+1)*count_wordindoc) /(count_wordindoc+k*(1-b+b*((rankingObject.length)/(average_doc)))))* Math.log10((M+1)/(word_df));
