@@ -1,9 +1,6 @@
 package sample;
 
-import PartA.CityIndexer;
-import PartA.Indexer;
-import PartA.Pointer;
-import PartA.ReadFile;
+import PartA.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -257,8 +254,20 @@ public class Controller implements Initializable {
             language.setValue(languages.iterator().next());
             language.setDisable(false);
             ObservableList<String> strings = FXCollections.observableArrayList(languages);
+            ArrayList<String> citisNames = new ArrayList<>();
+            for(City c :CityIndexer.getInstance().dict_cache.values()){
+                citisNames.add(c.getName());
+            }
+            citisNames.sort(new Comparator<String>() {
+                @Override
+                    public int compare(String obj1, String obj2) {
+                        return obj1.compareTo(obj2);
+                    }
+
+            });
+            ObservableList<String> Citis = FXCollections.observableArrayList(citisNames);
             CheckComboBox_Citis.setDisable(false);
-            CheckComboBox_Citis.getItems().setAll(strings);
+            CheckComboBox_Citis.getItems().setAll(Citis);
         }
     }
 
