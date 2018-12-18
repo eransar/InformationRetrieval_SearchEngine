@@ -6,21 +6,27 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import org.controlsfx.control.CheckComboBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
       <TextField fx:id="corpusField" layoutX="151.0" layoutY="38.0" />
       <TextField fx:id="PostingField" layoutX="151.0" layoutY="129.0" />
       <Button fx:id="corpusPath" layoutX="12.0" layoutY="82.0" mnemonicParsing="false" onAction="#openStopWords" text="Load StopWords" />
       <Button fx:id="PostingPath" layoutX="24.0" layoutY="130.0" mnemonicParsing="false" onAction="#SavePostingPath" text="Save Posting" />
-      <Button fx:id="run" layoutX="224.0" layoutY="305.0" mnemonicParsing="false" onAction="#SetAll" prefHeight="58.0" prefWidth="118.0" text="run" />
+      <Button fx:id="run" layoutX="324.0" layoutY="210.0" mnemonicParsing="false" onAction="#SetAll" prefHeight="58.0" prefWidth="118.0" text="run" />
       <TextField fx:id="stopWordsField" layoutX="151.0" layoutY="82.0" />
       <Button fx:id="StopW" layoutX="24.0" layoutY="38.0" mnemonicParsing="false" onAction="#openCourpus" text="Load Curpos" />
       <CheckBox fx:id="StemmingCheckBox" layoutX="388.0" layoutY="129.0" mnemonicParsing="false" onAction="#Tostemming" prefHeight="25.0" prefWidth="109.0" text="Stemming" />
-      <ChoiceBox fx:id="language" layoutX="368.0" layoutY="70.0" prefWidth="150.0" />
+      <ChoiceBox fx:id="language" layoutX="383.0" layoutY="63.0" prefWidth="150.0" />
       <Button fx:id="reset" layoutX="186.0" layoutY="175.0" mnemonicParsing="false" onAction="#Reset" prefHeight="25.0" prefWidth="79.0" text="Reset" />
-      <Button fx:id="ShowDictionary" layoutX="24.0" layoutY="305.0" mnemonicParsing="false" onAction="#ShowDictionary" text="Show Dictionary" />
-      <Button fx:id="LoadDictionary" layoutX="26.0" layoutY="351.0" mnemonicParsing="false" onAction="#LoadDictionary" text="Load Dictionary" />
+      <Button fx:id="ShowDictionary" layoutX="25.0" layoutY="227.0" mnemonicParsing="false" onAction="#ShowDictionary" text="Show Dictionary" />
+      <Button fx:id="LoadDictionary" layoutX="27.0" layoutY="268.0" mnemonicParsing="false" onAction="#LoadDictionary" text="Load Dictionary" />
       <Label fx:id="error" layoutX="383.0" layoutY="301.0" prefHeight="66.0" prefWidth="182.0" />
+      <TextField fx:id="Q_text" layoutX="176.0" layoutY="388.0" prefHeight="17.0" prefWidth="296.0" promptText="Write your Q here" />
+      <Button fx:id="load_Q_file" layoutX="14.0" layoutY="388.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="109.0" text="Browse" />
+      <Label layoutX="137.0" layoutY="392.0" text="OR" />
+      <Button layoutX="250.0" layoutY="452.0" mnemonicParsing="false" text="Run Q" />
+      <CheckComboBox fx:id="CheckComboBox_Citis" layoutX="418.0" layoutY="440.0" prefHeight="33.0" prefWidth="141.0" />
    </children>
 </AnchorPane>

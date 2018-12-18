@@ -12,7 +12,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("MainWIn.fxml"));
         primaryStage.setTitle("Search Engine");
-        Scene scene = new Scene(root, 600, 400);
+        Scene scene = new Scene(root, 600, 800);
         scene.getStylesheets().add(getClass().getClassLoader().getResource("CssController.css").toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.show();

@@ -5,6 +5,7 @@ import PartA.Indexer;
 import PartA.Pointer;
 import PartA.ReadFile;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -16,6 +17,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
+import org.controlsfx.control.CheckComboBox;
+import org.controlsfx.control.IndexedCheckModel;
 
 import javax.swing.*;
 import java.io.*;
@@ -40,6 +43,7 @@ public class Controller implements Initializable {
     public TextField PostingField;
     public CheckBox StemmingCheckBox;
     public ChoiceBox<String> language;
+    public CheckComboBox CheckComboBox_Citis;
     public ReadFile rf;
     private String PathOfCorpus="";
     private String StopWordsPath="";
@@ -55,6 +59,7 @@ public class Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         StemmingCheckBox.setSelected(false);
         language.setDisable(true);
+        CheckComboBox_Citis.setDisable(true);
         language.setItems(FXCollections.observableArrayList(
                 "Language")
         );
@@ -251,6 +256,9 @@ public class Controller implements Initializable {
             language.setItems(FXCollections.observableArrayList(languages));
             language.setValue(languages.iterator().next());
             language.setDisable(false);
+            ObservableList<String> strings = FXCollections.observableArrayList(languages);
+            CheckComboBox_Citis.setDisable(false);
+            CheckComboBox_Citis.getItems().setAll(strings);
         }
     }
 
