@@ -287,6 +287,11 @@ public class Controller implements Initializable {
     public void runQuery(ActionEvent event){
         String query ="";
         if(Q_text.getText()!=null && !Q_text.getText().equals("")){
+            ObservableList<Integer> in = CheckComboBox_Citis.getCheckModel().getCheckedIndices();
+            HashSet<String> s = new HashSet<>();
+            for(Integer i :in) {
+                s.add((String) CheckComboBox_Citis.getItems().get(i));
+            }
             query = Q_text.getText();
             Searcher searcher = new Searcher(query);
         }
