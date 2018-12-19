@@ -1,8 +1,11 @@
 package PartA;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 public class Indexer {
     private static Indexer ourInstance = new Indexer();
@@ -289,67 +292,130 @@ public class Indexer {
         dict_capitals.clear();
     }
 
-    public List<String> mergeCapitals(List<String> capitalTerms ,List<String> file_content , String file_name ){
+    public List<String> mergeCapitals(List<String> capitalTerms ,List<String> file_content , String file_name ) {
 
-        for (int i = 0; i < capitalTerms.size() ; i++) {
-            //find term in lower case first letter form
-            char first_letter = Character.toLowerCase(capitalTerms.get(i).charAt(0));
-            StringBuilder check_term = new StringBuilder(""+first_letter);
-            for (int k = 1; k <capitalTerms.get(i).length() ; k++) {
-                check_term.append(capitalTerms.get(i).charAt(k));
-            }
-            Pointer find_location=isExist(check_term.toString());
-            if(find_location==null){
-                Term OtherTerm=dict_capitals.get(capitalTerms.get(i));
-                StringBuilder termData = new StringBuilder("");
-                for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
+        for (int i = 0; i < capitalTerms.size(); i++) {
 
-                    termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile()); //DOCNO,FrequencyInDoc,File Name of Doc
-                }
-                file_content.add(OtherTerm.getDf()+" "+termData);
-                Pointer OtherPointer = new Pointer(file_name,file_content.size()-1,OtherTerm.getDf());
-                if(OtherTerm.getName().charAt(0) >=65 && OtherTerm.getName().charAt(0)<=90){
-                    OtherTerm.setName(OtherTerm.getName().toUpperCase());
-                    dictionary.put(OtherTerm.getName(),OtherPointer);
-//                    for (Map.Entry<Doc,Integer> d : OtherTerm.getDocFrequency().entrySet()){
-//                        dict_docs.get(d.getKey().getDOCNO()).add_TreeSet(OtherTerm);
-//                    }
-                }
-                else{
-                    dictionary.put(OtherTerm.getName(),OtherPointer);
-                }
-
-
-            }
-            else{
+            if (isExist(capitalTerms.get(i).toLowerCase()) != null) {
                 /**
                  * is exist in the dictionary in lower case in the first letter
                  */
+                Pointer find_location = isExist(capitalTerms.get(i).toLowerCase());
                 String lineToChange = null;
                 lineToChange = file_content.get(find_location.getLine_number());
-
                 Term OtherTerm = dict_capitals.get(capitalTerms.get(i));
-                OtherTerm.setName(check_term.toString());
+                OtherTerm.setName(capitalTerms.get(i).toLowerCase());
                 String[] currentline = lineToChange.split(" ");
-                int currentdf=Integer.parseInt(currentline[0]);
+                int currentdf = Integer.parseInt(currentline[0]);
                 int chunkdf = OtherTerm.getDf();
-                int newdf=currentdf+chunkdf;
+                int newdf = currentdf + chunkdf;
                 StringBuilder termData = new StringBuilder("");
-                for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
-                    termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
+                for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()) {
+                    termData.append("|" + _doc.getKey().getDOCNO() + "," + _doc.getValue() + "," + _doc.getKey().getFile());
                 }
-                file_content.set(find_location.getLine_number(),newdf+" "+currentline[1]+termData);
-                Pointer p1 =dictionary.get(OtherTerm.getName());
+                file_content.set(find_location.getLine_number(), newdf + " " + currentline[1] + termData);
+                Pointer p1 = dictionary.get(OtherTerm.getName());
+                dictionary.put(OtherTerm.getName(), new Pointer(file_name, p1.getLine_number(), newdf));
+            } else if (isExist(capitalTerms.get(i).toUpperCase()) != null) {
+                Pointer find_location = isExist(capitalTerms.get(i).toUpperCase());
+                String lineToChange = null;
+                lineToChange = file_content.get(find_location.getLine_number());
+                Term OtherTerm = dict_capitals.get(capitalTerms.get(i));
+                OtherTerm.setName(capitalTerms.get(i).toUpperCase());
+                String[] currentline = lineToChange.split(" ");
+                int currentdf = Integer.parseInt(currentline[0]);
+                int chunkdf = OtherTerm.getDf();
+                int newdf = currentdf + chunkdf;
+                StringBuilder termData = new StringBuilder("");
+                for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()) {
+                    termData.append("|" + _doc.getKey().getDOCNO() + "," + _doc.getValue() + "," + _doc.getKey().getFile());
+                }
+                file_content.set(find_location.getLine_number(), newdf + " " + currentline[1] + termData);
+                Pointer p1 = dictionary.get(OtherTerm.getName());
+                dictionary.put(OtherTerm.getName(), new Pointer(file_name, p1.getLine_number(), newdf));
+            } else if (isExist(capitalTerms.get(i)) == null) {
+                Term OtherTerm = dict_capitals.get(capitalTerms.get(i));
+                OtherTerm.setName(OtherTerm.getName().toUpperCase());
+                StringBuilder termData = new StringBuilder("");
+                for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()) {
 
-
-                dictionary.put(OtherTerm.getName(),new Pointer(file_name,p1.getLine_number(),newdf));
-
+                    termData.append("|" + _doc.getKey().getDOCNO() + "," + _doc.getValue() + "," + _doc.getKey().getFile()); //DOCNO,FrequencyInDoc,File Name of Doc
+                }
+                file_content.add(OtherTerm.getDf() + " " + termData);
+                Pointer OtherPointer = new Pointer(file_name, file_content.size() - 1, OtherTerm.getDf());
+                dictionary.put(OtherTerm.getName(), OtherPointer);
             }
-
         }
         return file_content;
-
     }
+
+
+//
+//
+//
+//
+//
+//            //find term in lower case first letter form
+//            char first_letter = Character.toLowerCase(capitalTerms.get(i).charAt(0));
+//            StringBuilder check_term = new StringBuilder(""+first_letter);
+//            for (int k = 1; k <capitalTerms.get(i).length() ; k++) {
+//                check_term.append(capitalTerms.get(i).charAt(k));
+//            }
+//            Pointer find_location=isExist(check_term.toString());
+//            if(find_location==null){
+//                Term OtherTerm=dict_capitals.get(capitalTerms.get(i));
+//                StringBuilder termData = new StringBuilder("");
+//                for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
+//
+//                    termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile()); //DOCNO,FrequencyInDoc,File Name of Doc
+//                }
+//                file_content.add(OtherTerm.getDf()+" "+termData);
+//                Pointer OtherPointer = new Pointer(file_name,file_content.size()-1,OtherTerm.getDf());
+//                if(OtherTerm.getName().charAt(0) >=65 && OtherTerm.getName().charAt(0)<=90){
+//                    if(OtherTerm.getName().charAt(OtherTerm.getName().length()-1) >= 65 && OtherTerm.getName().charAt(OtherTerm.getName().length()-1) <=90 ){
+//                        if(OtherTerm.getName().)
+//                    }
+//                    OtherTerm.setName(OtherTerm.getName().toUpperCase());
+//                    dictionary.put(OtherTerm.getName(),OtherPointer);
+////                    for (Map.Entry<Doc,Integer> d : OtherTerm.getDocFrequency().entrySet()){
+////                        dict_docs.get(d.getKey().getDOCNO()).add_TreeSet(OtherTerm);
+////                    }
+//                }
+//                else{
+//                    dictionary.put(OtherTerm.getName(),OtherPointer);
+//                }
+//
+//
+//            }
+//            else{
+//                /**
+//                 * is exist in the dictionary in lower case in the first letter
+//                 */
+//                String lineToChange = null;
+//                lineToChange = file_content.get(find_location.getLine_number());
+//
+//                Term OtherTerm = dict_capitals.get(capitalTerms.get(i));
+//                OtherTerm.setName(check_term.toString());
+//                String[] currentline = lineToChange.split(" ");
+//                int currentdf=Integer.parseInt(currentline[0]);
+//                int chunkdf = OtherTerm.getDf();
+//                int newdf=currentdf+chunkdf;
+//                StringBuilder termData = new StringBuilder("");
+//                for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
+//                    termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
+//                }
+//                file_content.set(find_location.getLine_number(),newdf+" "+currentline[1]+termData);
+//                Pointer p1 =dictionary.get(OtherTerm.getName());
+//
+//
+//                dictionary.put(OtherTerm.getName(),new Pointer(file_name,p1.getLine_number(),newdf));
+//
+//            }
+//
+//        }
+
+
+
 
     public void setPath(String path){
         this.path=path;
@@ -473,6 +539,16 @@ public class Indexer {
         }
 
     }
+    public String getLine(Pointer term_pointer){
+        String line="";
+        try (Stream<String> lines = Files.lines(Paths.get(path+ File.separator+ term_pointer.getFile_name()+".txt"))) {
+            line = lines.skip(term_pointer.getLine_number()).findFirst().get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return line;
+    }
+
     public void addtoAvg(int size){
         docsaverage+=size;
     }

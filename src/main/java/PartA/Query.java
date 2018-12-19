@@ -22,7 +22,7 @@ public class Query {
                 map_query.put(word,count+1);
             }
             else{
-                map_query.put(word,1);
+                map_query.put(word.toLowerCase(),1);
             }
         }
     }

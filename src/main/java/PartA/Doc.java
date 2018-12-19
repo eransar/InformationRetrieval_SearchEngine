@@ -165,6 +165,14 @@ public class Doc {
     public String getLANGUAGE() {
         return LANGUAGE;
     }
+
+    public String getHEADER() {
+        return HEADER;
+    }
+
+    public void setHEADER(String HEADER) {
+        this.HEADER = HEADER;
+    }
     //</editor-fold>
 }
 

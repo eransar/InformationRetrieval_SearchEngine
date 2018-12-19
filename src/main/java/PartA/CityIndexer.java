@@ -169,6 +169,4 @@ public class CityIndexer {
     }
 
 
-
-
 }

@@ -22,6 +22,7 @@ public class Ranker {
         semantics = false;
         this.sorted_rankingobject = new TreeSet<>();
 
+
     }
 
     public void calculateBM25() {
@@ -38,9 +39,19 @@ public class Ranker {
         }
     }
 
+//    public void calculateHeaderTest(){
+//        for (RankingObject rank : map_ranked_docs.values()) {
+//            HeaderTest headerTest = new HeaderTest(rank);
+//            rank.setRank_header(headerTest.calculate());
+//        }
+//    }
+
     public void calculate(){
+        calculateBM25();
+        calculateCosSim();
+//        calculateHeaderTest();
         for (RankingObject rank : map_ranked_docs.values()) {
-            rank.setRank(rank.getRank_BM25()*0.75+rank.getRank_cossim()*0.25);
+            rank.setRank( +rank.getRank_BM25()*0.65+rank.getRank_cossim()*0.35);
         }
     }
 

@@ -1,8 +1,11 @@
 package PartA.Ranking;
 
+import PartA.Indexer;
 import PartA.Pointer;
+import PartA.Term;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class RankingObject implements Comparable {
 
@@ -13,6 +16,10 @@ public class RankingObject implements Comparable {
     double rank;
     double rank_BM25;
     double rank_cossim;
+    double rank_header;
+
+
+
     HashMap<String, RankingInstance> terms_data; // String is the name of the term
 
 
@@ -37,6 +44,28 @@ public class RankingObject implements Comparable {
 
     public void setRank_cossim(double rank_cossim) {
         this.rank_cossim = rank_cossim;
+    }
+
+
+    public double getRank_header() {
+        return rank_header;
+    }
+
+    public void setRank_header(double rank_header) {
+        this.rank_header = rank_header;
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RankingObject rankingObject = (RankingObject) o;
+        return this.DOCNO.equals(rankingObject.getDOCNO());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(DOCNO);
     }
 
     public int getLength() {

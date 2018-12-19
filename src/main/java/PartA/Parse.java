@@ -869,6 +869,18 @@ Parse {
     }
 
     public ArrayList<Term> getQueryTerms() {
+        for (int i = 0; i <queryTerms.size() ; i++) {
+            if(indexer.getDictionary().get(queryTerms.get(i).getName().toLowerCase())!=null){
+                Term Otherterm = queryTerms.get(i);
+                Otherterm.setName(Otherterm.getName().toLowerCase());
+                queryTerms.set(i,Otherterm);
+            }
+            else if (indexer.getDictionary().get(queryTerms.get(i).getName().toUpperCase())!=null){
+                Term Otherterm = queryTerms.get(i);
+                Otherterm.setName(Otherterm.getName().toUpperCase());
+                queryTerms.set(i,Otherterm);
+            }
+        }
         return queryTerms;
     }
 

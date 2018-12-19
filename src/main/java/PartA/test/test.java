@@ -10,12 +10,13 @@ import java.io.IOException;
 
 public class test {
     public static void main(String[] args) throws IOException {
-        ReadFile readFile = new ReadFile("d:\\documents\\users\\eransar\\Downloads\\smallcorpus","d:\\documents\\users\\eransar\\Downloads\\smallcorpus\\stop_words.txt","d:\\documents\\users\\eransar\\Downloads\\WithOutStem\\WithOutStem\\",false);
+        ReadFile readFile = new ReadFile("d:\\documents\\users\\eransar\\Downloads\\minicorpus","d:\\documents\\users\\eransar\\Downloads\\smallcorpus\\stop_words.txt","d:\\documents\\users\\eransar\\Downloads\\posting",false);
         readFile.start();
-        Searcher s = new Searcher("Falkland petroleum exploration ");
+        Searcher s = new Searcher("What information is available on petroleum exploration in \n" +
+                "the South Atlantic near the Falkland Islands?");
         s.getPointers();
         Ranker rank = s.getRanker();
-        rank.calculateBM25();
+        rank.calculate();
         rank.sortSet();
         int i =5;
     }
