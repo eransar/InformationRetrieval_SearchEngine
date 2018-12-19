@@ -3,6 +3,7 @@ package PartA.Ranking;
 import PartA.Doc;
 import PartA.Indexer;
 import PartA.Ranking.Functions.BM25;
+import PartA.Ranking.Functions.CosSim;
 import PartA.Term;
 
 import java.util.*;
@@ -26,9 +27,21 @@ public class Ranker {
     public void calculateBM25() {
         for (RankingObject rank : map_ranked_docs.values()) {
             BM25 bm25 = new BM25(rank);
-            rank.setRank(bm25.calculate());
+            rank.setRank_BM25(bm25.calculate());
         }
+    }
 
+    public void calculateCosSim(){
+        for (RankingObject rank : map_ranked_docs.values()) {
+            CosSim cosSim = new CosSim(rank);
+            rank.setRank_cossim(cosSim.calculate());
+        }
+    }
+
+    public void calculate(){
+        for (RankingObject rank : map_ranked_docs.values()) {
+            rank.setRank(rank.getRank_BM25()*0.75+rank.getRank_cossim()*0.25);
+        }
     }
 
     public void sortSet() {

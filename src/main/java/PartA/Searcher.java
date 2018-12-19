@@ -34,6 +34,14 @@ public class Searcher {
         this.indexer=Indexer.getInstance();
         this.parse=new Parse(true);
     }
+
+    public Searcher(String query){
+        ranker = new Ranker(hashSet_citisByUser);
+        this.query=new Query(query);
+        this.indexer=Indexer.getInstance();
+        this.parse=new Parse(true);
+    }
+
     public ArrayList<Term> parseQuery(){
         return parse.parseQuery(query.text);
     }
