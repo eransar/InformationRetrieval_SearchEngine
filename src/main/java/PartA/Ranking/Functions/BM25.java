@@ -1,15 +1,13 @@
-package PartA.Ranking;
+package PartA.Ranking.Functions;
 
 import PartA.*;
+import PartA.Ranking.RankingInstance;
+import PartA.Ranking.RankingObject;
 
 import java.util.ArrayList;
 
 
-public class BM25 {
-    private ArrayList<Term> words;
-    private String docno;
-    private Query query;
-
+public class BM25 extends ARankerFunction{
 
     private final double b = 0.75;
     private final double k = 1.2;
@@ -19,6 +17,7 @@ public class BM25 {
 
 
     public BM25(RankingObject rankingObject){
+        super(rankingObject);
         this.indexer=Indexer.getInstance();
         this.M = indexer.getDict_docs().size();
         this.rankingObject = rankingObject;
@@ -33,16 +32,10 @@ public class BM25 {
             int word_df= (indexer.getDictionary().get(in.getTerm_name()).getTerm_df());
             int average_doc=indexer.getDocsaverage();
             result += count_wordinquery*
-                    (((k+1)*count_wordindoc) /(count_wordindoc+k*(1-b+b*((rankingObject.length)/(average_doc)))))* Math.log10((M+1)/(word_df));
+                    (((k+1)*count_wordindoc) /(count_wordindoc+k*(1-b+b*((rankingObject.getLength())/(average_doc)))))* Math.log10((M+1)/(word_df));
         }
         return result;
     }
 
-    public int countwordinTerm(Term word){
-        if(query.getMap_query().containsKey(word)){
-            return query.getMap_query().get(word);
-        }
-        return 0;
-    }
 }
 

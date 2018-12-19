@@ -1,12 +1,11 @@
 package PartA.Ranking;
 
-import PartA.City;
 import PartA.Doc;
 import PartA.Indexer;
+import PartA.Ranking.Functions.BM25;
 import PartA.Term;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Ranker {
     private HashMap<Doc, ArrayList<Term>> map_docs;

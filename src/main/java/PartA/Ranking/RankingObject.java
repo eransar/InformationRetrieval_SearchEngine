@@ -11,6 +11,8 @@ public class RankingObject implements Comparable {
     String file;
     String CITY;
     double rank;
+    double rank_BM25;
+    double rank_cossim;
     HashMap<String, RankingInstance> terms_data; // String is the name of the term
 
 
@@ -19,6 +21,22 @@ public class RankingObject implements Comparable {
         this.DOCNO = DOCNO;
         this.file = file;
         this.length = length;
+    }
+
+    public double getRank_BM25() {
+        return rank_BM25;
+    }
+
+    public void setRank_BM25(double rank_BM25) {
+        this.rank_BM25 = rank_BM25;
+    }
+
+    public double getRank_cossim() {
+        return rank_cossim;
+    }
+
+    public void setRank_cossim(double rank_cossim) {
+        this.rank_cossim = rank_cossim;
     }
 
     public int getLength() {
