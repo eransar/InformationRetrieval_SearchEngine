@@ -19,6 +19,8 @@ import org.controlsfx.control.IndexedCheckModel;
 
 import javax.swing.*;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.*;
@@ -40,7 +42,12 @@ public class Controller implements Initializable {
     public TextField PostingField;
     public CheckBox StemmingCheckBox;
     public ChoiceBox<String> language;
+    ////////////////////////////////////
     public CheckComboBox CheckComboBox_Citis;
+    public Button load_Q_file;
+    public TextField Q_text;
+    public Button run_Q;
+    ////////////////////////////////////
     public ReadFile rf;
     private String PathOfCorpus="";
     private String StopWordsPath="";
@@ -253,21 +260,44 @@ public class Controller implements Initializable {
             language.setItems(FXCollections.observableArrayList(languages));
             language.setValue(languages.iterator().next());
             language.setDisable(false);
-            ObservableList<String> strings = FXCollections.observableArrayList(languages);
-            ArrayList<String> citisNames = new ArrayList<>();
-            for(City c :CityIndexer.getInstance().dict_cache.values()){
-                citisNames.add(c.getName());
-            }
-            citisNames.sort(new Comparator<String>() {
-                @Override
-                    public int compare(String obj1, String obj2) {
-                        return obj1.compareTo(obj2);
-                    }
+            CitisCheckComboBox();
+        }
+    }
 
-            });
-            ObservableList<String> Citis = FXCollections.observableArrayList(citisNames);
-            CheckComboBox_Citis.setDisable(false);
-            CheckComboBox_Citis.getItems().setAll(Citis);
+    /**
+     * build list of citis for the user to search for
+     */
+    private void CitisCheckComboBox() {
+        ArrayList<String> citisNames = new ArrayList<>();
+        for(City c : CityIndexer.getInstance().dict_cache.values()){
+            citisNames.add(c.getName());
+        }
+        citisNames.sort(new Comparator<String>() {
+            @Override
+                public int compare(String obj1, String obj2) {
+                    return obj1.compareTo(obj2);
+                }
+
+        });
+        ObservableList<String> Citis = FXCollections.observableArrayList(citisNames);
+        CheckComboBox_Citis.setDisable(false);
+        CheckComboBox_Citis.getItems().setAll(Citis);
+    }
+
+    public void runQuery(ActionEvent event){
+        String query ="";
+        if(Q_text.getText()!=null && !Q_text.getText().equals("")){
+            query = Q_text.getText();
+            Searcher searcher = new Searcher(query);
+        }
+    }
+
+    public void BrowseQuery(ActionEvent event) throws FileNotFoundException {
+        String path = browse();
+        if(path!=null) {
+            File f = new File(path);
+            FileReader fr = new FileReader(f);
+            BufferedReader bufferedReader = new BufferedReader(fr);
         }
     }
 

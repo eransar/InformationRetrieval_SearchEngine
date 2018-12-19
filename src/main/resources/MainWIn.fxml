@@ -26,7 +26,7 @@
       <TextField fx:id="Q_text" layoutX="176.0" layoutY="388.0" prefHeight="17.0" prefWidth="296.0" promptText="Write your Q here" />
       <Button fx:id="load_Q_file" layoutX="14.0" layoutY="388.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="109.0" text="Browse" />
       <Label layoutX="137.0" layoutY="392.0" text="OR" />
-      <Button layoutX="250.0" layoutY="452.0" mnemonicParsing="false" text="Run Q" />
+      <Button fx:id="run_Q" layoutX="250.0" layoutY="452.0" mnemonicParsing="false" onAction="#runQuery" text="Run Q" />
       <CheckComboBox fx:id="CheckComboBox_Citis" layoutX="418.0" layoutY="440.0" prefHeight="33.0" prefWidth="141.0" />
    </children>
 </AnchorPane>
