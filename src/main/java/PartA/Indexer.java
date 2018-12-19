@@ -208,6 +208,7 @@ public class Indexer {
                 fi = new FileInputStream(new File(pathPosting+File.separator+"WithOutStem"+File.separator+"dictionary.txt"));
             ObjectInputStream oi = new ObjectInputStream(fi);
             sortDicTree = (TreeMap<String, Pointer>)oi.readObject();
+            Indexer.getInstance().dictionary.putAll(sortDicTree);
             oi.close();
 
     }

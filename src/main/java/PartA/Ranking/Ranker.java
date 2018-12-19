@@ -57,7 +57,7 @@ public class Ranker {
 
     public void sortSet() {
         //remove the unnecessary docs by not chosen citis.
-        if(set_citiesChoosen.size()>0) {
+        if(set_citiesChoosen != null && set_citiesChoosen.size()>0) {
             for (String s : map_ranked_docs.keySet()) {
                 String city = Indexer.getInstance().getDict_docs().get(s).getCITY();
                 if (!set_citiesChoosen.contains(city)) {

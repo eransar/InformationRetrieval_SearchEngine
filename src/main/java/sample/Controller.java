@@ -1,6 +1,7 @@
 package sample;
 
 import PartA.*;
+import PartA.Ranking.Ranker;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -287,13 +288,18 @@ public class Controller implements Initializable {
     public void runQuery(ActionEvent event){
         String query ="";
         if(Q_text.getText()!=null && !Q_text.getText().equals("")){
-            ObservableList<Integer> indexOfCheckComboBox_Citis = CheckComboBox_Citis.getCheckModel().getCheckedIndices();
             HashSet<String> set_CitisByUser = new HashSet<>();
+            ObservableList<Integer> indexOfCheckComboBox_Citis = CheckComboBox_Citis.getCheckModel().getCheckedIndices();
             for(Integer i :indexOfCheckComboBox_Citis) {
                 set_CitisByUser.add((String) CheckComboBox_Citis.getItems().get(i));
             }
             query = Q_text.getText();
             Searcher searcher = new Searcher(query,set_CitisByUser);
+            searcher.getPointers();
+            Ranker ranker = searcher.getRanker();
+            ranker.calculate();
+            ranker.sortSet();
+            System.out.println("j");
         }
     }
 

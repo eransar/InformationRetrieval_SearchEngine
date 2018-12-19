@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class test {
     public static void main(String[] args) throws IOException {
-        ReadFile readFile = new ReadFile("d:\\documents\\users\\eransar\\Downloads\\minicorpus","d:\\documents\\users\\eransar\\Downloads\\smallcorpus\\stop_words.txt","d:\\documents\\users\\eransar\\Downloads\\posting",false);
+        ReadFile readFile = new ReadFile("C:\\corpus\\corpus","C:\\corpus\\corpus\\stop_words.txt","C:\\corpus\\temp",false);
         readFile.start();
         Searcher s = new Searcher("What information is available on petroleum exploration in \n" +
                 "the South Atlantic near the Falkland Islands?");
