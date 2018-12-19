@@ -1,36 +1,48 @@
 package PartA.Ranking;
 
+import PartA.City;
 import PartA.Doc;
+import PartA.Indexer;
 import PartA.Term;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Ranker {
-    private HashMap<Doc,ArrayList<Term>> map_docs;
-    private HashMap<String,RankingObject> map_ranked_docs; //String is the name of the DOC ( DOCNO)
+    private HashMap<Doc, ArrayList<Term>> map_docs;
+    private HashMap<String, RankingObject> map_ranked_docs; //String is the name of the DOC ( DOCNO)
     private TreeSet<RankingObject> sorted_rankingobject;
     private boolean semantics;
+    private HashSet<String> set_citiesChoosen;
 
-
-    public Ranker(){
+    public Ranker(HashSet<String> set_citiesChoosen) {
+        this.set_citiesChoosen = set_citiesChoosen;
         map_docs = new HashMap<>();
         map_ranked_docs = new HashMap<>();
         semantics = false;
-        this.sorted_rankingobject=new TreeSet<>();
+        this.sorted_rankingobject = new TreeSet<>();
 
     }
 
-    public void calculateBM25(){
-        for (RankingObject rank: map_ranked_docs.values()){
+    public void calculateBM25() {
+        for (RankingObject rank : map_ranked_docs.values()) {
             BM25 bm25 = new BM25(rank);
             rank.setRank(bm25.calculate());
         }
 
     }
-    public void sortSet(){
 
-       sorted_rankingobject.addAll(map_ranked_docs.values());
+    public void sortSet() {
+        //remove the unnecessary docs by not chosen citis.
+        if(set_citiesChoosen.size()>0) {
+            for (String s : map_ranked_docs.keySet()) {
+                String city = Indexer.getInstance().getDict_docs().get(s).getCITY();
+                if (!set_citiesChoosen.contains(city)) {
+                    map_ranked_docs.remove(s);
+                }
+            }
+        }   
+        sorted_rankingobject.addAll(map_ranked_docs.values());
     }
 
     public HashMap<Doc, ArrayList<Term>> getMap_docs() {

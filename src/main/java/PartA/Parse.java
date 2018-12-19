@@ -46,9 +46,6 @@ Parse {
         init_stopWords(stopWordsPath);
         init_replace();
         indexer_city.startConnection();
-
-
-       
     }
 
     public Parse(boolean use_searcher){

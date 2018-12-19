@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
@@ -22,11 +23,13 @@ public class Searcher {
     private Query query;
     private Indexer indexer;
     private TreeSet<Pointer> pointers = new TreeSet<>();
-    private static Ranker ranker = new Ranker();
+    private static Ranker ranker;
     private Parse parse;
+    private HashSet<String> hashSet_citisByUser;
 
-
-    public Searcher(String query){
+    public Searcher(String query, HashSet<String> hashSet_citisByUser){
+        ranker = new Ranker(hashSet_citisByUser);
+        this.hashSet_citisByUser =hashSet_citisByUser;
         this.query=new Query(query);
         this.indexer=Indexer.getInstance();
         this.parse=new Parse(true);
@@ -46,7 +49,6 @@ public class Searcher {
                 BuildRankingObjects(term.getName(), currentPointer);
             }
         }
-        System.out.println("jjj");
     }
 
     public static Ranker getRanker() {
