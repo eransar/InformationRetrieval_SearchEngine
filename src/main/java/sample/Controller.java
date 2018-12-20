@@ -330,6 +330,7 @@ public class Controller implements Initializable {
      * @param ranker
      */
     private void DisplayDocs(Ranker ranker) {
+        listView_docs.getItems().clear();
         int i = 0;
         for(RankingObject r : ranker.getSorted_rankingobject()){
             if(i>=50)
@@ -352,6 +353,11 @@ public class Controller implements Initializable {
         }
     }
 
+    /**
+     * use query text file
+     * @param event
+     * @throws FileNotFoundException
+     */
     public void BrowseQuery(ActionEvent event) throws FileNotFoundException {
         String path = browse();
         if(path!=null) {
