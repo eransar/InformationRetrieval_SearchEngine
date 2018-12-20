@@ -2,14 +2,17 @@ package sample;
 
 import PartA.*;
 import PartA.Ranking.Ranker;
+import PartA.Ranking.RankingObject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -58,6 +61,8 @@ public class Controller implements Initializable {
     private String newPostingPath = "";
     private File f;
     public Indexer indexer = Indexer.getInstance();
+    public ArrayList<String> citisNames;
+    public ListView<Node> listView_docs;
 
 
     @Override
@@ -71,6 +76,7 @@ public class Controller implements Initializable {
         language.setValue("Language");
         language.setDisable(true);
         error.setVisible(false);
+        citisNames = new ArrayList<>();
     }
 
     /**
@@ -202,12 +208,14 @@ public class Controller implements Initializable {
     }
 
     /**
-     * load the Dictionary from disc if its not load
+     * load the Dictionary ,Language from disc if its not load
      */
     public void LoadDictionary()  {
         if (PathOfPosting != null && !PathOfPosting.equals("")) {
             try {
                 indexer.loadDictionary(PathOfPosting, Steam);
+                indexer.loadLanguage(PathOfPosting, Steam);
+                languageChoosieBox();
             } catch (Exception e) {
                 error.setVisible(true);
                 error.setText("please run the\nprogram it first");
@@ -257,19 +265,23 @@ public class Controller implements Initializable {
                     + "Number of terms: " + indexer.getDictionary().size() + "\n"
                     + "Time of creating inverted index: " + ((end - start) * Math.pow(10, -9) ) + " sec");
             alert.show();
-            HashSet<String> languages = indexer.getSet_languages();
-            language.setItems(FXCollections.observableArrayList(languages));
-            language.setValue(languages.iterator().next());
-            language.setDisable(false);
+            languageChoosieBox();
             CitisCheckComboBox();
         }
     }
+
+    private void languageChoosieBox() {
+        HashSet<String> languages = indexer.getSet_languages();
+        language.setItems(FXCollections.observableArrayList(languages));
+        language.setValue(languages.iterator().next());
+        language.setDisable(false);
+    }
+
 
     /**
      * build list of citis for the user to search for
      */
     private void CitisCheckComboBox() {
-        ArrayList<String> citisNames = new ArrayList<>();
         for(City c : CityIndexer.getInstance().dict_cache.values()){
             citisNames.add(c.getName());
         }
@@ -299,7 +311,44 @@ public class Controller implements Initializable {
             Ranker ranker = searcher.getRanker();
             ranker.calculate();
             ranker.sortSet();
-            System.out.println("j");
+            DisplayDocs(ranker);
+        }
+    }
+
+    /**
+     * show Entities for specific doc;
+     * @param event
+     */
+    private void OnClickEntities(ActionEvent event){
+        Button b = ((Button)event.getSource());
+        int i = Integer.parseInt(b.getId());
+        //Entities data structers
+    }
+
+    /**
+     * display list of 50 relevant docs
+     * @param ranker
+     */
+    private void DisplayDocs(Ranker ranker) {
+        int i = 0;
+        for(RankingObject r : ranker.getSorted_rankingobject()){
+            if(i>=50)
+                break;
+            HBox hBox = new HBox();
+            hBox.resize(526,267/4);
+            Button button = new Button();
+            button.setText("Show Entities");
+            button.resize(61,31);
+            button.setId(""+i);
+            button.setOnAction(this::OnClickEntities);
+            Label docName = new Label();
+            docName.setText("   " + r.getDOCNO());
+            System.out.println(r.getDOCNO());
+            hBox.getChildren().add(button);
+            hBox.getChildren().add(docName);
+            listView_docs.getItems().add(hBox);
+            i++;
+            //System.out.println(r.getDOCNO());
         }
     }
 

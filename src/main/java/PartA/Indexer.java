@@ -193,6 +193,19 @@ public class Indexer {
     }
 
     /**
+     *  Writing the LanguageS to the posting directory
+     * @throws IOException
+     */
+    public void WriteLanguage() throws IOException {
+        FileOutputStream f = new FileOutputStream(new File(path+File.separator+"language.txt"));
+        ObjectOutputStream o = new ObjectOutputStream(f);
+        // Write objects to file
+        o.writeObject(set_languages);
+        o.flush();
+        o.close();
+    }
+
+    /**
      * Loading the dicationary from the posting path with stemm or not
      * @param pathPosting - posting path
      * @param stem - boolean for stemming
@@ -211,6 +224,26 @@ public class Indexer {
             Indexer.getInstance().dictionary.putAll(sortDicTree);
             oi.close();
 
+    }
+
+    /**
+     * Loading the citis from the posting path with stemm or not
+     * @param pathPosting
+     * @param stem
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public void loadLanguage(String pathPosting,boolean stem) throws IOException, ClassNotFoundException {
+        FileInputStream fi = null;
+        if(stem)
+            fi = new FileInputStream(new File(pathPosting+File.separator+"Stem"+File.separator+"language.txt"));
+        else
+            fi = new FileInputStream(new File(pathPosting+File.separator+"WithOutStem"+File.separator+"language.txt"));
+        ObjectInputStream oi = new ObjectInputStream(fi);
+        set_languages = (HashSet<String>)oi.readObject();
+        Indexer.getInstance().dictionary.putAll(sortDicTree);
+        oi.close();
     }
 
 
@@ -349,74 +382,6 @@ public class Indexer {
         }
         return file_content;
     }
-
-
-//
-//
-//
-//
-//
-//            //find term in lower case first letter form
-//            char first_letter = Character.toLowerCase(capitalTerms.get(i).charAt(0));
-//            StringBuilder check_term = new StringBuilder(""+first_letter);
-//            for (int k = 1; k <capitalTerms.get(i).length() ; k++) {
-//                check_term.append(capitalTerms.get(i).charAt(k));
-//            }
-//            Pointer find_location=isExist(check_term.toString());
-//            if(find_location==null){
-//                Term OtherTerm=dict_capitals.get(capitalTerms.get(i));
-//                StringBuilder termData = new StringBuilder("");
-//                for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
-//
-//                    termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile()); //DOCNO,FrequencyInDoc,File Name of Doc
-//                }
-//                file_content.add(OtherTerm.getDf()+" "+termData);
-//                Pointer OtherPointer = new Pointer(file_name,file_content.size()-1,OtherTerm.getDf());
-//                if(OtherTerm.getName().charAt(0) >=65 && OtherTerm.getName().charAt(0)<=90){
-//                    if(OtherTerm.getName().charAt(OtherTerm.getName().length()-1) >= 65 && OtherTerm.getName().charAt(OtherTerm.getName().length()-1) <=90 ){
-//                        if(OtherTerm.getName().)
-//                    }
-//                    OtherTerm.setName(OtherTerm.getName().toUpperCase());
-//                    dictionary.put(OtherTerm.getName(),OtherPointer);
-////                    for (Map.Entry<Doc,Integer> d : OtherTerm.getDocFrequency().entrySet()){
-////                        dict_docs.get(d.getKey().getDOCNO()).add_TreeSet(OtherTerm);
-////                    }
-//                }
-//                else{
-//                    dictionary.put(OtherTerm.getName(),OtherPointer);
-//                }
-//
-//
-//            }
-//            else{
-//                /**
-//                 * is exist in the dictionary in lower case in the first letter
-//                 */
-//                String lineToChange = null;
-//                lineToChange = file_content.get(find_location.getLine_number());
-//
-//                Term OtherTerm = dict_capitals.get(capitalTerms.get(i));
-//                OtherTerm.setName(check_term.toString());
-//                String[] currentline = lineToChange.split(" ");
-//                int currentdf=Integer.parseInt(currentline[0]);
-//                int chunkdf = OtherTerm.getDf();
-//                int newdf=currentdf+chunkdf;
-//                StringBuilder termData = new StringBuilder("");
-//                for (Map.Entry<Doc, Integer> _doc : OtherTerm.getDocFrequency().entrySet()){
-//                    termData.append("|"+_doc.getKey().getDOCNO()+","+_doc.getValue()+","+_doc.getKey().getFile());
-//                }
-//                file_content.set(find_location.getLine_number(),newdf+" "+currentline[1]+termData);
-//                Pointer p1 =dictionary.get(OtherTerm.getName());
-//
-//
-//                dictionary.put(OtherTerm.getName(),new Pointer(file_name,p1.getLine_number(),newdf));
-//
-//            }
-//
-//        }
-
-
-
 
     public void setPath(String path){
         this.path=path;

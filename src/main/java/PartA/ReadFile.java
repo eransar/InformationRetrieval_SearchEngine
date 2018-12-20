@@ -88,7 +88,7 @@ public class ReadFile {
       indexer.WriteDictionary();
       //write cities to disc
       CityIndexer.getInstance().WriteDictionary(path_posting);
-
+      indexer.WriteLanguage();
   }
 
   public int getCountDOCs() {

@@ -4,11 +4,12 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import org.controlsfx.control.CheckComboBox?>
 
-<AnchorPane prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
       <TextField fx:id="corpusField" layoutX="151.0" layoutY="38.0" />
       <TextField fx:id="PostingField" layoutX="151.0" layoutY="129.0" />
@@ -28,5 +29,6 @@
       <Label layoutX="137.0" layoutY="392.0" text="OR" />
       <Button fx:id="run_Q" layoutX="250.0" layoutY="452.0" mnemonicParsing="false" onAction="#runQuery" text="Run Q" />
       <CheckComboBox fx:id="CheckComboBox_Citis" layoutX="418.0" layoutY="440.0" prefHeight="33.0" prefWidth="141.0" />
+      <ListView fx:id="listView_docs" layoutX="37.0" layoutY="508.0" prefHeight="267.0" prefWidth="526.0" />
    </children>
 </AnchorPane>
