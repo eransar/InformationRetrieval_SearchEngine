@@ -16,7 +16,6 @@ public class Indexer {
     private HashSet<String> set_languages;
 
 
-
     private HashMap<String,Doc> dict_docs;
     private ConcurrentHashMap<String,Pointer> dictionary;
     private List<List<String>> list_termsByAlhabet = new ArrayList<List<String>>();

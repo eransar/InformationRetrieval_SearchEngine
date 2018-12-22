@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class BM25 extends ARankerFunction{
 
     private final double b = 0.75;
-    private final double k = 1.2;
+    private final double k = 1.6;
     private int M ;
     private RankingObject rankingObject;
     private Indexer indexer;

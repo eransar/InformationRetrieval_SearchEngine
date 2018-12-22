@@ -3,6 +3,7 @@ package sample;
 import PartA.*;
 import PartA.Ranking.Ranker;
 import PartA.Ranking.RankingObject;
+import PartA.Ranking.Semantics;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -63,6 +64,8 @@ public class Controller implements Initializable {
     public Indexer indexer = Indexer.getInstance();
     public ArrayList<String> citisNames;
     public ListView<Node> listView_docs;
+    private boolean semantic=false;
+    public CheckBox check_Semantic;
 
 
     @Override
@@ -308,11 +311,22 @@ public class Controller implements Initializable {
             query = Q_text.getText();
             Searcher searcher = new Searcher(query,set_CitisByUser);
             searcher.getPointers();
+            Semantics semantics = new Semantics();
+            if(semantic) {
+                semantics.startConnection();
+            }
             Ranker ranker = searcher.getRanker();
             ranker.calculate();
             ranker.sortSet();
             DisplayDocs(ranker);
         }
+    }
+
+    public void Semantic_Choose(ActionEvent event){
+        if(check_Semantic.isSelected())
+            semantic = true;
+        else
+            semantic = false;
     }
 
     /**

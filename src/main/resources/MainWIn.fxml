@@ -30,5 +30,6 @@
       <Button fx:id="run_Q" layoutX="250.0" layoutY="452.0" mnemonicParsing="false" onAction="#runQuery" text="Run Q" />
       <CheckComboBox fx:id="CheckComboBox_Citis" layoutX="418.0" layoutY="440.0" prefHeight="33.0" prefWidth="141.0" />
       <ListView fx:id="listView_docs" layoutX="37.0" layoutY="508.0" prefHeight="267.0" prefWidth="526.0" />
+      <CheckBox fx:id="check_Semantic" layoutX="487.0" layoutY="393.0" mnemonicParsing="false" onAction="#Semantic_Choose" text="Semantic" />
    </children>
 </AnchorPane>

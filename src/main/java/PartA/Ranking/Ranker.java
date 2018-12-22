@@ -71,7 +71,7 @@ public class Ranker {
         calculateCosSim();
 //        calculateHeaderTest();
         for (RankingObject rank : map_ranked_docs.values()) {
-            rank.setRank( +rank.getRank_BM25()*0.65+rank.getRank_cossim()*0.35);
+            rank.setRank(rank.getRank_BM25()*0.65+rank.getRank_cossim()*0.35);
         }
     }
 

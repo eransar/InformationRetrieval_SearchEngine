@@ -26,8 +26,6 @@ public class RankingInstance {
         this.count_doc=count_doc;
         this.term_name=term_name;
         this.df= Indexer.getInstance().getDictionary().get(term_name).getTerm_df();
-
-
     }
 
     public int getCount_query() {
