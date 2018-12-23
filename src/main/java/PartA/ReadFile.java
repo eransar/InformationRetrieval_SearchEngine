@@ -89,6 +89,7 @@ public class ReadFile {
       //write cities to disc
       CityIndexer.getInstance().WriteDictionary(path_posting);
       indexer.WriteLanguage();
+      indexer.calculateAvg();
       indexer.writeAvgToDisk();
   }
 
@@ -136,7 +137,7 @@ public class ReadFile {
       countDOCs++;
       parse.ParseDoc(new Doc(DOCNO, file.getName(),CITY,HEADER,DATE,LANGUAGE), TEXT);
     }
-    Indexer.getInstance().calculateAvg();
+    //Indexer.getInstance().calculateAvg();
   }
 
   /**
