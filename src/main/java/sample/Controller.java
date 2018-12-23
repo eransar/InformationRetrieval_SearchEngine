@@ -220,8 +220,7 @@ public class Controller implements Initializable {
                 indexer.loadDocs(PathOfPosting,Steam);
                 indexer.loadDictionary(PathOfPosting, Steam);
                 indexer.loadLanguage(PathOfPosting, Steam);
-
-//                indexer.loadDocs(PathOfPosting,Steam);
+                indexer.setPath(PathOfPosting);
                 languageChoosieBox();
             } catch (Exception e) {
                 e.printStackTrace();
