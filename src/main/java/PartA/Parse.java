@@ -73,7 +73,9 @@ Parse {
     public void ParseDoc(Doc doc, String TEXT) {
         int doc_size = TEXT.length();
         doc.setLENGTH(doc_size);
-        indexer.addtoAvg(doc_size);
+        if(!use_searcher){
+            indexer.addtoAvg(doc_size);
+        }
         docmaxtf = 0;
         dic_docterms = new HashMap<>();
         this.doc = doc;

@@ -20,6 +20,7 @@ public class RankingObject implements Comparable {
 
 
 
+
     HashMap<String, RankingInstance> terms_data; // String is the name of the term
 
 

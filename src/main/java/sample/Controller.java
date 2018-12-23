@@ -222,6 +222,7 @@ public class Controller implements Initializable {
                 indexer.loadDocs(PathOfPosting,Steam);
                 indexer.loadDictionary(PathOfPosting, Steam);
                 indexer.loadLanguage(PathOfPosting, Steam);
+                indexer.loadAvgFromDisk(PathOfPosting,Steam);
                 //load cities
                 indexer.setPath(PathOfPosting);
                 languageChoosieBox();
@@ -240,6 +241,7 @@ public class Controller implements Initializable {
     /**
      * running func
      * @param event
+     * @throws IOException
      * @throws IOException
      */
     public void SetAll(ActionEvent event) throws IOException {

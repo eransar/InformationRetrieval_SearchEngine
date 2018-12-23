@@ -534,6 +534,27 @@ public class Indexer {
         }
         return file_content;
     }
+    public void writeAvgToDisk() throws IOException {
+        FileOutputStream f = new FileOutputStream(new File(path+File.separator+"average"));
+        ObjectOutputStream o = new ObjectOutputStream(f);
+        // Write objects to file
+        o.writeObject(docsaverage);
+        o.flush();
+        o.close();
+    }
+
+    public void loadAvgFromDisk(String pathPosting, boolean stem) throws IOException, ClassNotFoundException {
+        FileInputStream fi = null;
+
+        if (stem)
+            fi = new FileInputStream(new File(pathPosting + File.separator + "Stem" + File.separator + "average"));
+        else
+            fi = new FileInputStream(new File(pathPosting + File.separator + "WithOutStem" + File.separator + "average"));
+        ObjectInputStream oi = new ObjectInputStream(fi);
+        docsaverage = (int) oi.readObject();
+        oi.close();
+
+    }
 
 
     public String getLine(Pointer term_pointer){
