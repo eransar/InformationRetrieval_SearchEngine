@@ -254,8 +254,10 @@ public class Indexer {
             encoded = Files.readAllBytes(Paths.get(pathPosting + File.separator + "WithOutStem" + File.separator + "docs.txt"));
         }
 
-        byte[] decodedOutput = Base64.getDecoder().decode(encoded );
+        byte[] decodedOutput = Base64.getMimeDecoder().decode(encoded );
         Object output = SerializationUtils.deserialize(decodedOutput);
+        dict_docs = ((HashMap<String,Doc>) output);
+
 
 
 //        byte[] input = SerializationUtils.serialize(dict_docs);
