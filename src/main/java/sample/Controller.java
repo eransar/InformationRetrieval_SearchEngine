@@ -184,6 +184,7 @@ public class Controller implements Initializable {
             );
             language.setValue("Language");
             newPostingPath="";
+            indexer.setLoad(false);
         }
     }
 
@@ -216,12 +217,15 @@ public class Controller implements Initializable {
     public void LoadDictionary()  {
         if (PathOfPosting != null && !PathOfPosting.equals("")) {
             try {
+                indexer.setLoad(true);
                 indexer.setStem(Steam);
                 indexer.loadDocs(PathOfPosting,Steam);
                 indexer.loadDictionary(PathOfPosting, Steam);
                 indexer.loadLanguage(PathOfPosting, Steam);
+                //load cities
                 indexer.setPath(PathOfPosting);
                 languageChoosieBox();
+                CitisCheckComboBox();
             } catch (Exception e) {
                 e.printStackTrace();
                 error.setVisible(true);
@@ -239,6 +243,7 @@ public class Controller implements Initializable {
      * @throws IOException
      */
     public void SetAll(ActionEvent event) throws IOException {
+        indexer.setLoad(false);
         newPostingPath = PathOfPosting;
         if (stopWordsField.getText().trim().isEmpty() || corpusField.getText().trim().isEmpty() || PostingField.getText().trim().isEmpty()) {
             error.setText("Pleas fill all the fields");
@@ -304,25 +309,46 @@ public class Controller implements Initializable {
         CheckComboBox_Citis.getItems().setAll(Citis);
     }
 
-    public void runQuery(ActionEvent event){
-        String query ="";
-        if(Q_text.getText()!=null && !Q_text.getText().equals("")){
+    public void runQuery(ActionEvent event) {
+        String query = "";
+        if (Q_text.getText() != null && !Q_text.getText().equals("")) {
             HashSet<String> set_CitisByUser = new HashSet<>();
             ObservableList<Integer> indexOfCheckComboBox_Citis = CheckComboBox_Citis.getCheckModel().getCheckedIndices();
-            for(Integer i :indexOfCheckComboBox_Citis) {
+            for (Integer i : indexOfCheckComboBox_Citis) {
                 set_CitisByUser.add((String) CheckComboBox_Citis.getItems().get(i));
             }
             query = Q_text.getText();
-            Searcher searcher = new Searcher(query,set_CitisByUser);
+            Searcher searcher = new Searcher(query, set_CitisByUser);
             searcher.getPointers();
             Semantics semantics = new Semantics();
-            if(semantic) {
-                semantics.startConnection();
-            }
             Ranker ranker = searcher.getRanker();
             ranker.calculate();
+            Searcher searcher1;
+            Ranker ranker1;
+            if (semantic) {
+                semantics.startConnection();
+                String query1 = "";
+                for (Map.Entry<String, String> d : Semantics.getMap_concepte().entrySet()) {
+                    query1 = query1 + " " + d.getValue();
+                }
+                searcher1 = new Searcher(query1, set_CitisByUser);
+                searcher1.getPointers();
+                ranker1 = searcher.getRanker();
+                ranker1.calculate();
+                margeRank(ranker,ranker1);
+            }
             ranker.sortSet();
             DisplayDocs(ranker);
+        }
+    }
+
+    private void margeRank(Ranker r1,Ranker r2) {
+        for (Map.Entry<String, RankingObject> d : r2.getMap_ranked_docs().entrySet()){
+            if(r1.getMap_ranked_docs().containsKey(d.getKey())){
+                double rank1 = r1.getMap_ranked_docs().get(d.getKey()).getRank();
+                double rank2 = r2.getMap_ranked_docs().get(d.getKey()).getRank();
+                r1.getMap_ranked_docs().get(d.getKey()).setRank(rank1 + 0.5*rank2);
+            }
         }
     }
 

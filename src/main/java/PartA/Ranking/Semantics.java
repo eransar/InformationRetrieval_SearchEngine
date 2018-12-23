@@ -16,10 +16,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Semantics{
+public class Semantics {
 
     private Indexer indexer = Indexer.getInstance();
-    private HashMap<String,ArrayList<String>> map_concepte;
+    private static HashMap<String, String> map_concepte;
     public Object[] parsed_json;
     private Query query;
 
@@ -30,8 +30,8 @@ public class Semantics{
 
     public void startConnection() {
         String[] terms = query.getText().split(" ");
-        for (String termName :terms ) {
-            String URL ="https://api.datamuse.com/words?ml="+termName;
+        for (String termName : terms) {
+            String URL = "https://api.datamuse.com/words?ml=" + termName;
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder().url(URL).build();
             Response response = null;
@@ -52,7 +52,11 @@ public class Semantics{
                 if (obj != null) {
                     String word = "";
                     parsed_json = ((JSONArray) obj).toArray();
-                    int index=0;
+                    for (Object s : parsed_json) {
+                        word = (String) ((JSONObject) s).get("word");
+                        map_concepte.put(termName, word);
+                    }
+                    /*int index=0;
                     map_concepte.put(termName,new ArrayList<>());
                     for (Object s : parsed_json) {
                         word = (String) ((JSONObject) s).get("word");
@@ -60,7 +64,7 @@ public class Semantics{
                         if(index==4)
                             break;
                         index++;
-                    }
+                    }*/
 
                 }
             } catch (org.json.simple.parser.ParseException e) {
@@ -69,11 +73,11 @@ public class Semantics{
         }
     }
 
-    public HashMap<String, ArrayList<String>> getMap_concepte() {
+    public static HashMap<String, String> getMap_concepte() {
         return map_concepte;
     }
 
-    public void setMap_concepte(HashMap<String, ArrayList<String>> map_concepte) {
-        this.map_concepte = map_concepte;
+    public static void setMap_concepte(HashMap<String, String> map_concepte) {
+        Semantics.map_concepte = map_concepte;
     }
 }

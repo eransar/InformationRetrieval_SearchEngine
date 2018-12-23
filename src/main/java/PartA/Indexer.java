@@ -17,7 +17,7 @@ public class Indexer {
     private HashMap<String,Integer> dict_files;
     private HashSet<String> file_names;
     private HashSet<String> set_languages;
-
+    private boolean isLoad=false;
 
     private HashMap<String,Doc> dict_docs;
     private ConcurrentHashMap<String,Pointer> dictionary;
@@ -87,6 +87,7 @@ public class Indexer {
             dictionary.put(key,p);
         }
     }
+
 
 
     /**
@@ -537,11 +538,15 @@ public class Indexer {
 
     public String getLine(Pointer term_pointer){
         String path1="";
-        if(stem){
-            path1=this.path+File.separator+"Stem";
+        if(isLoad) {
+            if (stem) {
+                path1 = this.path + File.separator + "Stem";
+            } else {
+                path1 = this.path + File.separator + "WithOutStem";
+            }
         }
         else{
-            path1=this.path+File.separator+"WithOutStem";
+            path1 =this.path;
         }
         String line="";
         try (Stream<String> lines = Files.lines(Paths.get(path1+ File.separator+ term_pointer.getFile_name()+".txt"))) {
@@ -604,6 +609,14 @@ public class Indexer {
 
     public void setStem(boolean stem) {
         this.stem = stem;
+    }
+
+    public boolean isLoad() {
+        return isLoad;
+    }
+
+    public void setLoad(boolean load) {
+        isLoad = load;
     }
     //</editor-fold>
 }

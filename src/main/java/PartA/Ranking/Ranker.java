@@ -11,11 +11,10 @@ import java.util.*;
 public class Ranker {
     private HashMap<Doc, ArrayList<Term>> map_docs;
     private HashMap<String, RankingObject> map_ranked_docs; //String is the name of the DOC ( DOCNO)
-
-
     private TreeSet<RankingObject> sorted_rankingobject;
     private boolean semantics;
     private HashSet<String> set_citiesChoosen;
+
 
     public Ranker(HashSet<String> set_citiesChoosen) {
         this.set_citiesChoosen = set_citiesChoosen;
@@ -26,7 +25,6 @@ public class Ranker {
 
 
     }
-
 
     public TreeSet<RankingObject> getSorted_rankingobject() {
         return sorted_rankingobject;
@@ -59,21 +57,16 @@ public class Ranker {
         }
     }
 
-//    public void calculateHeaderTest(){
-//        for (RankingObject rank : map_ranked_docs.values()) {
-//            HeaderTest headerTest = new HeaderTest(rank);
-//            rank.setRank_header(headerTest.calculate());
-//        }
-//    }
 
-    public void calculate(){
+    public void calculate() {
         calculateBM25();
         calculateCosSim();
 //        calculateHeaderTest();
         for (RankingObject rank : map_ranked_docs.values()) {
-            rank.setRank(rank.getRank_BM25()*0.65+rank.getRank_cossim()*0.35);
+            rank.setRank(rank.getRank_BM25());
         }
     }
+
 
     /**
      * sort the relevent docs by rank
