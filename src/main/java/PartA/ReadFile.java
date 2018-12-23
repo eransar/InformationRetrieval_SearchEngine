@@ -118,7 +118,7 @@ public class ReadFile {
       int cityindex=0;
       if(temp_city.length > 2) {
         if (CITY.startsWith("   St.")) {
-          CITY = temp_city[3] + " " + temp_city[4];
+          CITY = new String(temp_city[3] + " " + temp_city[4]);
         } else {
           while(temp_city[cityindex].equals("")){
             cityindex++;

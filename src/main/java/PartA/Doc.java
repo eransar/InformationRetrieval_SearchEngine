@@ -1,8 +1,9 @@
 package PartA;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Doc {
+public class Doc implements Serializable {
     private String CITY;
     private String DOCNO;
     private String HEADER;
@@ -27,28 +28,7 @@ public class Doc {
         this.DATE=DATE;
         this.LANGUAGE=LANGUAGE;
         this.set_entities=new HashSet<>();
-        this.treeset_entities = new TreeSet<Term>(new Comparator<Term>() {
-            @Override
-            public int compare(Term t1, Term t2) {
-                        // compare t1 and t2
-                        int t1freq=1;
-                        for (Doc d : t1.getDocFrequency().keySet()){
-                            t1freq=t1.getDocFrequency().get(d);
-                        }
-                         int t2freq=1;
-
-                        for (Doc d : t2.getDocFrequency().keySet()){
-                            t2freq=t2.getDocFrequency().get(d);
-                        }
-
-                        if(t1freq > t2freq){
-                            return 1;
-                        }
-                        else{
-                            return -1;
-                        }
-            }
-        });
+        this.treeset_entities = new TreeSet<Term>(new DocComperator() {});
         this.arr_entities=new String[5];
 
     }

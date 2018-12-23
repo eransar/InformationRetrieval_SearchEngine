@@ -216,10 +216,15 @@ public class Controller implements Initializable {
     public void LoadDictionary()  {
         if (PathOfPosting != null && !PathOfPosting.equals("")) {
             try {
+                indexer.setStem(Steam);
+                indexer.loadDocs(PathOfPosting,Steam);
                 indexer.loadDictionary(PathOfPosting, Steam);
                 indexer.loadLanguage(PathOfPosting, Steam);
+
+//                indexer.loadDocs(PathOfPosting,Steam);
                 languageChoosieBox();
             } catch (Exception e) {
+                e.printStackTrace();
                 error.setVisible(true);
                 error.setText("please run the\nprogram it first");
             }

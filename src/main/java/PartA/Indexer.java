@@ -1,5 +1,8 @@
 package PartA;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SerializationUtils;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -23,9 +26,9 @@ public class Indexer {
     private int docsaverage;
 
 
-    private boolean first_chunk;
+    private boolean stem;
     private String path;
-    private transient TreeMap<String,Pointer> sortDicTree;
+    private TreeMap<String,Pointer> sortDicTree;
     public static Indexer getInstance() {
         return ourInstance;
     }
@@ -34,6 +37,8 @@ public class Indexer {
         return dict_cache;
     }
 
+
+
     private Indexer(){
         dictionary=new ConcurrentHashMap<String,Pointer>();
         dict_cache=new HashMap<>();
@@ -41,9 +46,9 @@ public class Indexer {
         dict_files=new HashMap<>();
         this.dict_capitals=new HashMap<>();
         this.list_termsByAlhabet = new ArrayList<List<String>>();
-        this.first_chunk=true;
         this.set_languages = new HashSet();
         this.dict_docs =new HashMap<>();
+
     }
 
     /**
@@ -56,7 +61,6 @@ public class Indexer {
         dict_files=new HashMap<>();
         this.dict_capitals=new HashMap<>();
         this.list_termsByAlhabet = new ArrayList<List<String>>();
-        this.first_chunk=true;
         sortDicTree= new TreeMap<>();
         sortDic= new ArrayList<>();
         set_languages=new HashSet<>();
@@ -84,13 +88,6 @@ public class Indexer {
         }
     }
 
-    /**
-     * Controling whether this is the first chunk of writing files or not
-     * @param first_chunk
-     */
-    public void setFirst_chunk(boolean first_chunk) {
-        this.first_chunk = first_chunk;
-    }
 
     /**
      * Writing first posting files to disk
@@ -181,14 +178,38 @@ public class Indexer {
      * @throws IOException
      */
     public void WriteDictionary() throws IOException {
-
         FileOutputStream f = new FileOutputStream(new File(path+File.separator+"dictionary.txt"));
         ObjectOutputStream o = new ObjectOutputStream(f);
         // Write objects to file
         o.writeObject(sortDicTree);
         o.flush();
         o.close();
+    }
+    /**
+     * Writing the docs hashset into file
+     */
+    public void writeDocs() throws IOException {
 
+        byte[] input = SerializationUtils.serialize(dict_docs);
+        byte[] encodedInput = Base64.getEncoder().encode(input);
+        FileUtils.writeByteArrayToFile(new File(path+File.separator+"docs.txt"),encodedInput);
+//        FileUtils.writeStringToFile(new File(path+File.separator+"docs.txt",encodedInput,);
+//        FileUtils.writeStringToFile(,encodedInput));
+//        FileUtils.writeByteArrayToFile(),input);
+//        ByteArrayOutputStream  bo= new ByteArrayOutputStream(input)
+//        ObjectInputStream oi = new ObjectInputStream(input);
+//        String encodedInput = Base64.getEncoder().encodeToString(input);
+//        FileOutputStream f = new FileOutputStream(new File(path+File.separator+"docs.txt","UTF-8"));
+
+//        byte[] decodedOutput = Base64.getDecoder().decode(encodedInput);
+//
+//
+//        FileOutputStream f = new FileOutputStream(new File(path+File.separator+"docs.txt","UTF-8"));
+//        ObjectOutputStream o = new ObjectOutputStream(f);
+//        // Write objects to file
+//        o.writeObject(dict_docs);
+//        o.flush();
+//        o.close();
     }
 
     /**
@@ -214,15 +235,41 @@ public class Indexer {
     public void loadDictionary(String pathPosting,boolean stem) throws IOException, ClassNotFoundException {
         FileInputStream fi = null;
 
-            if(stem)
-                fi = new FileInputStream(new File(pathPosting+File.separator+"Stem"+File.separator+"dictionary.txt"));
-            else
-                fi = new FileInputStream(new File(pathPosting+File.separator+"WithOutStem"+File.separator+"dictionary.txt"));
-            ObjectInputStream oi = new ObjectInputStream(fi);
-            sortDicTree = (TreeMap<String, Pointer>)oi.readObject();
-            Indexer.getInstance().dictionary.putAll(sortDicTree);
-            oi.close();
+        if (stem)
+            fi = new FileInputStream(new File(pathPosting + File.separator + "Stem" + File.separator + "dictionary.txt"));
+        else
+            fi = new FileInputStream(new File(pathPosting + File.separator + "WithOutStem" + File.separator + "dictionary.txt"));
+        ObjectInputStream oi = new ObjectInputStream(fi);
+        sortDicTree = (TreeMap<String, Pointer>) oi.readObject();
+        Indexer.getInstance().dictionary.putAll(sortDicTree);
+        oi.close();
+    }
 
+    public void loadDocs(String pathPosting,boolean stem) throws IOException, ClassNotFoundException {
+        byte[] encoded=null;
+        if(stem){
+             encoded = Files.readAllBytes(Paths.get(pathPosting + File.separator + "Stem" + File.separator + "docs.txt"));
+        }
+        else{
+            encoded = Files.readAllBytes(Paths.get(pathPosting + File.separator + "WithOutStem" + File.separator + "docs.txt"));
+        }
+
+        byte[] decodedOutput = Base64.getDecoder().decode(encoded );
+        Object output = SerializationUtils.deserialize(decodedOutput);
+
+
+//        byte[] input = SerializationUtils.serialize(dict_docs);
+//        byte[] encodedInput = Base64.getEncoder().encode(input);
+//        FileUtils.writeByteArrayToFile(new File(path+File.separator+"docs.txt"),encodedInput);
+
+//        FileInputStream fi = null;
+//        if (stem)
+//            fi = new FileInputStream(new File(pathPosting + File.separator + "Stem" + File.separator + "docs.txt","UTF-8"));
+//        else
+//            fi = new FileInputStream(new File(pathPosting + File.separator + "WithOutStem" + File.separator + "docs.txt"));
+//        ObjectInputStream oi = new ObjectInputStream(fi.en);
+//        dict_docs = (HashMap<String, Doc>) oi.readObject();
+//        oi.close();
     }
 
     /**
@@ -485,28 +532,17 @@ public class Indexer {
         return file_content;
     }
 
-    /**
-     * Writing the docs hashset into file
-     */
-    public void writeDocs() {
 
-        String filename = path + File.separator + "docs.txt";
-        FileWriter fw = null; //the true will append the new data
-        try {
-            fw = new FileWriter(filename, true);
-            for (Doc docs : dict_docs.values()) {
-                fw.write(docs.getDOCNO() + "|" + docs.getDistinctwords() + "|" + docs.getMaxtf()+System.lineSeparator());
-            }
-            fw.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
     public String getLine(Pointer term_pointer){
+        String path1="";
+        if(stem){
+            path1=this.path+File.separator+"Stem";
+        }
+        else{
+            path1=this.path+File.separator+"WithOutStem";
+        }
         String line="";
-        try (Stream<String> lines = Files.lines(Paths.get(path+ File.separator+ term_pointer.getFile_name()+".txt"))) {
+        try (Stream<String> lines = Files.lines(Paths.get(path1+ File.separator+ term_pointer.getFile_name()+".txt"))) {
             line = lines.skip(term_pointer.getLine_number()).findFirst().get();
         } catch (IOException e) {
             e.printStackTrace();
@@ -562,6 +598,10 @@ public class Indexer {
 
     public HashMap<String, Doc> getDict_docs() {
         return dict_docs;
+    }
+
+    public void setStem(boolean stem) {
+        this.stem = stem;
     }
     //</editor-fold>
 }
