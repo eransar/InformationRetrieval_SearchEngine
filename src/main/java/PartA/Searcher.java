@@ -105,6 +105,7 @@ public class Searcher {
     }
 
 
+
 //    public String getLine(Pointer term_pointer){
 //        String line="";
 //        try (Stream<String> lines = Files.lines(Paths.get(indexer.getPath()+ File.separator+ term_pointer.getFile_name()+".txt"))) {

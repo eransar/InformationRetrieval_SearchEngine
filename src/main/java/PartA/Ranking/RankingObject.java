@@ -79,6 +79,7 @@ public class RankingObject implements Comparable {
         return this.DOCNO.equals(rankingObject.getDOCNO());
     }
 
+
     @Override
     public int hashCode() {
 

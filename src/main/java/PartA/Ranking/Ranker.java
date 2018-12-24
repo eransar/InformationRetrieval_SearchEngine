@@ -63,8 +63,16 @@ public class Ranker {
         calculateCosSim();
 //        calculateHeaderTest();
         for (RankingObject rank : map_ranked_docs.values()) {
-            rank.setRank(0.65*rank.getRank_BM25()+0.35*rank.getRank_cossim()*10);
+            rank.setRank(0.65*rank.getRank_BM25()+0.25*rank.getRank_cossim()*10);
         }
+    }
+    public void writeResults(){
+        String s="";
+        for (RankingObject rank :sorted_rankingobject){
+            s+=("351"+" 0 "+rank.getDOCNO()+" 1 42.38 mt"+System.lineSeparator());
+        }
+        System.out.println("_");
+        System.out.println(s);
     }
 
 

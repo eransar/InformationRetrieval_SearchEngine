@@ -341,6 +341,7 @@ public class Controller implements Initializable {
             }
             ranker.sortSet();
             DisplayDocs(ranker);
+            ranker.writeResults();
         }
     }
 
