@@ -14,16 +14,19 @@ public class CosSim extends ARankerFunction {
     }
     @Override
     public double calculate() {
-        double sum_mone=0;
-        double sum_mechane=0;
+        double weight = super.getRankingObject().getWeight();
+        double weight_pow2 = super.getRankingObject().getWeight_pow2();
+        double sum_mone=weight;
+        double sum_mechane=weight_pow2;
+        double count_query=0;
+
+
 
         for (RankingInstance instance : super.getRankingObject().getTerms_data().values()){
-             double doc_weight=Math.log10(numOfDocs/instance.getDf())*(instance.getCount_doc()/Math.abs(super.getRankingObject().getLength()));
-             sum_mone+=doc_weight;
-             sum_mechane+=Math.pow(doc_weight,2);
+           count_query+=Math.pow(instance.getCount_query(),2);
         }
 
-        return ((sum_mone)/Math.sqrt(sum_mechane * getRankingObject().getTerms_data().size()));
+        return (weight)/(Math.sqrt(weight_pow2*count_query));
 
     }
 }

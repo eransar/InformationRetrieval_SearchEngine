@@ -585,6 +585,50 @@ public class Indexer {
         docsaverage=docsaverage/ dict_docs.size();
     }
 
+    public void updateDocWeight() throws IOException {
+
+        for (String file: file_names){
+            if(!file.equals("cities") && !file.equals("docs") && !file.equals("dictionary")){
+                File f = new File(path+File.separator+file+".txt");
+                BufferedReader in = new BufferedReader(new FileReader(f));
+                String str;
+                //opening file and adding it all to array
+                List<String> file_content = new ArrayList<String>();
+                while((str = in.readLine()) != null){
+                   addWeightToDoc(str);
+                }
+                in.close();
+
+            }
+        }
+
+    }
+
+    private void addWeightToDoc(String str) {
+        //find backspace
+        int numofdocs=this.dict_docs.size();
+        int i=0;
+        double dfi =0;
+        for (i = 0; i < str.length(); i++) {
+            if (str.charAt(i) == ' ') {
+                break;
+            }
+        }
+        dfi=Integer.parseInt(str.substring(0,i));
+        String substring = str.substring(i+2);
+        String[] split_substring=substring.split("\\|");
+
+        for(String splitted_line: split_substring){
+            String[] doc = splitted_line.split(",");
+            String DOCNO = doc[0];
+             double fij = Float.parseFloat(doc[1]);
+            double tfij = (fij)/ ((float) dict_docs.get(DOCNO).getLENGTH());
+            double idfi = ((float) Math.log10(numofdocs / dfi));
+            double weight = tfij*idfi;
+            dict_docs.get(DOCNO).addWeight(weight);
+        }
+    }
+
     public int getDocsaverage() {
         return docsaverage;
     }

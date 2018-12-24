@@ -17,6 +17,8 @@ public class RankingObject implements Comparable {
     double rank_BM25;
     double rank_cossim;
     double rank_header;
+    double weight;
+    double weight_pow2;
 
 
 
@@ -24,11 +26,25 @@ public class RankingObject implements Comparable {
     HashMap<String, RankingInstance> terms_data; // String is the name of the term
 
 
-    public RankingObject(String DOCNO, String file, int length) {
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(float weight) {
+        this.weight = weight;
+    }
+
+
+
+    public RankingObject(String DOCNO, String file, int length, double weight, double weight_pow2) {
         terms_data = new HashMap<>();
         this.DOCNO = DOCNO;
+
         this.file = file;
         this.length = length;
+        this.weight=weight;
+        this.weight_pow2=weight_pow2;
+
     }
 
     public double getRank_BM25() {
@@ -119,6 +135,14 @@ public class RankingObject implements Comparable {
 
     public void clear() {
         terms_data = new HashMap<>();
+    }
+
+    public double getWeight_pow2() {
+        return weight_pow2;
+    }
+
+    public void setWeight_pow2(float weight_pow2) {
+        this.weight_pow2 = weight_pow2;
     }
 
     @Override

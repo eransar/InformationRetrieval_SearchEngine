@@ -75,6 +75,7 @@ public class ReadFile {
     }
     if(indexer.getDict_cache().size()!=0) {
       indexer.writeToDisk();
+      indexer.updateDocWeight();
       indexer.writeDocs();
     }
       //marge capital letters to dictionary
@@ -91,6 +92,9 @@ public class ReadFile {
       indexer.WriteLanguage();
       indexer.calculateAvg();
       indexer.writeAvgToDisk();
+
+
+
   }
 
   public int getCountDOCs() {

@@ -97,7 +97,7 @@ public class Searcher {
                 }
             }
             else{
-                RankingObject o = new RankingObject(DOCNO,File,indexer.getDict_docs().get(DOCNO).getLENGTH());
+                RankingObject o = new RankingObject(DOCNO,File,indexer.getDict_docs().get(DOCNO).getLENGTH(),indexer.getDict_docs().get(DOCNO).getWeight(),indexer.getDict_docs().get(DOCNO).getWeight_pow2());
                 o.getTerms_data().put(term_name,new RankingInstance(term_name,query.getMap_query().get(term_name.toLowerCase()),Integer.parseInt(docTF)));
                 ranker.getMap_ranked_docs().put(DOCNO,o);
             }

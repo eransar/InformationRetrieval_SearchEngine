@@ -16,6 +16,10 @@ public class Doc implements Serializable {
     private HashSet<Term> set_entities;
     private TreeSet<Term> treeset_entities;
     private String[] arr_entities;
+    private double weight;
+    private double weight_pow2;
+    private static final long serialVersionUID = 1113799434508676095L;
+
 
 
     public Doc(String DOCNO, String file, String CITY, String HEADER, String DATE, String LANGUAGE){
@@ -30,6 +34,8 @@ public class Doc implements Serializable {
         this.set_entities=new HashSet<>();
         this.treeset_entities = new TreeSet<Term>(new DocComperator() {});
         this.arr_entities=new String[5];
+        this.weight=0.0;
+        this.weight_pow2=0.0;
 
     }
 
@@ -94,6 +100,11 @@ public class Doc implements Serializable {
         return maxtf;
     }
 
+    public void addWeight(double w){
+        weight+=w;
+        weight_pow2+= w*w; // <-- Change to something safe. It may easily overflow.
+    }
+
     //    private HashMap<Location,Term> termLocation;
 
     public String getCITY() {
@@ -153,6 +164,22 @@ public class Doc implements Serializable {
     public void setHEADER(String HEADER) {
         this.HEADER = HEADER;
     }
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(float weight) {
+        this.weight = weight;
+    }
+
+    public double getWeight_pow2() {
+        return weight_pow2;
+    }
+
+    public void setWeight_pow2(float weight_pow2) {
+        this.weight_pow2 = weight_pow2;
+    }
+
     //</editor-fold>
 }
 
