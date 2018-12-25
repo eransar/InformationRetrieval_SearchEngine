@@ -12,12 +12,13 @@ import sun.text.normalizer.Trie;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Indexer that in charge of the city dictionary
  */
-public class CityIndexer {
+public class CityIndexer implements Serializable {
     private static CityIndexer ourInstance = new CityIndexer();
     public HashMap<String,City> dict_cache;
     public HashMap<String,String> dict_city;

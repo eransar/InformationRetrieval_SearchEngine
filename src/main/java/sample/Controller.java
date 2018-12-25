@@ -223,7 +223,7 @@ public class Controller implements Initializable {
                 indexer.loadDictionary(PathOfPosting, Steam);
                 indexer.loadLanguage(PathOfPosting, Steam);
                 indexer.loadAvgFromDisk(PathOfPosting,Steam);
-                //load cities
+                indexer.loadCitis(PathOfPosting,Steam);
                 indexer.setPath(PathOfPosting);
                 languageChoosieBox();
                 CitisCheckComboBox();
@@ -296,8 +296,8 @@ public class Controller implements Initializable {
      * build list of citis for the user to search for
      */
     private void CitisCheckComboBox() {
-        for(City c : CityIndexer.getInstance().dict_cache.values()){
-            citisNames.add(c.getName());
+        for(String S : CityIndexer.getInstance().dict_city.keySet()){
+            citisNames.add(S);
         }
         citisNames.sort(new Comparator<String>() {
             @Override

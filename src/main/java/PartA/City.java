@@ -1,11 +1,12 @@
 package PartA;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class City {
+public class City implements Serializable{
     String name;
     String country;
     String coin;

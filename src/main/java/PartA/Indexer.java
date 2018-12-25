@@ -194,23 +194,6 @@ public class Indexer {
         byte[] input = SerializationUtils.serialize(dict_docs);
         byte[] encodedInput = Base64.getEncoder().encode(input);
         FileUtils.writeByteArrayToFile(new File(path+File.separator+"docs.txt"),encodedInput);
-//        FileUtils.writeStringToFile(new File(path+File.separator+"docs.txt",encodedInput,);
-//        FileUtils.writeStringToFile(,encodedInput));
-//        FileUtils.writeByteArrayToFile(),input);
-//        ByteArrayOutputStream  bo= new ByteArrayOutputStream(input)
-//        ObjectInputStream oi = new ObjectInputStream(input);
-//        String encodedInput = Base64.getEncoder().encodeToString(input);
-//        FileOutputStream f = new FileOutputStream(new File(path+File.separator+"docs.txt","UTF-8"));
-
-//        byte[] decodedOutput = Base64.getDecoder().decode(encodedInput);
-//
-//
-//        FileOutputStream f = new FileOutputStream(new File(path+File.separator+"docs.txt","UTF-8"));
-//        ObjectOutputStream o = new ObjectOutputStream(f);
-//        // Write objects to file
-//        o.writeObject(dict_docs);
-//        o.flush();
-//        o.close();
     }
 
     /**
@@ -222,6 +205,15 @@ public class Indexer {
         ObjectOutputStream o = new ObjectOutputStream(f);
         // Write objects to file
         o.writeObject(set_languages);
+        o.flush();
+        o.close();
+    }
+
+    public void WriteCitis() throws IOException {
+        FileOutputStream f = new FileOutputStream(new File(path+File.separator+"citisAsObject.txt"));
+        ObjectOutputStream o = new ObjectOutputStream(f);
+        // Write objects to file
+        o.writeObject(CityIndexer.getInstance().dict_city);
         o.flush();
         o.close();
     }
@@ -291,6 +283,18 @@ public class Indexer {
             fi = new FileInputStream(new File(pathPosting+File.separator+"WithOutStem"+File.separator+"language.txt"));
         ObjectInputStream oi = new ObjectInputStream(fi);
         set_languages = (HashSet<String>)oi.readObject();
+        Indexer.getInstance().dictionary.putAll(sortDicTree);
+        oi.close();
+    }
+
+    public void loadCitis(String pathPosting,boolean stem) throws IOException, ClassNotFoundException {
+        FileInputStream fi = null;
+        if(stem)
+            fi = new FileInputStream(new File(pathPosting+File.separator+"Stem"+File.separator+"citisAsObject.txt"));
+        else
+            fi = new FileInputStream(new File(pathPosting+File.separator+"WithOutStem"+File.separator+"citisAsObject.txt"));
+        ObjectInputStream oi = new ObjectInputStream(fi);
+        CityIndexer.getInstance().dict_city = (HashMap<String,String>)oi.readObject();
         Indexer.getInstance().dictionary.putAll(sortDicTree);
         oi.close();
     }

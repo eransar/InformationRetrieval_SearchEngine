@@ -92,9 +92,7 @@ public class ReadFile {
       indexer.WriteLanguage();
       indexer.calculateAvg();
       indexer.writeAvgToDisk();
-
-
-
+      indexer.WriteCitis();
   }
 
   public int getCountDOCs() {
