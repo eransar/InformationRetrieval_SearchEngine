@@ -89,13 +89,16 @@ public class Ranker {
      * filter the docs by cities
      */
     private void citiesFilter() {
+        ArrayList<String> list = new ArrayList<>();
         if(set_citiesChoosen != null && set_citiesChoosen.size()>0) {
             for (String s : map_ranked_docs.keySet()) {
                 String city = Indexer.getInstance().getDict_docs().get(s).getCITY();
                 if (!set_citiesChoosen.contains(city)) {
-                    map_ranked_docs.remove(s);
+                    list.add(s);
                 }
             }
+            for(String s : list)
+                map_ranked_docs.remove(s);
         }
     }
 
