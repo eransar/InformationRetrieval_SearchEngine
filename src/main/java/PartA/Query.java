@@ -21,6 +21,9 @@ public class Query {
         this.title = title;
         this.description = description;
         this.narr = narr;
+        this.map_query = new HashMap<>();
+        this.text = String_fileQuery();
+        init_mapquery();
     }
 
     public String String_fileQuery(){

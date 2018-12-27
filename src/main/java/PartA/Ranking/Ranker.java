@@ -67,8 +67,12 @@ public class Ranker {
     }
     public void writeResults(){
         String s="";
+        int i=0;
         for (RankingObject rank :sorted_rankingobject){
+            if(i==50)
+                break;
             s+=("351"+" 0 "+rank.getDOCNO()+" 1 42.38 mt"+System.lineSeparator());
+            i++;
         }
         System.out.println("_");
         System.out.println(s);

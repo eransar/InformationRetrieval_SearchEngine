@@ -65,6 +65,7 @@ public class Controller implements Initializable {
     public ParseQueryFile parseQueryFile;
     public Label labal_numOfQuery;
     public Button button_next;
+    public Button button_back;
     public int CurrentQuery=0;
 
 
@@ -83,6 +84,7 @@ public class Controller implements Initializable {
         language.setDisable(true);
         error.setVisible(false);
         button_next.setVisible(false);
+        button_back.setVisible(false);
         labal_numOfQuery.setVisible(false);
     }
 
@@ -231,8 +233,12 @@ public class Controller implements Initializable {
                 indexer.setPath(PathOfPosting);
                 languageChoosieBox();
                 CitisCheckComboBox();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Information Dialog");
+                alert.setHeaderText("System Message");
+                alert.setContentText("The Loding is done");
+                alert.showAndWait();
             } catch (Exception e) {
-                e.printStackTrace();
                 error.setVisible(true);
                 error.setText("please run the\nprogram it first");
             }
@@ -430,6 +436,7 @@ public class Controller implements Initializable {
             parseQueryFile.jparse();
             button_next.setVisible(true);
             labal_numOfQuery.setVisible(true);
+            button_back.setVisible(true);
             getQuery();
         }
     }
