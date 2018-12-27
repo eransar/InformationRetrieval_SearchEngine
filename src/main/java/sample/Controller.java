@@ -236,7 +236,7 @@ public class Controller implements Initializable {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Information Dialog");
                 alert.setHeaderText("System Message");
-                alert.setContentText("The Loding is done");
+                alert.setContentText("The Loading is done");
                 alert.showAndWait();
             } catch (Exception e) {
                 error.setVisible(true);
@@ -335,25 +335,20 @@ public class Controller implements Initializable {
     }
 
     private void runSearch(String query, HashSet<String> set_CitisByUser) {
-        Searcher searcher = new Searcher(query, set_CitisByUser);
+        String query1 = query;
+        if (semantic) {
+            Semantics semantics = new Semantics();
+            semantics.startConnection();
+            for (Map.Entry<String, ArrayList<String>> map : Semantics.getMap_concepte().entrySet()) {
+                for (String s : map.getValue())
+                    query1 = query1 + " " + s;
+            }
+            //margeRank(ranker,ranker1);
+        }
+        Searcher searcher = new Searcher(query1, set_CitisByUser);
         searcher.getPointers();
-        Semantics semantics = new Semantics();
         Ranker ranker = searcher.getRanker();
         ranker.calculate();
-        Searcher searcher1;
-        Ranker ranker1;
-        if (semantic) {
-            semantics.startConnection();
-            String query1 = "";
-            for (Map.Entry<String, String> d : Semantics.getMap_concepte().entrySet()) {
-                query1 = query1 + " " + d.getValue();
-            }
-            searcher1 = new Searcher(query1, set_CitisByUser);
-            searcher1.getPointers();
-            ranker1 = searcher.getRanker();
-            ranker1.calculate();
-            margeRank(ranker,ranker1);
-        }
         ranker.sortSet();
         DisplayDocs(ranker);
         ranker.writeResults();
