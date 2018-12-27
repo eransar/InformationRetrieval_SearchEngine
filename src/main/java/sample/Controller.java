@@ -61,6 +61,12 @@ public class Controller implements Initializable {
     private boolean semantic=false;
     public CheckBox check_Semantic;
     public HashMap<Integer,String> map_docIndex;
+    /////////////////////////////////////
+    public ParseQueryFile parseQueryFile;
+    public Label labal_numOfQuery;
+    public Button button_next;
+    public int CurrentQuery=0;
+
 
 
     @Override
@@ -76,6 +82,8 @@ public class Controller implements Initializable {
         language.setValue("Language");
         language.setDisable(true);
         error.setVisible(false);
+        button_next.setVisible(false);
+        labal_numOfQuery.setVisible(false);
     }
 
     /**
@@ -418,12 +426,37 @@ public class Controller implements Initializable {
         String path = browse();
         if(path!=null) {
             File f = new File(path);
-            ParseQueryFile parseQueryFile = new ParseQueryFile(f);
+            parseQueryFile = new ParseQueryFile(f);
             parseQueryFile.jparse();
-            for(Query query:parseQueryFile.getQueryArrayList()){
-                String mergeQuery = query.String_fileQuery();
-            }
+            button_next.setVisible(true);
+            labal_numOfQuery.setVisible(true);
+            getQuery();
         }
+    }
+
+
+    public void next_vacation(ActionEvent event) {
+
+        if (CurrentQuery+1 < parseQueryFile.getQueryArrayList().size()) {
+            CurrentQuery++;
+            listView_docs.getItems().clear();
+            getQuery();
+        }
+    }
+
+    public void prev_vacation(ActionEvent event) {
+        if (CurrentQuery-1 >= 0) {
+            CurrentQuery--;
+            listView_docs.getItems().clear();
+            getQuery();
+        }
+    }
+
+    private void getQuery() {
+        Query query = parseQueryFile.getQueryArrayList().get(CurrentQuery);
+        String mergeQuery = query.String_fileQuery();
+        runSearch(mergeQuery,new HashSet<>());
+        labal_numOfQuery.setText(query.getNumOfQuery());
     }
 
 

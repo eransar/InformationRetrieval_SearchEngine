@@ -57,4 +57,36 @@ public class Query {
     public void setMap_query(HashMap<String, Integer> map_query) {
         this.map_query = map_query;
     }
+
+    public String getNumOfQuery() {
+        return numOfQuery;
+    }
+
+    public void setNumOfQuery(String numOfQuery) {
+        this.numOfQuery = numOfQuery;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getNarr() {
+        return narr;
+    }
+
+    public void setNarr(String narr) {
+        this.narr = narr;
+    }
 }

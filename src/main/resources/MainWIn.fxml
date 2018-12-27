@@ -29,7 +29,10 @@
       <Label layoutX="137.0" layoutY="392.0" text="OR" />
       <Button fx:id="run_Q" layoutX="250.0" layoutY="452.0" mnemonicParsing="false" onAction="#runQuery" text="Run Q" />
       <CheckComboBox fx:id="CheckComboBox_Citis" layoutX="418.0" layoutY="440.0" prefHeight="33.0" prefWidth="141.0" />
-      <ListView fx:id="listView_docs" layoutX="37.0" layoutY="508.0" prefHeight="267.0" prefWidth="526.0" />
+      <ListView fx:id="listView_docs" layoutX="37.0" layoutY="508.0" prefHeight="229.0" prefWidth="526.0" />
       <CheckBox fx:id="check_Semantic" layoutX="487.0" layoutY="393.0" mnemonicParsing="false" onAction="#Semantic_Choose" text="Semantic" />
+      <Button fx:id="button_next" layoutX="273.0" layoutY="747.0" mnemonicParsing="false" onAction="#next_vacation" prefHeight="31.0" prefWidth="79.0" text="next" />
+      <Label fx:id="labal_numOfQuery" layoutX="45.0" layoutY="458.0" prefHeight="31.0" prefWidth="89.0" />
+      <Button fx:id="button_back" layoutX="158.0" layoutY="747.0" mnemonicParsing="false" onAction="#prev_vacation" prefHeight="31.0" prefWidth="79.0" text="back" />
    </children>
 </AnchorPane>
