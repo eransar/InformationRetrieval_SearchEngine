@@ -866,14 +866,16 @@ Parse {
     }
 
     public void filterEntities() {
+        List<Term> toRemove = new ArrayList();
         for (Term Entity : doc.getMap_entities().values()) {
             String tmp = Entity.getName().toLowerCase();
-            if (indexer.getDict_cache().containsKey(tmp)) {
                 if (dic_docterms.containsKey(tmp)) {
                     Entity.setName(tmp);
-                    doc.removeEntity(Entity);
+                    toRemove.add(Entity);
                 }
-            }
+        }
+        for (Term t : toRemove){
+            doc.getMap_entities().remove(t.getName().toUpperCase());
         }
     }
 

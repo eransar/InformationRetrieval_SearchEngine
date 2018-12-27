@@ -134,8 +134,8 @@ public class Doc implements Serializable {
         }
     }
 
-    public void removeEntity(Term term){
-        map_entities.remove(term);
+    public void removeEntity(String term_name){
+        map_entities.remove(term_name);
     }
 
     public String getCITY() {
