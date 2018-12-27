@@ -335,7 +335,11 @@ public class Controller implements Initializable {
     }
 
     private void runSearch(String query, HashSet<String> set_CitisByUser) {
-        String query1 = query;
+        Searcher searcher = new Searcher(query, set_CitisByUser);
+        searcher.getPointers();
+        Ranker ranker = searcher.getRanker();
+        ranker.calculate();
+        String query1 = "";
         if (semantic) {
             Semantics semantics = new Semantics();
             semantics.startConnection();
@@ -343,12 +347,12 @@ public class Controller implements Initializable {
                 for (String s : map.getValue())
                     query1 = query1 + " " + s;
             }
-            //margeRank(ranker,ranker1);
+            Searcher searcher2 = new Searcher(query1, set_CitisByUser);
+            searcher2.getPointers();
+            Ranker ranker2 = searcher.getRanker();
+            ranker2.calculate();
+            margeRank(ranker,ranker2);
         }
-        Searcher searcher = new Searcher(query1, set_CitisByUser);
-        searcher.getPointers();
-        Ranker ranker = searcher.getRanker();
-        ranker.calculate();
         ranker.sortSet();
         DisplayDocs(ranker);
         ranker.writeResults();
@@ -359,7 +363,7 @@ public class Controller implements Initializable {
             if(r1.getMap_ranked_docs().containsKey(d.getKey())){
                 double rank1 = r1.getMap_ranked_docs().get(d.getKey()).getRank();
                 double rank2 = r2.getMap_ranked_docs().get(d.getKey()).getRank();
-                r1.getMap_ranked_docs().get(d.getKey()).setRank(rank1 + 0.5*rank2);
+                r1.getMap_ranked_docs().get(d.getKey()).setRank(0.8*rank1 + 0.2*rank2);
             }
         }
     }
