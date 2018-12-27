@@ -236,7 +236,7 @@ public class Controller implements Initializable {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Information Dialog");
                 alert.setHeaderText("System Message");
-                alert.setContentText("The Loding is done");
+                alert.setContentText("The Loading is done");
                 alert.showAndWait();
             } catch (Exception e) {
                 error.setVisible(true);
@@ -337,22 +337,21 @@ public class Controller implements Initializable {
     private void runSearch(String query, HashSet<String> set_CitisByUser) {
         Searcher searcher = new Searcher(query, set_CitisByUser);
         searcher.getPointers();
-        Semantics semantics = new Semantics();
         Ranker ranker = searcher.getRanker();
         ranker.calculate();
-        Searcher searcher1;
-        Ranker ranker1;
+        String query1 = "";
         if (semantic) {
+            Semantics semantics = new Semantics();
             semantics.startConnection();
-            String query1 = "";
-            for (Map.Entry<String, String> d : Semantics.getMap_concepte().entrySet()) {
-                query1 = query1 + " " + d.getValue();
+            for (Map.Entry<String, ArrayList<String>> map : Semantics.getMap_concepte().entrySet()) {
+                for (String s : map.getValue())
+                    query1 = query1 + " " + s;
             }
-            searcher1 = new Searcher(query1, set_CitisByUser);
-            searcher1.getPointers();
-            ranker1 = searcher.getRanker();
-            ranker1.calculate();
-            margeRank(ranker,ranker1);
+            Searcher searcher2 = new Searcher(query1, set_CitisByUser);
+            searcher2.getPointers();
+            Ranker ranker2 = searcher.getRanker();
+            ranker2.calculate();
+            margeRank(ranker,ranker2);
         }
         ranker.sortSet();
         DisplayDocs(ranker);
@@ -364,7 +363,7 @@ public class Controller implements Initializable {
             if(r1.getMap_ranked_docs().containsKey(d.getKey())){
                 double rank1 = r1.getMap_ranked_docs().get(d.getKey()).getRank();
                 double rank2 = r2.getMap_ranked_docs().get(d.getKey()).getRank();
-                r1.getMap_ranked_docs().get(d.getKey()).setRank(rank1 + 0.5*rank2);
+                r1.getMap_ranked_docs().get(d.getKey()).setRank(0.8*rank1 + 0.2*rank2);
             }
         }
     }

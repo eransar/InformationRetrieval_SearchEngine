@@ -19,7 +19,7 @@ import java.util.HashMap;
 public class Semantics {
 
     private Indexer indexer = Indexer.getInstance();
-    private static HashMap<String, String> map_concepte;
+    private static HashMap<String, ArrayList<String>> map_concepte;
     public Object[] parsed_json;
     private Query query;
 
@@ -52,20 +52,19 @@ public class Semantics {
                 if (obj != null) {
                     String word = "";
                     parsed_json = ((JSONArray) obj).toArray();
+//                    for (Object s : parsed_json) {
+//                        word = (String) ((JSONObject) s).get("word");
+//                        map_concepte.put(termName, word);
+//                    }
+                    int index = 0;
+                    map_concepte.put(termName, new ArrayList<>());
                     for (Object s : parsed_json) {
                         word = (String) ((JSONObject) s).get("word");
-                        map_concepte.put(termName, word);
-                    }
-                    /*int index=0;
-                    map_concepte.put(termName,new ArrayList<>());
-                    for (Object s : parsed_json) {
-                        word = (String) ((JSONObject) s).get("word");
-                        map_concepte.get(termName).add(index,word);
-                        if(index==4)
+                        map_concepte.get(termName).add(index, word);
+                        if (index == 4)
                             break;
                         index++;
-                    }*/
-
+                    }
                 }
             } catch (org.json.simple.parser.ParseException e) {
                 e.printStackTrace();
@@ -73,11 +72,11 @@ public class Semantics {
         }
     }
 
-    public static HashMap<String, String> getMap_concepte() {
+    public static HashMap<String, ArrayList<String>> getMap_concepte() {
         return map_concepte;
     }
 
-    public static void setMap_concepte(HashMap<String, String> map_concepte) {
+    public static void setMap_concepte(HashMap<String, ArrayList<String>> map_concepte) {
         Semantics.map_concepte = map_concepte;
     }
 }
