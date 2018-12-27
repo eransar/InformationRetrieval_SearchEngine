@@ -13,7 +13,7 @@ public class Doc implements Serializable {
     private int maxtf;
     private int distinctwords;
     private String file;
-    private HashSet<Term> set_entities;
+    private HashMap<String,Term> map_entities;
     private TreeSet<Term> treeset_entities;
     private String[] arr_entities;
     private double weight;
@@ -31,7 +31,7 @@ public class Doc implements Serializable {
         this.maxtf=0;
         this.DATE=DATE;
         this.LANGUAGE=LANGUAGE;
-        this.set_entities=new HashSet<>();
+        this.map_entities =new HashMap<>();
         this.treeset_entities = new TreeSet<Term>(new DocComperator() {});
         this.arr_entities=new String[5];
         this.weight=0.0;
@@ -43,20 +43,30 @@ public class Doc implements Serializable {
         this.DOCNO=DOCNO;
 
     }
+
     public void AddtoEntities(Term t){
-        set_entities.add(t);
+        map_entities.put(t.getName(),t);
     }
 
     public void ClearEntitiesSet(){
-        set_entities.clear();
+        map_entities.clear();
+    }
+
+    public String[] getArr_entities() {
+        return arr_entities;
+    }
+
+    public void setArr_entities(String[] arr_entities) {
+        this.arr_entities = arr_entities;
     }
 
     public void init_TreeSet(){
-        for (Term t:
-             set_entities) {
+        for (Term t: map_entities.values()) {
             treeset_entities.add(t);
         }
+
     }
+
     public void add_TreeSet(Term t){
         if(treeset_entities.size()>5){
             Iterator<Term> it =treeset_entities.iterator();
@@ -73,6 +83,7 @@ public class Doc implements Serializable {
     public void ClearEntitiesTreeSet(){
         treeset_entities.clear();
     }
+
     public void init_arrEntities(){
         Iterator<Term> it= treeset_entities.descendingIterator();
         for (int i = 0; i < arr_entities.length; i++) {
@@ -107,6 +118,26 @@ public class Doc implements Serializable {
 
     //    private HashMap<Location,Term> termLocation;
 
+    public void addEntity(Term term){
+        Term tmp = new Term(term);
+        tmp.setName(tmp.getName().toUpperCase());
+        if(map_entities.get(tmp.getName())==null) {
+            tmp.setDf(1);
+            map_entities.put(tmp.getName(), tmp);
+        }
+        else {
+            Term t = map_entities.get(tmp.getName());
+            int num = t.getDf();
+            t.setDf(t.getDf()+1);
+            //map_entities.get(t.getName()).getDocFrequency().put(this,num+1);
+            map_entities.put(t.getName(),t);
+        }
+    }
+
+    public void removeEntity(Term term){
+        map_entities.remove(term);
+    }
+
     public String getCITY() {
         return CITY;
     }
@@ -115,8 +146,8 @@ public class Doc implements Serializable {
         this.CITY = CITY;
     }
 
-    public HashSet<Term> getSet_entities() {
-        return set_entities;
+    public HashMap<String,Term> getMap_entities() {
+        return map_entities;
     }
 
     public TreeSet<Term> getTreeset_entities() {

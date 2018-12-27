@@ -109,37 +109,36 @@ public class ReadFile {
     doc = Jsoup.parse(file, "UTF-8");
     String TEXT = "";
     String DOCNO = "";
-    String CITY ="";
-    String HEADER="";
-    String DATE="";
-    String LANGUAGE="";
+    String CITY = "";
+    String HEADER = "";
+    String DATE = "";
+    String LANGUAGE = "";
     Elements doctags = doc.select("DOC");
 
 
     for (Element element : doctags) {
-      CITY=getCityFromText(element.outerHtml());
-      String [] temp_city = CITY.split(" ");
-      int cityindex=0;
-      if(temp_city.length > 2) {
+      CITY = getCityFromText(element.outerHtml());
+      String[] temp_city = CITY.split(" ");
+      int cityindex = 0;
+      if (temp_city.length > 2) {
         if (CITY.startsWith("   St.")) {
           CITY = new String(temp_city[3] + " " + temp_city[4]);
         } else {
-          while(temp_city[cityindex].equals("")){
+          while (temp_city[cityindex].equals("")) {
             cityindex++;
           }
-          CITY=temp_city[cityindex];
+          CITY = temp_city[cityindex];
         }
       }
 
-      LANGUAGE=getLanguageFromCity(element.outerHtml());
+      LANGUAGE = getLanguageFromCity(element.outerHtml());
       DOCNO = element.select("DOCNO").text();
       TEXT = element.select("TEXT").text();
       HEADER = element.select("H3").select("TI").text();
-      DATE=element.select("DATE1").text();
+      DATE = element.select("DATE1").text();
       countDOCs++;
-      parse.ParseDoc(new Doc(DOCNO, file.getName(),CITY,HEADER,DATE,LANGUAGE), TEXT);
+      parse.ParseDoc(new Doc(DOCNO, file.getName(), CITY, HEADER, DATE, LANGUAGE), TEXT);
     }
-    //Indexer.getInstance().calculateAvg();
   }
 
   /**

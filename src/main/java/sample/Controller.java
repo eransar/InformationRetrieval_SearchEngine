@@ -4,6 +4,7 @@ import PartA.*;
 import PartA.Ranking.Ranker;
 import PartA.Ranking.RankingObject;
 import PartA.Ranking.Semantics;
+import PartA.ParseQueryFile;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,17 +21,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.CheckComboBox;
-import org.controlsfx.control.IndexedCheckModel;
 
-import javax.swing.*;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 
 public class Controller implements Initializable {
@@ -66,10 +60,13 @@ public class Controller implements Initializable {
     public ListView<Node> listView_docs;
     private boolean semantic=false;
     public CheckBox check_Semantic;
+    public HashMap<Integer,String> map_docIndex;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        citisNames = new ArrayList<>();
+        map_docIndex=new HashMap<>();
         StemmingCheckBox.setSelected(false);
         language.setDisable(true);
         CheckComboBox_Citis.setDisable(true);
@@ -79,7 +76,6 @@ public class Controller implements Initializable {
         language.setValue("Language");
         language.setDisable(true);
         error.setVisible(false);
-        citisNames = new ArrayList<>();
     }
 
     /**
@@ -320,29 +316,33 @@ public class Controller implements Initializable {
                 set_CitisByUser.add((String) CheckComboBox_Citis.getItems().get(i));
             }
             query = Q_text.getText();
-            Searcher searcher = new Searcher(query, set_CitisByUser);
-            searcher.getPointers();
-            Semantics semantics = new Semantics();
-            Ranker ranker = searcher.getRanker();
-            ranker.calculate();
-            Searcher searcher1;
-            Ranker ranker1;
-            if (semantic) {
-                semantics.startConnection();
-                String query1 = "";
-                for (Map.Entry<String, String> d : Semantics.getMap_concepte().entrySet()) {
-                    query1 = query1 + " " + d.getValue();
-                }
-                searcher1 = new Searcher(query1, set_CitisByUser);
-                searcher1.getPointers();
-                ranker1 = searcher.getRanker();
-                ranker1.calculate();
-                margeRank(ranker,ranker1);
-            }
-            ranker.sortSet();
-            DisplayDocs(ranker);
-            ranker.writeResults();
+            runSearch(query, set_CitisByUser);
         }
+    }
+
+    private void runSearch(String query, HashSet<String> set_CitisByUser) {
+        Searcher searcher = new Searcher(query, set_CitisByUser);
+        searcher.getPointers();
+        Semantics semantics = new Semantics();
+        Ranker ranker = searcher.getRanker();
+        ranker.calculate();
+        Searcher searcher1;
+        Ranker ranker1;
+        if (semantic) {
+            semantics.startConnection();
+            String query1 = "";
+            for (Map.Entry<String, String> d : Semantics.getMap_concepte().entrySet()) {
+                query1 = query1 + " " + d.getValue();
+            }
+            searcher1 = new Searcher(query1, set_CitisByUser);
+            searcher1.getPointers();
+            ranker1 = searcher.getRanker();
+            ranker1.calculate();
+            margeRank(ranker,ranker1);
+        }
+        ranker.sortSet();
+        DisplayDocs(ranker);
+        ranker.writeResults();
     }
 
     private void margeRank(Ranker r1,Ranker r2) {
@@ -369,7 +369,16 @@ public class Controller implements Initializable {
     private void OnClickEntities(ActionEvent event){
         Button b = ((Button)event.getSource());
         int i = Integer.parseInt(b.getId());
-        //Entities data structers
+        String docName = map_docIndex.get(i);
+        String [] array_Entity = indexer.getDict_docs().get(docName).getArr_entities();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Entities");
+        alert.setHeaderText("There are the 5 strong Entities");
+        String allTheEntites = "";
+        for(String s: array_Entity)
+            allTheEntites = allTheEntites + "\n" + s;
+        alert.setContentText(allTheEntites);
+        alert.showAndWait();
     }
 
     /**
@@ -391,12 +400,12 @@ public class Controller implements Initializable {
             button.setOnAction(this::OnClickEntities);
             Label docName = new Label();
             docName.setText("   " + r.getDOCNO());
+            map_docIndex.put(i,r.getDOCNO());
             System.out.println(r.getDOCNO());
             hBox.getChildren().add(button);
             hBox.getChildren().add(docName);
             listView_docs.getItems().add(hBox);
             i++;
-            //System.out.println(r.getDOCNO());
         }
     }
 
@@ -405,13 +414,15 @@ public class Controller implements Initializable {
      * @param event
      * @throws FileNotFoundException
      */
-    public void BrowseQuery(ActionEvent event) throws FileNotFoundException {
+    public void BrowseQuery(ActionEvent event) throws IOException {
         String path = browse();
         if(path!=null) {
             File f = new File(path);
-            FileReader fr = new FileReader(f);
-            BufferedReader bufferedReader = new BufferedReader(fr);
-            //צריך לפרסר ולשלוח לsearch
+            ParseQueryFile parseQueryFile = new ParseQueryFile(f);
+            parseQueryFile.jparse();
+            for(Query query:parseQueryFile.getQueryArrayList()){
+                String mergeQuery = query.String_fileQuery();
+            }
         }
     }
 

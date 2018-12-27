@@ -90,6 +90,7 @@ Parse {
             if (!doc.getLANGUAGE().equals("")) {
                 indexer.getSet_languages().add(doc.getLANGUAGE());
             }
+            filterEntities();
             doc.init_TreeSet();
             doc.init_arrEntities();
             doc.ClearEntitiesSet();
@@ -595,13 +596,7 @@ Parse {
             }
             if (toCheck.getType().equals("Word") && toCheck.getName().charAt(0) >= 65 && toCheck.getName().charAt(0) <= 90) {
                 updateCacheDicationary(indexer.getDict_capitals(), toCheck);
-//                if(toCheck.getName().charAt(toCheck.getName().length()-1) >= 65 && toCheck.getName().charAt(toCheck.getName().length()-1) <= 90){
-//                    if(isAllUpperCase(toCheck.getName())){
-//                        doc.AddtoEntities(toCheck);
-//                    }
-
-//                }
-
+                doc.addEntity(toCheck);
             } else {
                 updateCacheDicationary(indexer.getDict_cache(), toCheck);
             }
@@ -869,6 +864,19 @@ Parse {
 
         return doc;
     }
+
+    public void filterEntities() {
+        for (Term Entity : doc.getMap_entities().values()) {
+            String tmp = Entity.getName().toLowerCase();
+            if (indexer.getDict_cache().containsKey(tmp)) {
+                if (dic_docterms.containsKey(tmp)) {
+                    Entity.setName(tmp);
+                    doc.removeEntity(Entity);
+                }
+            }
+        }
+    }
+
 
     public ArrayList<Term> getQueryTerms() {
         for (int i = 0; i <queryTerms.size() ; i++) {

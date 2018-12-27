@@ -31,17 +31,12 @@ public class Term implements Serializable, Comparable{
 
     }
 
-    public Term(Term t){
-        this.name=t.name;
-        this.docFrequency=new HashMap<Doc,Integer>();
+    public Term(Term t) {
+        this.name = t.getName();
+        this.docFrequency = new HashMap<Doc, Integer>();
         this.docFrequency.putAll(t.docFrequency);
-        this.df=t.df;
-        this.docFrequency=null;
-        this.type="";
-
-
-
-
+        this.df = t.df;
+        this.type = t.getType();
     }
 
     @Override

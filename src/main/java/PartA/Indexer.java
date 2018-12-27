@@ -250,21 +250,6 @@ public class Indexer {
         byte[] decodedOutput = Base64.getMimeDecoder().decode(encoded );
         Object output = SerializationUtils.deserialize(decodedOutput);
         dict_docs = ((HashMap<String,Doc>) output);
-
-
-
-//        byte[] input = SerializationUtils.serialize(dict_docs);
-//        byte[] encodedInput = Base64.getEncoder().encode(input);
-//        FileUtils.writeByteArrayToFile(new File(path+File.separator+"docs.txt"),encodedInput);
-
-//        FileInputStream fi = null;
-//        if (stem)
-//            fi = new FileInputStream(new File(pathPosting + File.separator + "Stem" + File.separator + "docs.txt","UTF-8"));
-//        else
-//            fi = new FileInputStream(new File(pathPosting + File.separator + "WithOutStem" + File.separator + "docs.txt"));
-//        ObjectInputStream oi = new ObjectInputStream(fi.en);
-//        dict_docs = (HashMap<String, Doc>) oi.readObject();
-//        oi.close();
     }
 
     /**

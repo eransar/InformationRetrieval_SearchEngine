@@ -57,7 +57,6 @@ public class Ranker {
         }
     }
 
-
     public void calculate() {
         calculateBM25();
         calculateCosSim();
@@ -74,7 +73,6 @@ public class Ranker {
         System.out.println("_");
         System.out.println(s);
     }
-
 
     /**
      * sort the relevent docs by rank

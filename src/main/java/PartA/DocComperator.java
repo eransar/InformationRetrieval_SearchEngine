@@ -11,7 +11,7 @@ public class DocComperator implements Serializable,Comparator {
             Term t1= ((Term) o1);
             Term t2= ((Term) o2);
 
-            int t1freq=1;
+            /*int t1freq=1;
             for (Doc d : t1.getDocFrequency().keySet()){
                 t1freq=t1.getDocFrequency().get(d);
             }
@@ -26,7 +26,11 @@ public class DocComperator implements Serializable,Comparator {
             }
             else{
                 return -1;
-            }
+            }*/
+            if(t1.getDf()>t2.getDf())
+                return 1;
+            else
+                return -1;
         }
 
         return -5;
