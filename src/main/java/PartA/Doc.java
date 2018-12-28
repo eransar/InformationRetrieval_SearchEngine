@@ -113,7 +113,7 @@ public class Doc implements Serializable {
 
     public void addWeight(double w){
         weight+=w;
-        weight_pow2+= w*w; // <-- Change to something safe. It may easily overflow.
+        weight_pow2+= w*w;
     }
 
     //    private HashMap<Location,Term> termLocation;

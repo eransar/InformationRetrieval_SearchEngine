@@ -4,7 +4,7 @@ import PartA.*;
 import PartA.Ranking.Ranker;
 import PartA.Ranking.RankingObject;
 import PartA.Ranking.Semantics;
-import PartA.ParseQueryFile;
+import PartA.QueryFile;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -62,7 +62,7 @@ public class Controller implements Initializable {
     public CheckBox check_Semantic;
     public HashMap<Integer,String> map_docIndex;
     /////////////////////////////////////
-    public ParseQueryFile parseQueryFile;
+    public QueryFile queryFile;
     public Label labal_numOfQuery;
     public Button button_next;
     public Button button_back;
@@ -355,7 +355,7 @@ public class Controller implements Initializable {
         }
         ranker.sortSet();
         DisplayDocs(ranker);
-        ranker.writeResults();
+        ranker.writeResults(PathOfPosting);
     }
 
     private void margeRank(Ranker r1,Ranker r2) {
@@ -431,11 +431,13 @@ public class Controller implements Initializable {
         String path = browse();
         if(path!=null) {
             File f = new File(path);
-            parseQueryFile = new ParseQueryFile(f);
-            parseQueryFile.jparse();
+            queryFile = new QueryFile(f);
+            queryFile.jparse();
             button_next.setVisible(true);
             labal_numOfQuery.setVisible(true);
             button_back.setVisible(true);
+
+
             getQuery();
         }
     }
@@ -443,7 +445,7 @@ public class Controller implements Initializable {
 
     public void next_vacation(ActionEvent event) {
 
-        if (CurrentQuery+1 < parseQueryFile.getQueryArrayList().size()) {
+        if (CurrentQuery+1 < queryFile.getQueryArrayList().size()) {
             CurrentQuery++;
             listView_docs.getItems().clear();
             getQuery();
@@ -459,10 +461,15 @@ public class Controller implements Initializable {
     }
 
     private void getQuery() {
-        Query query = parseQueryFile.getQueryArrayList().get(CurrentQuery);
+        Query query = queryFile.getQueryArrayList().get(CurrentQuery);
         String mergeQuery = query.String_fileQuery();
         runSearch(mergeQuery,new HashSet<>());
         labal_numOfQuery.setText(query.getNumOfQuery());
+        writeResults();
+    }
+
+    private void writeResults() {
+
     }
 
 

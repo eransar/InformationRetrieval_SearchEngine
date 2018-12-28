@@ -20,6 +20,7 @@ public class Searcher {
     private ArrayList<String> arr_cities;
     private HashMap<String,Integer> map_docsbm25;
     private HashMap<Doc,Term> map_termsindocs;
+    private HashMap<Query,HashSet<RankingObject>> map_queryfile;
     protected static Query query;
     private Indexer indexer;
     private TreeSet<Pointer> pointers = new TreeSet<>();
@@ -32,9 +33,17 @@ public class Searcher {
         this.hashSet_citisByUser =hashSet_citisByUser;
         ranker = new Ranker(hashSet_citisByUser);
         this.query_text=query;
-
         this.indexer=Indexer.getInstance();
         this.parse=new Parse(true);
+        this.map_queryfile=new HashMap<>();
+    }
+
+    public Searcher(QueryFile queryfile, HashSet<String> hashSet_citisByUser){
+        this.hashSet_citisByUser =hashSet_citisByUser;
+        this.indexer=Indexer.getInstance();
+        this.parse=new Parse(true);
+        this.map_queryfile = new HashMap<>();
+
     }
 
     public Searcher(String query){
@@ -43,6 +52,7 @@ public class Searcher {
         this.query_text=query;
         this.indexer=Indexer.getInstance();
         this.parse=new Parse(true);
+        this.map_queryfile=new HashMap<>();
     }
 
     public ArrayList<Term> parseQuery(){
@@ -52,9 +62,27 @@ public class Searcher {
      * Find if the words in the query are in the inverted index and return a pointers to them
      */
     public void getPointers(){
-        parse.ParseDoc(new Doc(""),query_text);
-        ArrayList<Term> parsed_content=parse.getQueryTerms();
-        StringBuilder sb = new StringBuilder();
+        ArrayList<Term> parsed_content=sendtoParse(query_text);
+        query=buildQuery(parsed_content);
+
+        for (Term term: parsed_content){
+            Pointer currentPointer =indexer.getDictionary().get(term.getName());
+            if(currentPointer!=null){
+                BuildRankingObjects(term.getName(), currentPointer);
+            }
+        }
+    }
+    public ArrayList<Term> sendtoParse(String text){
+        parse.ParseDoc(new Doc(""),text);
+        return parse.getQueryTerms();
+
+
+
+
+    }
+
+    public Query buildQuery(ArrayList<Term> parsed_content){
+        StringBuilder sb = new StringBuilder("");
         for (int i = 0; i < parsed_content.size(); i++) {
             if(i==0){
                 sb.append(parsed_content.get(i));
@@ -64,12 +92,7 @@ public class Searcher {
             }
         }
         query=new Query(sb.toString());
-        for (Term term: parsed_content){
-            Pointer currentPointer =indexer.getDictionary().get(term.getName());
-            if(currentPointer!=null){
-                BuildRankingObjects(term.getName(), currentPointer);
-            }
-        }
+        return query;
     }
 
     public static Ranker getRanker() {
@@ -97,7 +120,8 @@ public class Searcher {
                 }
             }
             else{
-                RankingObject o = new RankingObject(DOCNO,File,indexer.getDict_docs().get(DOCNO).getLENGTH(),indexer.getDict_docs().get(DOCNO).getWeight(),indexer.getDict_docs().get(DOCNO).getWeight_pow2());
+                Doc currentdoc=indexer.getDict_docs().get(DOCNO);
+                RankingObject o = new RankingObject(DOCNO,File,currentdoc.getLENGTH(),currentdoc.getWeight(),currentdoc.getWeight_pow2(),currentdoc.getArr_entities(),query);
                 o.getTerms_data().put(term_name,new RankingInstance(term_name,query.getMap_query().get(term_name.toLowerCase()),Integer.parseInt(docTF)));
                 ranker.getMap_ranked_docs().put(DOCNO,o);
             }

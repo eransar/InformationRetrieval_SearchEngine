@@ -610,9 +610,9 @@ public class Indexer {
         for(String splitted_line: split_substring){
             String[] doc = splitted_line.split(",");
             String DOCNO = doc[0];
-             double fij = Float.parseFloat(doc[1]);
-            double tfij = (fij)/ ((float) dict_docs.get(DOCNO).getLENGTH());
-            double idfi = ((float) Math.log10(numofdocs / dfi));
+             double fij = Double.parseDouble(doc[1]);
+            double tfij = (fij)/ ((double) dict_docs.get(DOCNO).getMaxtf());
+            double idfi = Math.log10(numofdocs / dfi);
             double weight = tfij*idfi;
             dict_docs.get(DOCNO).addWeight(weight);
         }

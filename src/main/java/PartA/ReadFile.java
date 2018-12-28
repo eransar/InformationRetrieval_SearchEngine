@@ -75,11 +75,11 @@ public class ReadFile {
     }
     if(indexer.getDict_cache().size()!=0) {
       indexer.writeToDisk();
-      indexer.updateDocWeight();
       indexer.writeDocs();
     }
       //marge capital letters to dictionary
       indexer.handleCapitalLetters();
+      indexer.updateDocWeight();
 //      for (Doc d : indexer.getDict_docs().values()){
 //        d.init_TreeSet();
 //        d.init_arrEntities();

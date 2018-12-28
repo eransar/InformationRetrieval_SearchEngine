@@ -1,11 +1,10 @@
 package PartA.Ranking;
 
-import PartA.Doc;
-import PartA.Indexer;
+import PartA.*;
 import PartA.Ranking.Functions.BM25;
 import PartA.Ranking.Functions.CosSim;
-import PartA.Term;
 
+import java.io.*;
 import java.util.*;
 
 public class Ranker {
@@ -62,20 +61,26 @@ public class Ranker {
         calculateCosSim();
 //        calculateHeaderTest();
         for (RankingObject rank : map_ranked_docs.values()) {
-            rank.setRank(0.65*50*rank.getRank_BM25()+0.25*rank.getRank_cossim()*10);
+            rank.setRank(0.5*rank.getRank_BM25()+0.5*rank.getRank_entities());
         }
     }
-    public void writeResults(){
-        String s="";
+    public void writeResults(String filepath){
+        StringBuilder sb = new StringBuilder("");
         int i=0;
         for (RankingObject rank :sorted_rankingobject){
             if(i==50)
                 break;
-            s+=("351"+" 0 "+rank.getDOCNO()+" 1 42.38 mt"+System.lineSeparator());
+            sb.append(Searcher.getQuery().getNumOfQuery()+" 0 "+rank.getDOCNO()+" 1 42.38 mt"+System.lineSeparator());
             i++;
         }
-        System.out.println("_");
-        System.out.println(s);
+        try {
+            File f=new File(filepath+ File.separator+"results.txt");
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f, false)));
+            out.write(sb.toString());
+            out.close();
+        } catch (IOException e) {
+            //exception handling left as an exercise for the reader
+        }
     }
 
     /**

@@ -25,8 +25,8 @@ public class CosSim extends ARankerFunction {
         for (RankingInstance instance : super.getRankingObject().getTerms_data().values()){
            count_query+=Math.pow(instance.getCount_query(),2);
         }
-
-        return (weight)/(Math.sqrt(weight_pow2*count_query));
+        double result = (weight)/(Math.sqrt(weight_pow2*count_query));
+        return result/10;
 
     }
 }

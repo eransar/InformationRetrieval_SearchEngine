@@ -1,11 +1,10 @@
 package PartA.Ranking;
 
-import PartA.Indexer;
-import PartA.Pointer;
-import PartA.Term;
+import PartA.Query;
 
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Optional;
 
 public class RankingObject implements Comparable {
 
@@ -19,8 +18,10 @@ public class RankingObject implements Comparable {
     double rank_header;
     double weight;
     double weight_pow2;
+    String[] entities;
 
 
+    double rank_entities;
 
 
     HashMap<String, RankingInstance> terms_data; // String is the name of the term
@@ -35,15 +36,22 @@ public class RankingObject implements Comparable {
     }
 
 
-
-    public RankingObject(String DOCNO, String file, int length, double weight, double weight_pow2) {
+    public RankingObject(String DOCNO, String file, int length, double weight, double weight_pow2, String[] entities_arr, Query query) {
         terms_data = new HashMap<>();
         this.DOCNO = DOCNO;
-
         this.file = file;
         this.length = length;
-        this.weight=weight;
-        this.weight_pow2=weight_pow2;
+        this.weight = weight;
+        this.weight_pow2 = weight_pow2;
+        this.entities = new String[5];
+        for (int i = 0; i < this.entities.length; i++) {
+            this.entities[i] = entities_arr[i];
+            if(entities[i] != null && query.getMap_query().get(this.entities[i].toLowerCase()) !=null){
+                rank_entities++;
+            }
+            //rank_entities += query.getMap_query().get(this.entities[i].toLowerCase()) == null ? 0.00d : query.getMap_query().get(this.entities[i].toLowerCase());
+        }
+
 
     }
 
@@ -160,4 +168,13 @@ public class RankingObject implements Comparable {
         }
         return -1;
     }
+
+    public double getRank_entities() {
+        return rank_entities;
+    }
+
+    public void setRank_entities(double rank_entities) {
+        this.rank_entities = rank_entities;
+    }
+
 }

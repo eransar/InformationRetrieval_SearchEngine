@@ -10,13 +10,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-public class ParseQueryFile {
+public class QueryFile {
     private Document doc;
     private File querysFile;
     private LinkedHashMap<String, String> dict_replaceWords;
     private ArrayList<Query> queryArrayList;
 
-    public ParseQueryFile(File querysFile) {
+    public QueryFile(File querysFile) {
         this.querysFile = querysFile;
         queryArrayList = new ArrayList<>();
         dict_replaceWords = new LinkedHashMap<>();

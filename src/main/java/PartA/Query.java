@@ -34,9 +34,9 @@ public class Query {
         String[] splitted = text.split(" ");
         for (String word: splitted){
 
-            if(map_query.get(word)!=null){
-                int count = map_query.get(word);
-                map_query.put(word,count+1);
+            if(map_query.get(word.toLowerCase())!=null){
+                int count = map_query.get(word.toLowerCase());
+                map_query.put(word.toLowerCase(),count+1);
             }
             else{
                 map_query.put(word.toLowerCase(),1);
