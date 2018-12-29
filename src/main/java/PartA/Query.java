@@ -3,6 +3,7 @@ package PartA;
 import javax.print.attribute.standard.MediaSize;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Query implements Comparable{
 
@@ -97,17 +98,31 @@ public class Query implements Comparable{
         this.narr = narr;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Query query = (Query) o;
+        return Objects.equals(numOfQuery, query.numOfQuery);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(numOfQuery);
+    }
 
     @Override
     public int compareTo(Object o) {
-        if(o instanceof Query){
+        if (o instanceof Query) {
             Query OtherQuery = ((Query) o);
-            if (Integer.parseInt(this.getNumOfQuery()) > Integer.parseInt(OtherQuery.getNumOfQuery())){
-            return 1;
+            if (Integer.parseInt(this.getNumOfQuery()) > Integer.parseInt(OtherQuery.getNumOfQuery())) {
+                return 1;
             }
-            else{
+            else if (Integer.parseInt(this.getNumOfQuery()) < Integer.parseInt(OtherQuery.getNumOfQuery())) {
                 return -1;
             }
+            else return 0;
         }
         return -5;
     }

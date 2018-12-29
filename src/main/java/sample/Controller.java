@@ -68,6 +68,7 @@ public class Controller implements Initializable {
     public Button button_back;
     public int CurrentQuery = 0;
     public TreeMap<Query, TreeSet<RankingObject>> map_results;
+    private Query currentNumQurrey;
 
 
     @Override
@@ -358,7 +359,7 @@ public class Controller implements Initializable {
             margeRank(ranker, ranker2);
         }
         ranker.sortSet();
-        DisplayDocs(ranker);
+        DisplayDocs(ranker.getSorted_rankingobject());
         ranker.writeResults(PathOfPosting);
     }
 
@@ -402,12 +403,13 @@ public class Controller implements Initializable {
     /**
      * display list of 50 relevant docs
      *
-     * @param ranker
+     * @param
+     * @param rankingObjects
      */
-    private void DisplayDocs(Ranker ranker) {
+    private void DisplayDocs(TreeSet<RankingObject> rankingObjects) {
         listView_docs.getItems().clear();
         int i = 0;
-        for (RankingObject r : ranker.getSorted_rankingobject()) {
+        for (RankingObject r : rankingObjects) {
             if (i >= 50)
                 break;
             HBox hBox = new HBox();
@@ -444,34 +446,27 @@ public class Controller implements Initializable {
             labal_numOfQuery.setVisible(true);
             button_back.setVisible(true);
             searchFile();
+            currentNumQurrey = map_results.firstKey();
+            DisplayDocs(map_results.get(currentNumQurrey));
+            labal_numOfQuery.setText(currentNumQurrey.getNumOfQuery());
             writeResults();
         }
     }
 
-
     public void next_vacation(ActionEvent event) {
-
-        if (CurrentQuery + 1 < queryFile.getQueryArrayList().size()) {
-            CurrentQuery++;
-            listView_docs.getItems().clear();
-            getQuery();
+        if(map_results.higherKey(currentNumQurrey) !=null){
+            currentNumQurrey = map_results.higherKey(currentNumQurrey);
         }
+        DisplayDocs(map_results.get(currentNumQurrey));
+        labal_numOfQuery.setText(currentNumQurrey.getNumOfQuery());
     }
 
     public void prev_vacation(ActionEvent event) {
-        if (CurrentQuery - 1 >= 0) {
-            CurrentQuery--;
-            listView_docs.getItems().clear();
-            getQuery();
+        if(map_results.lowerKey(currentNumQurrey) !=null){
+            currentNumQurrey = map_results.lowerKey(currentNumQurrey);
         }
-    }
-
-    private void getQuery() {
-        Query query = queryFile.getQueryArrayList().get(CurrentQuery);
-        String mergeQuery = query.String_fileQuery();
-        runSearch(mergeQuery, new HashSet<>());
-        labal_numOfQuery.setText(query.getNumOfQuery());
-        writeResults();
+        DisplayDocs(map_results.get(currentNumQurrey));
+        labal_numOfQuery.setText(currentNumQurrey.getNumOfQuery());
     }
 
     public void searchFile() {
@@ -502,7 +497,6 @@ public class Controller implements Initializable {
             }
             ranker.sortSet();
             map_results.put(q, ranker.getSorted_rankingobject());
-            DisplayDocs(ranker);
         }
 
     }
