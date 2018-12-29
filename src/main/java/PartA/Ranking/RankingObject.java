@@ -47,8 +47,13 @@ public class RankingObject implements Comparable {
         for (int i = 0; i < this.entities.length; i++) {
             this.entities[i] = entities_arr[i];
             if(entities[i] != null && query.getMap_query().get(this.entities[i].toLowerCase()) !=null){
+                if(query.getMap_query().get(this.entities[i].toLowerCase() ) > 1){
+                    rank_entities*=2;
+                }
+                else{
+                    rank_entities++;
+                }
 
-                rank_entities+=query.getMap_query().get(this.entities[i].toLowerCase());
             }
             //rank_entities += query.getMap_query().get(this.entities[i].toLowerCase()) == null ? 0.00d : query.getMap_query().get(this.entities[i].toLowerCase());
         }
