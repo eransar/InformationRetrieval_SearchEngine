@@ -48,9 +48,9 @@ public class Controller implements Initializable {
     public Button run_Q;
     ////////////////////////////////////
     public ReadFile rf;
-    private String PathOfCorpus="";
-    private String StopWordsPath="";
-    public String PathOfPosting="";
+    private String PathOfCorpus = "";
+    private String StopWordsPath = "";
+    public String PathOfPosting = "";
     private boolean Steam;
     public Label error;
     private String newPostingPath = "";
@@ -58,22 +58,23 @@ public class Controller implements Initializable {
     public Indexer indexer = Indexer.getInstance();
     public ArrayList<String> citisNames;
     public ListView<Node> listView_docs;
-    private boolean semantic=false;
+    private boolean semantic = false;
     public CheckBox check_Semantic;
-    public HashMap<Integer,String> map_docIndex;
+    public HashMap<Integer, String> map_docIndex;
     /////////////////////////////////////
     public QueryFile queryFile;
     public Label labal_numOfQuery;
     public Button button_next;
     public Button button_back;
-    public int CurrentQuery=0;
-
+    public int CurrentQuery = 0;
+    public TreeMap<Query, TreeSet<RankingObject>> map_results;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         citisNames = new ArrayList<>();
-        map_docIndex=new HashMap<>();
+        map_docIndex = new HashMap<>();
+        map_results = new TreeMap<>();
         StemmingCheckBox.setSelected(false);
         language.setDisable(true);
         CheckComboBox_Citis.setDisable(true);
@@ -175,6 +176,7 @@ public class Controller implements Initializable {
 
     /**
      * reset the system - cleaning memory
+     *
      * @param event
      * @throws IOException
      */
@@ -189,13 +191,14 @@ public class Controller implements Initializable {
                     "Language")
             );
             language.setValue("Language");
-            newPostingPath="";
+            newPostingPath = "";
             indexer.setLoad(false);
         }
     }
 
     /**
      * show the Dictionary in listView
+     *
      * @param event
      */
     public void ShowDictionary(ActionEvent event) {
@@ -220,16 +223,16 @@ public class Controller implements Initializable {
     /**
      * load the Dictionary ,Language from disc if its not load
      */
-    public void LoadDictionary()  {
+    public void LoadDictionary() {
         if (PathOfPosting != null && !PathOfPosting.equals("")) {
             try {
                 indexer.setLoad(true);
                 indexer.setStem(Steam);
-                indexer.loadDocs(PathOfPosting,Steam);
+                indexer.loadDocs(PathOfPosting, Steam);
                 indexer.loadDictionary(PathOfPosting, Steam);
                 indexer.loadLanguage(PathOfPosting, Steam);
-                indexer.loadAvgFromDisk(PathOfPosting,Steam);
-                indexer.loadCitis(PathOfPosting,Steam);
+                indexer.loadAvgFromDisk(PathOfPosting, Steam);
+                indexer.loadCitis(PathOfPosting, Steam);
                 indexer.setPath(PathOfPosting);
                 languageChoosieBox();
                 CitisCheckComboBox();
@@ -250,6 +253,7 @@ public class Controller implements Initializable {
 
     /**
      * running func
+     *
      * @param event
      * @throws IOException
      * @throws IOException
@@ -287,7 +291,7 @@ public class Controller implements Initializable {
             alert.setHeaderText("Indexer Information");
             alert.setContentText("Number of docs: " + rf.getCountDOCs() + "\n"
                     + "Number of terms: " + indexer.getDictionary().size() + "\n"
-                    + "Time of creating inverted index: " + ((end - start) * Math.pow(10, -9) ) + " sec");
+                    + "Time of creating inverted index: " + ((end - start) * Math.pow(10, -9)) + " sec");
             alert.show();
             languageChoosieBox();
             CitisCheckComboBox();
@@ -306,14 +310,14 @@ public class Controller implements Initializable {
      * build list of citis for the user to search for
      */
     private void CitisCheckComboBox() {
-        for(String S : CityIndexer.getInstance().dict_city.keySet()){
+        for (String S : CityIndexer.getInstance().dict_city.keySet()) {
             citisNames.add(S);
         }
         citisNames.sort(new Comparator<String>() {
             @Override
-                public int compare(String obj1, String obj2) {
-                    return obj1.compareTo(obj2);
-                }
+            public int compare(String obj1, String obj2) {
+                return obj1.compareTo(obj2);
+            }
 
         });
         ObservableList<String> Citis = FXCollections.observableArrayList(citisNames);
@@ -351,25 +355,25 @@ public class Controller implements Initializable {
             searcher2.getPointers();
             Ranker ranker2 = searcher.getRanker();
             ranker2.calculate();
-            margeRank(ranker,ranker2);
+            margeRank(ranker, ranker2);
         }
         ranker.sortSet();
         DisplayDocs(ranker);
         ranker.writeResults(PathOfPosting);
     }
 
-    private void margeRank(Ranker r1,Ranker r2) {
-        for (Map.Entry<String, RankingObject> d : r2.getMap_ranked_docs().entrySet()){
-            if(r1.getMap_ranked_docs().containsKey(d.getKey())){
+    private void margeRank(Ranker r1, Ranker r2) {
+        for (Map.Entry<String, RankingObject> d : r2.getMap_ranked_docs().entrySet()) {
+            if (r1.getMap_ranked_docs().containsKey(d.getKey())) {
                 double rank1 = r1.getMap_ranked_docs().get(d.getKey()).getRank();
                 double rank2 = r2.getMap_ranked_docs().get(d.getKey()).getRank();
-                r1.getMap_ranked_docs().get(d.getKey()).setRank(0.8*rank1 + 0.2*rank2);
+                r1.getMap_ranked_docs().get(d.getKey()).setRank(0.8 * rank1 + 0.2 * rank2);
             }
         }
     }
 
-    public void Semantic_Choose(ActionEvent event){
-        if(check_Semantic.isSelected())
+    public void Semantic_Choose(ActionEvent event) {
+        if (check_Semantic.isSelected())
             semantic = true;
         else
             semantic = false;
@@ -377,18 +381,19 @@ public class Controller implements Initializable {
 
     /**
      * show Entities for specific doc;
+     *
      * @param event
      */
-    private void OnClickEntities(ActionEvent event){
-        Button b = ((Button)event.getSource());
+    private void OnClickEntities(ActionEvent event) {
+        Button b = ((Button) event.getSource());
         int i = Integer.parseInt(b.getId());
         String docName = map_docIndex.get(i);
-        String [] array_Entity = indexer.getDict_docs().get(docName).getArr_entities();
+        String[] array_Entity = indexer.getDict_docs().get(docName).getArr_entities();
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Entities");
         alert.setHeaderText("There are the 5 strong Entities");
         String allTheEntites = "";
-        for(String s: array_Entity)
+        for (String s : array_Entity)
             allTheEntites = allTheEntites + "\n" + s;
         alert.setContentText(allTheEntites);
         alert.showAndWait();
@@ -396,24 +401,25 @@ public class Controller implements Initializable {
 
     /**
      * display list of 50 relevant docs
+     *
      * @param ranker
      */
     private void DisplayDocs(Ranker ranker) {
         listView_docs.getItems().clear();
         int i = 0;
-        for(RankingObject r : ranker.getSorted_rankingobject()){
-            if(i>=50)
+        for (RankingObject r : ranker.getSorted_rankingobject()) {
+            if (i >= 50)
                 break;
             HBox hBox = new HBox();
-            hBox.resize(526,267/4);
+            hBox.resize(526, 267 / 4);
             Button button = new Button();
             button.setText("Show Entities");
-            button.resize(61,31);
-            button.setId(""+i);
+            button.resize(61, 31);
+            button.setId("" + i);
             button.setOnAction(this::OnClickEntities);
             Label docName = new Label();
             docName.setText("   " + r.getDOCNO());
-            map_docIndex.put(i,r.getDOCNO());
+            map_docIndex.put(i, r.getDOCNO());
             System.out.println(r.getDOCNO());
             hBox.getChildren().add(button);
             hBox.getChildren().add(docName);
@@ -424,28 +430,28 @@ public class Controller implements Initializable {
 
     /**
      * use query text file
+     *
      * @param event
      * @throws FileNotFoundException
      */
     public void BrowseQuery(ActionEvent event) throws IOException {
         String path = browse();
-        if(path!=null) {
+        if (path != null) {
             File f = new File(path);
             queryFile = new QueryFile(f);
             queryFile.jparse();
             button_next.setVisible(true);
             labal_numOfQuery.setVisible(true);
             button_back.setVisible(true);
-
-
-            getQuery();
+            searchFile();
+            writeResults();
         }
     }
 
 
     public void next_vacation(ActionEvent event) {
 
-        if (CurrentQuery+1 < queryFile.getQueryArrayList().size()) {
+        if (CurrentQuery + 1 < queryFile.getQueryArrayList().size()) {
             CurrentQuery++;
             listView_docs.getItems().clear();
             getQuery();
@@ -453,7 +459,7 @@ public class Controller implements Initializable {
     }
 
     public void prev_vacation(ActionEvent event) {
-        if (CurrentQuery-1 >= 0) {
+        if (CurrentQuery - 1 >= 0) {
             CurrentQuery--;
             listView_docs.getItems().clear();
             getQuery();
@@ -463,16 +469,74 @@ public class Controller implements Initializable {
     private void getQuery() {
         Query query = queryFile.getQueryArrayList().get(CurrentQuery);
         String mergeQuery = query.String_fileQuery();
-        runSearch(mergeQuery,new HashSet<>());
+        runSearch(mergeQuery, new HashSet<>());
         labal_numOfQuery.setText(query.getNumOfQuery());
         writeResults();
     }
 
-    private void writeResults() {
+    public void searchFile() {
+        HashSet<String> set_CitisByUser = new HashSet<>();
+        ObservableList<Integer> indexOfCheckComboBox_Citis = CheckComboBox_Citis.getCheckModel().getCheckedIndices();
+        for (Integer i : indexOfCheckComboBox_Citis) {
+            set_CitisByUser.add((String) CheckComboBox_Citis.getItems().get(i));
+        }
+        ArrayList<Query> queries = queryFile.getQueryArrayList();
+        for (Query q : queries) {
+            Searcher searcher = new Searcher(q, set_CitisByUser);
+            searcher.getPointers();
+            Ranker ranker = searcher.getRanker();
+            ranker.calculate();
+            StringBuilder query1 = new StringBuilder("");
+            if (semantic) {
+                Semantics semantics = new Semantics();
+                semantics.startConnection();
+                for (Map.Entry<String, ArrayList<String>> map : Semantics.getMap_concepte().entrySet()) {
+                    for (String s : map.getValue())
+                        query1.append(" " + s);
+                }
+                Searcher searcher2 = new Searcher(query1.toString(), set_CitisByUser);
+                searcher2.getPointers();
+                Ranker ranker2 = searcher.getRanker();
+                ranker2.calculate();
+                margeRank(ranker, ranker2);
+            }
+            ranker.sortSet();
+            map_results.put(q, ranker.getSorted_rankingobject());
+            DisplayDocs(ranker);
+        }
 
     }
 
+    private void writeResults() {
+        StringBuilder sb = new StringBuilder("");
+        for (Map.Entry<Query, TreeSet<RankingObject>> map : map_results.entrySet()) {
+            {
+                int i = 0;
+                for (RankingObject rank : map.getValue()) {
+                    if (i == 50)
+                        break;
+                    sb.append(map.getKey().getNumOfQuery() + " 0 " + rank.getDOCNO() + " 1 42.38 mt" + System.lineSeparator());
+                    i++;
+                }
+            }
 
+            try {
+                File f = new File(PathOfPosting + File.separator + "results.txt");
+                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f, false)));
+                out.write(sb.toString());
+                out.close();
+            } catch (IOException e) {
+                //exception handling left as an exercise for the reader
+
+
+            }
+
+        }
+    }
 }
+
+
+
+
 
 

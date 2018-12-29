@@ -1,13 +1,16 @@
 package PartA;
 
+import javax.print.attribute.standard.MediaSize;
 import java.util.HashMap;
+import java.util.Map;
 
-public class Query {
+public class Query implements Comparable{
 
     private String numOfQuery="";
     private String title="";
     private String description="";
     private String narr="";
+
     HashMap<String,Integer> map_query;
     String text;
 
@@ -23,11 +26,10 @@ public class Query {
         this.narr = narr;
         this.map_query = new HashMap<>();
         this.text = String_fileQuery();
-        init_mapquery();
     }
 
     public String String_fileQuery(){
-        return title+" "+description+" "+narr;
+        return title+" "+description;
     }
 
     public void init_mapquery(){
@@ -43,6 +45,8 @@ public class Query {
             }
         }
     }
+
+
 
     public String getText() {
         return text;
@@ -91,5 +95,20 @@ public class Query {
 
     public void setNarr(String narr) {
         this.narr = narr;
+    }
+
+
+    @Override
+    public int compareTo(Object o) {
+        if(o instanceof Query){
+            Query OtherQuery = ((Query) o);
+            if (Integer.parseInt(this.getNumOfQuery()) > Integer.parseInt(OtherQuery.getNumOfQuery())){
+            return 1;
+            }
+            else{
+                return -1;
+            }
+        }
+        return -5;
     }
 }

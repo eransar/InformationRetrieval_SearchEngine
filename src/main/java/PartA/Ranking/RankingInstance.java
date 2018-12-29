@@ -2,6 +2,8 @@ package PartA.Ranking;
 
 import PartA.Indexer;
 
+import java.util.Objects;
+
 public class RankingInstance {
     String term_name;
     int count_query;
@@ -42,5 +44,18 @@ public class RankingInstance {
 
     public void setCount_doc(int count_doc) {
         this.count_doc = count_doc;
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        RankingInstance rankingInstance = (RankingInstance) o;
+        return this.term_name.equals(rankingInstance.getTerm_name());
+    }
+
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(term_name);
     }
 }

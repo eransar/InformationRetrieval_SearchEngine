@@ -16,11 +16,7 @@ import java.util.stream.Stream;
 
 public class Searcher {
 
-    private Doc[] arr_docs;
-    private ArrayList<String> arr_cities;
-    private HashMap<String,Integer> map_docsbm25;
-    private HashMap<Doc,Term> map_termsindocs;
-    private HashMap<Query,HashSet<RankingObject>> map_queryfile;
+
     protected static Query query;
     private Indexer indexer;
     private TreeSet<Pointer> pointers = new TreeSet<>();
@@ -28,6 +24,7 @@ public class Searcher {
     private Parse parse;
     private HashSet<String> hashSet_citisByUser;
     private String query_text;
+    private TreeSet<RankingObject> map_results;
 
     public Searcher(String query, HashSet<String> hashSet_citisByUser){
         this.hashSet_citisByUser =hashSet_citisByUser;
@@ -35,14 +32,17 @@ public class Searcher {
         this.query_text=query;
         this.indexer=Indexer.getInstance();
         this.parse=new Parse(true);
-        this.map_queryfile=new HashMap<>();
+        this.map_results=new TreeSet<RankingObject>();
+
     }
 
-    public Searcher(QueryFile queryfile, HashSet<String> hashSet_citisByUser){
+    public Searcher(Query query, HashSet<String> hashSet_citisByUser){
         this.hashSet_citisByUser =hashSet_citisByUser;
         this.indexer=Indexer.getInstance();
         this.parse=new Parse(true);
-        this.map_queryfile = new HashMap<>();
+        this.map_results=new TreeSet<RankingObject>();
+        this.query_text=query.getText();
+        ranker = new Ranker(hashSet_citisByUser);
 
     }
 
@@ -52,7 +52,7 @@ public class Searcher {
         this.query_text=query;
         this.indexer=Indexer.getInstance();
         this.parse=new Parse(true);
-        this.map_queryfile=new HashMap<>();
+        this.map_results=new TreeSet<RankingObject>();
     }
 
     public ArrayList<Term> parseQuery(){
@@ -64,7 +64,6 @@ public class Searcher {
     public void getPointers(){
         ArrayList<Term> parsed_content=sendtoParse(query_text);
         query=buildQuery(parsed_content);
-
         for (Term term: parsed_content){
             Pointer currentPointer =indexer.getDictionary().get(term.getName());
             if(currentPointer!=null){
@@ -75,10 +74,6 @@ public class Searcher {
     public ArrayList<Term> sendtoParse(String text){
         parse.ParseDoc(new Doc(""),text);
         return parse.getQueryTerms();
-
-
-
-
     }
 
     public Query buildQuery(ArrayList<Term> parsed_content){

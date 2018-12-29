@@ -47,7 +47,8 @@ public class RankingObject implements Comparable {
         for (int i = 0; i < this.entities.length; i++) {
             this.entities[i] = entities_arr[i];
             if(entities[i] != null && query.getMap_query().get(this.entities[i].toLowerCase()) !=null){
-                rank_entities++;
+
+                rank_entities+=query.getMap_query().get(this.entities[i].toLowerCase());
             }
             //rank_entities += query.getMap_query().get(this.entities[i].toLowerCase()) == null ? 0.00d : query.getMap_query().get(this.entities[i].toLowerCase());
         }
@@ -82,7 +83,6 @@ public class RankingObject implements Comparable {
 
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
         RankingObject rankingObject = (RankingObject) o;
         return this.DOCNO.equals(rankingObject.getDOCNO());
     }
