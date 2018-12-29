@@ -23,7 +23,7 @@ public class QueryFile {
         init_replace();
     }
 
-    public void jparse() throws IOException {
+    public void parse() throws IOException {
         Document query;
         query = Jsoup.parse(querysFile, "UTF-8");
         ArrayList<String> list = new ArrayList<>();

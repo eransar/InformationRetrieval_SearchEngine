@@ -439,7 +439,7 @@ public class Controller implements Initializable {
         if (path != null) {
             File f = new File(path);
             queryFile = new QueryFile(f);
-            queryFile.jparse();
+            queryFile.parse();
             button_next.setVisible(true);
             labal_numOfQuery.setVisible(true);
             button_back.setVisible(true);
