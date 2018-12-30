@@ -8,12 +8,14 @@ import PartA.QueryFile;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -71,7 +73,9 @@ public class Controller implements Initializable {
     private Query currentNumQurrey;
     private String pathFileQuery;
     private StringBuilder sb = new StringBuilder("");
-
+    public ComboBox<CheckBox> checkCombo;
+    public MenuButton menu_item;
+    public ObservableList<MenuItem> menuItemObservableList;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -80,7 +84,7 @@ public class Controller implements Initializable {
         map_results = new TreeMap<>();
         StemmingCheckBox.setSelected(false);
         language.setDisable(true);
-        CheckComboBox_Citis.setDisable(true);
+        //CheckComboBox_Citis.setDisable(true);
         language.setItems(FXCollections.observableArrayList(
                 "Language")
         );
@@ -324,18 +328,28 @@ public class Controller implements Initializable {
 
         });
         ObservableList<String> Citis = FXCollections.observableArrayList(citisNames);
-        CheckComboBox_Citis.setDisable(false);
-        CheckComboBox_Citis.getItems().setAll(Citis);
+        for(String tmp1 :Citis){
+            CheckMenuItem item = new CheckMenuItem();
+            item.setText(tmp1);
+            menu_item.getItems().add(item);
+        }
+//        CheckComboBox_Citis.setDisable(false);
+//        CheckComboBox_Citis.getItems().setAll(Citis);
     }
 
     public void runQuery(ActionEvent event) {
         String query = "";
         if (Q_text.getText() != null && !Q_text.getText().equals("")) {
             HashSet<String> set_CitisByUser = new HashSet<>();
-            ObservableList<Integer> indexOfCheckComboBox_Citis = CheckComboBox_Citis.getCheckModel().getCheckedIndices();
-            for (Integer i : indexOfCheckComboBox_Citis) {
-                set_CitisByUser.add((String) CheckComboBox_Citis.getItems().get(i));
+            for(MenuItem item : menu_item.getItems()){
+                CheckMenuItem item1 = (CheckMenuItem)item;
+                if(item1.isSelected())
+                    set_CitisByUser.add(item1.getText());
             }
+//            ObservableList<Integer> indexOfCheckComboBox_Citis = CheckComboBox_Citis.getCheckModel().getCheckedIndices();
+//            for (Integer i : indexOfCheckComboBox_Citis) {
+//                set_CitisByUser.add((String) CheckComboBox_Citis.getItems().get(i));
+//            }
             query = Q_text.getText();
             runSearch(query, set_CitisByUser);
         }
@@ -476,10 +490,15 @@ public class Controller implements Initializable {
 
     public void searchFile() {
         HashSet<String> set_CitisByUser = new HashSet<>();
-        ObservableList<Integer> indexOfCheckComboBox_Citis = CheckComboBox_Citis.getCheckModel().getCheckedIndices();
-        for (Integer i : indexOfCheckComboBox_Citis) {
-            set_CitisByUser.add((String) CheckComboBox_Citis.getItems().get(i));
+        for(MenuItem item : menu_item.getItems()){
+            CheckMenuItem item1 = (CheckMenuItem)item;
+            if(item1.isSelected())
+                set_CitisByUser.add(item1.getText());
         }
+//        ObservableList<Integer> indexOfCheckComboBox_Citis = CheckComboBox_Citis.getCheckModel().getCheckedIndices();
+//        for (Integer i : indexOfCheckComboBox_Citis) {
+//            set_CitisByUser.add((String) CheckComboBox_Citis.getItems().get(i));
+//        }
         ArrayList<Query> queries = queryFile.getQueryArrayList();
         for (Query q : queries) {
             Searcher searcher = new Searcher(q, set_CitisByUser);
