@@ -51,7 +51,6 @@ public class RankingObject implements Comparable {
         terms_data = new HashMap<>();
         this.DOCNO = DOCNO;
         this.query = query;
-
         this.HEADER = indexer.getDict_docs().get(DOCNO).getHEADER();
         this.file = file;
         this.length = length;

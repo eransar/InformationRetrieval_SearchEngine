@@ -14,14 +14,13 @@ public class Header extends ARankerFunction {
     @Override
     public double calculate() {
         String s= super.getRankingObject().getHEADER();
-        int lenth =s.length();
+        int length =s.length();
         String [] Header = s.split(" ");
         for(String tmp : Header){
-            if(super.getRankingObject().getQuery().getMap_query().containsKey(tmp)){
+            if(super.getRankingObject().getQuery().getMap_query().containsKey(tmp.toLowerCase()) || super.getRankingObject().getQuery().getMap_query().containsKey(tmp.toUpperCase())){
                 result = result + 1;
             }
         }
-
-        return result/(double)lenth;
+        return result;
     }
 }

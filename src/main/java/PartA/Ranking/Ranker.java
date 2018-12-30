@@ -71,7 +71,7 @@ public class Ranker {
         calculateHeader();
 //        calculateHeaderTest();
         for (RankingObject rank : map_ranked_docs.values()) {
-            rank.setRank(0.5*rank.getRank_BM25()+0.2*rank.getRank_entities() +0.3*rank.getRank_header() );
+            rank.setRank(0.6*rank.getRank_BM25()+0.1*rank.getRank_entities() +0.3*rank.getRank_header());
         }
     }
 

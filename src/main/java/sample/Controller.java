@@ -69,6 +69,8 @@ public class Controller implements Initializable {
     public int CurrentQuery = 0;
     public TreeMap<Query, TreeSet<RankingObject>> map_results;
     private Query currentNumQurrey;
+    private String pathFileQuery;
+    private StringBuilder sb = new StringBuilder("");
 
 
     @Override
@@ -429,17 +431,20 @@ public class Controller implements Initializable {
             i++;
         }
     }
+    public void BrowseQuery(ActionEvent event) throws IOException {
+        pathFileQuery = browse();
+    }
+
 
     /**
      * use query text file
      *
-     * @param event
+     * @param
      * @throws FileNotFoundException
      */
-    public void BrowseQuery(ActionEvent event) throws IOException {
-        String path = browse();
-        if (path != null) {
-            File f = new File(path);
+    public void button_BrowseQuery(ActionEvent event) throws IOException {
+        if (pathFileQuery != null) {
+            File f = new File(pathFileQuery);
             queryFile = new QueryFile(f);
             queryFile.parse();
             button_next.setVisible(true);
@@ -502,7 +507,7 @@ public class Controller implements Initializable {
     }
 
     private void writeResults() {
-        StringBuilder sb = new StringBuilder("");
+
         for (Map.Entry<Query, TreeSet<RankingObject>> map : map_results.entrySet()) {
             {
                 int i = 0;
@@ -513,18 +518,18 @@ public class Controller implements Initializable {
                     i++;
                 }
             }
+        }
+    }
 
-            try {
-                File f = new File(PathOfPosting + File.separator + "results.txt");
-                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f, false)));
-                out.write(sb.toString());
-                out.close();
-            } catch (IOException e) {
-                //exception handling left as an exercise for the reader
-
-
-            }
-
+    public void button_writeResult(ActionEvent event){
+        String path = GetPath();
+        try {
+            File f = new File(path + File.separator + "result.txt");
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f, false)));
+            out.write(sb.toString());
+            out.close();
+        } catch (IOException e) {
+            //exception handling left as an exercise for the reader
         }
     }
 }

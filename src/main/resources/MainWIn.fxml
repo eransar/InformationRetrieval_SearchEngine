@@ -7,6 +7,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.CheckComboBox?>
 
 <AnchorPane prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
@@ -14,7 +15,10 @@
       <TextField fx:id="corpusField" layoutX="151.0" layoutY="38.0" />
       <TextField fx:id="PostingField" layoutX="151.0" layoutY="129.0" />
       <Button fx:id="corpusPath" layoutX="12.0" layoutY="82.0" mnemonicParsing="false" onAction="#openStopWords" text="Load StopWords" />
-      <Button fx:id="PostingPath" layoutX="24.0" layoutY="130.0" mnemonicParsing="false" onAction="#SavePostingPath" text="Save Posting" />
+      <Button fx:id="PostingPath" layoutX="12.0" layoutY="129.0" mnemonicParsing="false" onAction="#SavePostingPath" prefHeight="31.0" prefWidth="131.0" text="browse / Save Posting">
+         <font>
+            <Font size="11.0" />
+         </font></Button>
       <Button fx:id="run" layoutX="324.0" layoutY="210.0" mnemonicParsing="false" onAction="#SetAll" prefHeight="58.0" prefWidth="118.0" text="run" />
       <TextField fx:id="stopWordsField" layoutX="151.0" layoutY="82.0" />
       <Button fx:id="StopW" layoutX="24.0" layoutY="38.0" mnemonicParsing="false" onAction="#openCourpus" text="Load Curpos" />
@@ -34,5 +38,7 @@
       <Button fx:id="button_next" layoutX="273.0" layoutY="747.0" mnemonicParsing="false" onAction="#next_vacation" prefHeight="31.0" prefWidth="79.0" text="next" />
       <Label fx:id="labal_numOfQuery" layoutX="45.0" layoutY="458.0" prefHeight="31.0" prefWidth="89.0" />
       <Button fx:id="button_back" layoutX="158.0" layoutY="747.0" mnemonicParsing="false" onAction="#prev_vacation" prefHeight="31.0" prefWidth="79.0" text="back" />
+      <Button layoutX="84.0" layoutY="452.0" mnemonicParsing="false" onAction="#button_BrowseQuery" prefHeight="21.0" prefWidth="89.0" text="run file" />
+      <Button layoutX="431.0" layoutY="747.0" mnemonicParsing="false" onAction="#button_writeResult" text="write to treceval file" />
    </children>
 </AnchorPane>
