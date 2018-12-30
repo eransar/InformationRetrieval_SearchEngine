@@ -1,7 +1,10 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="IR2:jar">
+  <artifact type="jar" build-on-make="true" name="IR2:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/IR2_jar</output-path>
     <root id="archive" name="IR2.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/main/java/a/META-INF/MANIFEST.MF" />
+      </element>
       <element id="module-output" name="IR2" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/squareup/okhttp3/okhttp/3.12.0/okhttp-3.12.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/controlsfx/controlsfx/8.40.14/controlsfx-8.40.14.jar" path-in-jar="/" />
