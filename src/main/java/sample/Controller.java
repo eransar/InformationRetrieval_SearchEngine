@@ -8,14 +8,12 @@ import PartA.QueryFile;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -362,7 +360,7 @@ public class Controller implements Initializable {
         ranker.calculate();
         String query1 = "";
         if (semantic) {
-            Semantics semantics = new Semantics();
+            Semantics semantics = new Semantics(new Query("",query,"",""));
             semantics.startConnection();
             for (Map.Entry<String, ArrayList<String>> map : Semantics.getMap_concepte().entrySet()) {
                 for (String s : map.getValue())
@@ -384,7 +382,7 @@ public class Controller implements Initializable {
             if (r1.getMap_ranked_docs().containsKey(d.getKey())) {
                 double rank1 = r1.getMap_ranked_docs().get(d.getKey()).getRank();
                 double rank2 = r2.getMap_ranked_docs().get(d.getKey()).getRank();
-                r1.getMap_ranked_docs().get(d.getKey()).setRank(0.8 * rank1 + 0.2 * rank2);
+                r1.getMap_ranked_docs().get(d.getKey()).setRank(0.65 * rank1 + 0.35 * rank2);
             }
         }
     }
@@ -507,7 +505,7 @@ public class Controller implements Initializable {
             ranker.calculate();
             StringBuilder query1 = new StringBuilder("");
             if (semantic) {
-                Semantics semantics = new Semantics();
+                Semantics semantics = new Semantics(q);
                 semantics.startConnection();
                 for (Map.Entry<String, ArrayList<String>> map : Semantics.getMap_concepte().entrySet()) {
                     for (String s : map.getValue())
@@ -526,7 +524,7 @@ public class Controller implements Initializable {
     }
 
     private void writeResults() {
-
+            sb = new StringBuilder();
         for (Map.Entry<Query, TreeSet<RankingObject>> map : map_results.entrySet()) {
             {
                 int i = 0;

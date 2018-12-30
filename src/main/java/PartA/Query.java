@@ -20,6 +20,7 @@ public class Query implements Comparable{
         this.map_query = new HashMap<>();
         init_mapquery();
     }
+
     public Query(String numOfQuery, String title,String description,String narr){
         this.numOfQuery = numOfQuery;
         this.title = title;
@@ -46,8 +47,6 @@ public class Query implements Comparable{
             }
         }
     }
-
-
 
     public String getText() {
         return text;

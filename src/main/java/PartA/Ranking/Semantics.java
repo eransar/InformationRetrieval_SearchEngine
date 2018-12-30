@@ -1,9 +1,7 @@
 package PartA.Ranking;
 
-import PartA.City;
 import PartA.Indexer;
 import PartA.Query;
-import PartA.Ranking.RankingObject;
 import PartA.Searcher;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -23,13 +21,13 @@ public class Semantics {
     public Object[] parsed_json;
     private Query query;
 
-    public Semantics() {
+    public Semantics(Query q) {
         map_concepte = new HashMap<>();
-        query = Searcher.getQuery();
+        query = q;
     }
 
     public void startConnection() {
-        String[] terms = query.getText().split(" ");
+        String[] terms = query.getTitle().split(" ");
         for (String termName : terms) {
             String URL = "https://api.datamuse.com/words?ml=" + termName;
             OkHttpClient client = new OkHttpClient();
