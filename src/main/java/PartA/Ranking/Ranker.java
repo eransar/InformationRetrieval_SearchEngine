@@ -3,6 +3,7 @@ package PartA.Ranking;
 import PartA.*;
 import PartA.Ranking.Functions.BM25;
 import PartA.Ranking.Functions.CosSim;
+import PartA.Ranking.Functions.Header;
 
 import java.io.*;
 import java.util.*;
@@ -13,6 +14,7 @@ public class Ranker {
     private TreeSet<RankingObject> sorted_rankingobject;
     private boolean semantics;
     private HashSet<String> set_citiesChoosen;
+
 
 
     public Ranker(HashSet<String> set_citiesChoosen) {
@@ -56,14 +58,23 @@ public class Ranker {
         }
     }
 
+    public void calculateHeader() {
+        for (RankingObject rank : map_ranked_docs.values()) {
+            Header header = new Header(rank);
+            rank.setRank_header(header.calculate());
+        }
+    }
+
     public void calculate() {
         calculateBM25();
         calculateCosSim();
+        calculateHeader();
 //        calculateHeaderTest();
         for (RankingObject rank : map_ranked_docs.values()) {
-            rank.setRank(0.6*rank.getRank_BM25()+0.4*rank.getRank_entities());
+            rank.setRank(0.5*rank.getRank_BM25()+0.2*rank.getRank_entities() +0.3*rank.getRank_header() );
         }
     }
+
     public void writeResults(String filepath){
         StringBuilder sb = new StringBuilder("");
         int i=0;

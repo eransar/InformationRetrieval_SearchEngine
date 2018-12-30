@@ -58,7 +58,6 @@ Parse {
         this.index = 0;
         this.stemmer=Stemmer.getInstance();
         this.use_searcher=use_searcher;
-
         //Initializers
         init_replace();
         indexer_city.startConnection();
@@ -571,6 +570,29 @@ Parse {
             handleTerm(tempTerm); //
         }
 
+    }
+
+    public void HadleHeader(String header) {
+        String tmp = replaceText(header);
+        String[] headerSplit = tmp.split(" ");
+        tmp ="";
+        for (String s : headerSplit) {
+            if (!dict_stopWords.contains(s) && !dict_stopWords.contains(s.toUpperCase()) && !dict_stopWords.contains(s.toLowerCase())) {
+                /**
+                 * Stemming
+                 */
+                if (isSteam) {
+                    stemmer.setCurrent(s);
+                    if (stemmer.stem()) {
+                        tmp = tmp + " "  + (stemmer.getCurrent());
+                    }
+                }
+                else {
+                    tmp = tmp + " " +s;
+                }
+            }
+        }
+        doc.setHEADER(tmp);
     }
 
 

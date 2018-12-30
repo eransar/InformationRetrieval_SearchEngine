@@ -1,15 +1,19 @@
 package PartA.Ranking;
 
+import PartA.Indexer;
 import PartA.Query;
+import PartA.Ranking.Functions.Header;
 
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
 
 public class RankingObject implements Comparable {
-
+    Indexer indexer = Indexer.getInstance();
     int length;
+    Query query;
     String DOCNO;
+    String HEADER="";
     String file;
     String CITY;
     double rank;
@@ -19,8 +23,6 @@ public class RankingObject implements Comparable {
     double weight;
     double weight_pow2;
     String[] entities;
-
-
     double rank_entities;
 
 
@@ -36,9 +38,21 @@ public class RankingObject implements Comparable {
     }
 
 
+    public String getHEADER() {
+        return HEADER;
+    }
+
+    public void setHEADER(String HEADER) {
+        this.HEADER = HEADER;
+    }
+
+
     public RankingObject(String DOCNO, String file, int length, double weight, double weight_pow2, String[] entities_arr, Query query) {
         terms_data = new HashMap<>();
         this.DOCNO = DOCNO;
+        this.query = query;
+
+        this.HEADER = indexer.getDict_docs().get(DOCNO).getHEADER();
         this.file = file;
         this.length = length;
         this.weight = weight;
@@ -57,8 +71,6 @@ public class RankingObject implements Comparable {
             }
             //rank_entities += query.getMap_query().get(this.entities[i].toLowerCase()) == null ? 0.00d : query.getMap_query().get(this.entities[i].toLowerCase());
         }
-
-
     }
 
     public double getRank_BM25() {
@@ -76,6 +88,13 @@ public class RankingObject implements Comparable {
     public void setRank_cossim(double rank_cossim) {
         this.rank_cossim = rank_cossim;
     }
+    public Query getQuery() {
+        return query;
+    }
+
+    public void setQuery(Query query) {
+        this.query = query;
+    }
 
 
     public double getRank_header() {
@@ -91,7 +110,6 @@ public class RankingObject implements Comparable {
         RankingObject rankingObject = (RankingObject) o;
         return this.DOCNO.equals(rankingObject.getDOCNO());
     }
-
 
     @Override
     public int hashCode() {
