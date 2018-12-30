@@ -382,7 +382,7 @@ public class Controller implements Initializable {
             if (r1.getMap_ranked_docs().containsKey(d.getKey())) {
                 double rank1 = r1.getMap_ranked_docs().get(d.getKey()).getRank();
                 double rank2 = r2.getMap_ranked_docs().get(d.getKey()).getRank();
-                r1.getMap_ranked_docs().get(d.getKey()).setRank(0.65 * rank1 + 0.35 * rank2);
+                r1.getMap_ranked_docs().get(d.getKey()).setRank(0.70 * rank1 + 0.3 * rank2);
             }
         }
     }
