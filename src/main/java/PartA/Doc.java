@@ -88,7 +88,8 @@ public class Doc implements Serializable {
         Iterator<Term> it= treeset_entities.descendingIterator();
         for (int i = 0; i < arr_entities.length; i++) {
             if(it.hasNext()){
-                arr_entities[i]=it.next().getName();
+                Term t = it.next();
+                arr_entities[i]=t.getName()+"  " + t.getTf();
             }
         }
     }
@@ -122,13 +123,13 @@ public class Doc implements Serializable {
         Term tmp = new Term(term);
         tmp.setName(tmp.getName().toUpperCase());
         if(map_entities.get(tmp.getName())==null) {
-            tmp.setDf(1);
+            tmp.setTf(1);
             map_entities.put(tmp.getName(), tmp);
         }
         else {
             Term t = map_entities.get(tmp.getName());
-            int num = t.getDf();
-            t.setDf(t.getDf()+1);
+            int num = t.getTf();
+            t.setTf(t.getTf()+1);
             //map_entities.get(t.getName()).getDocFrequency().put(this,num+1);
             map_entities.put(t.getName(),t);
         }

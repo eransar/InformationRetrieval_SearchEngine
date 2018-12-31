@@ -138,7 +138,7 @@ public class ReadFile {
       DATE = element.select("DATE1").text();
       countDOCs++;
       parse.ParseDoc(new Doc(DOCNO, file.getName(), CITY, HEADER, DATE, LANGUAGE), TEXT);
-      parse.HadleHeader(HEADER);
+      parse.HandleHeader(HEADER);
     }
   }
 

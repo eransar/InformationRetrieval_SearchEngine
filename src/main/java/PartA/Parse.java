@@ -60,7 +60,7 @@ Parse {
         this.use_searcher=use_searcher;
         //Initializers
         init_replace();
-        indexer_city.startConnection();
+        //indexer_city.startConnection();
     }
 
 
@@ -572,10 +572,10 @@ Parse {
 
     }
 
-    public void HadleHeader(String header) {
+    public void HandleHeader(String header) {
         String tmp = replaceText(header);
         String[] headerSplit = tmp.split(" ");
-        tmp ="";
+        tmp = "";
         for (String s : headerSplit) {
             if (!dict_stopWords.contains(s) && !dict_stopWords.contains(s.toUpperCase()) && !dict_stopWords.contains(s.toLowerCase())) {
                 /**
@@ -584,11 +584,15 @@ Parse {
                 if (isSteam) {
                     stemmer.setCurrent(s);
                     if (stemmer.stem()) {
-                        tmp = tmp + " "  + (stemmer.getCurrent());
+                        //tmp = tmp + " "  + (stemmer.getCurrent());
+                        String stemStringTmp = stemmer.getCurrent().toLowerCase();
+                        if (indexer.getDictionary().contains(stemStringTmp))
+                            tmp = tmp + " " + stemStringTmp;
+                        else
+                            tmp = tmp + " " + stemStringTmp.toUpperCase();
                     }
-                }
-                else {
-                    tmp = tmp + " " +s;
+                } else {
+                    tmp = tmp + " " + s;
                 }
             }
         }

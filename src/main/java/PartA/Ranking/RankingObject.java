@@ -47,7 +47,7 @@ public class RankingObject implements Comparable {
     }
 
 
-    public RankingObject(String DOCNO, String file, int length, double weight, double weight_pow2, String[] entities_arr, Query query) {
+    public RankingObject(String DOCNO, String file, int length, double weight, double weight_pow2,String [] entities_arr, Query query) {
         terms_data = new HashMap<>();
         this.DOCNO = DOCNO;
         this.query = query;

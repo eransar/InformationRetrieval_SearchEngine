@@ -1,6 +1,7 @@
 package PartA;
 
 
+import javafx.scene.control.Alert;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -96,7 +97,9 @@ public class CityIndexer implements Serializable {
         try {
             response = client.newCall(request).execute();
         } catch (IOException e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("City Api");
+            alert.setHeaderText("There is no internet connection");
         }
         JSONParser parser = new JSONParser();
         Object obj = null;

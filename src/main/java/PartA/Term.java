@@ -27,8 +27,6 @@ public class Term implements Serializable, Comparable{
         this.df=0;
         this.tf=0;
         this.docFrequency=new HashMap<Doc,Integer>();
-
-
     }
 
     public Term(Term t) {
@@ -36,6 +34,7 @@ public class Term implements Serializable, Comparable{
         this.docFrequency = new HashMap<Doc, Integer>();
         this.docFrequency.putAll(t.docFrequency);
         this.df = t.df;
+        this.tf= t.tf;
         this.type = t.getType();
     }
 
