@@ -900,14 +900,17 @@ Parse {
 
 
     public ArrayList<Term> getQueryTerms(boolean stemming) {
-        for(int i=0 ; i<queryTerms.size() ; i++){
-            stemmer.setCurrent(queryTerms.get(i).getName());
-            if(stemmer.stem()){
-                Term t= new Term(queryTerms.get(i));
-                t.setName(stemmer.getCurrent());
-                queryTerms.set(i,t);
+        if(stemming){
+            for(int i=0 ; i<queryTerms.size() ; i++){
+                stemmer.setCurrent(queryTerms.get(i).getName());
+                if(stemmer.stem()){
+                    Term t= new Term(queryTerms.get(i));
+                    t.setName(stemmer.getCurrent());
+                    queryTerms.set(i,t);
+                }
             }
         }
+
 
         for (int i = 0; i <queryTerms.size() ; i++) {
             if(indexer.getDictionary().get(queryTerms.get(i).getName().toLowerCase())!=null){

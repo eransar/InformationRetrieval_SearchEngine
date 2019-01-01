@@ -168,6 +168,15 @@ public class Controller implements Initializable {
             return selectedDirectory.getAbsolutePath();
         }
     }
+    private String save() {
+        FileChooser fc = new FileChooser();
+        File f = fc.showSaveDialog(null);
+        if (f == null) {
+            return null;
+        } else {
+            return f.getAbsolutePath();
+        }
+    }
 
     /**
      * To steam or not?
@@ -541,9 +550,9 @@ public class Controller implements Initializable {
     }
 
     public void button_writeResult(ActionEvent event){
-        String path = GetPath();
+        String p = save();
         try {
-            File f = new File(path + File.separator + "result.txt");
+            File f = new File(p);
             PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f, false)));
             out.write(sb.toString());
             out.close();
