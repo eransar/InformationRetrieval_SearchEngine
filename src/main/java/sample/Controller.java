@@ -354,7 +354,8 @@ public class Controller implements Initializable {
     }
 
     private void runSearch(String query, HashSet<String> set_CitisByUser) {
-        Searcher searcher = new Searcher(query, set_CitisByUser);
+        boolean stem = StemmingCheckBox.isSelected();
+        Searcher searcher = new Searcher(query, set_CitisByUser,stem);
         searcher.getPointers();
         Ranker ranker = searcher.getRanker();
         ranker.calculate();
@@ -366,7 +367,7 @@ public class Controller implements Initializable {
                 for (String s : map.getValue())
                     query1 = query1 + " " + s;
             }
-            Searcher searcher2 = new Searcher(query1, set_CitisByUser);
+            Searcher searcher2 = new Searcher(query1, set_CitisByUser,stem);
             searcher2.getPointers();
             Ranker ranker2 = searcher.getRanker();
             ranker2.calculate();
@@ -498,8 +499,9 @@ public class Controller implements Initializable {
 //            set_CitisByUser.add((String) CheckComboBox_Citis.getItems().get(i));
 //        }
         ArrayList<Query> queries = queryFile.getQueryArrayList();
+        boolean stem = StemmingCheckBox.isSelected();
         for (Query q : queries) {
-            Searcher searcher = new Searcher(q, set_CitisByUser);
+            Searcher searcher = new Searcher(q, set_CitisByUser,stem);
             searcher.getPointers();
             Ranker ranker = searcher.getRanker();
             ranker.calculate();
@@ -511,7 +513,7 @@ public class Controller implements Initializable {
                     for (String s : map.getValue())
                         query1.append(" " + s);
                 }
-                Searcher searcher2 = new Searcher(query1.toString(), set_CitisByUser);
+                Searcher searcher2 = new Searcher(query1.toString(), set_CitisByUser,stem);
                 searcher2.getPointers();
                 Ranker ranker2 = searcher.getRanker();
                 ranker2.calculate();

@@ -25,34 +25,39 @@ public class Searcher {
     private HashSet<String> hashSet_citisByUser;
     private String query_text;
     private TreeSet<RankingObject> map_results;
+    private boolean stemming;
 
-    public Searcher(String query, HashSet<String> hashSet_citisByUser){
+    public Searcher(String query, HashSet<String> hashSet_citisByUser,boolean stemming){
         this.hashSet_citisByUser =hashSet_citisByUser;
         ranker = new Ranker(hashSet_citisByUser);
         this.query_text=query;
         this.indexer=Indexer.getInstance();
         this.parse=new Parse(true);
         this.map_results=new TreeSet<RankingObject>();
+        this.stemming=false;
 
     }
 
-    public Searcher(Query query, HashSet<String> hashSet_citisByUser){
+    public Searcher(Query query, HashSet<String> hashSet_citisByUser,boolean stemming){
         this.hashSet_citisByUser =hashSet_citisByUser;
         this.indexer=Indexer.getInstance();
         this.parse=new Parse(true);
         this.map_results=new TreeSet<RankingObject>();
         this.query_text=query.getText();
         ranker = new Ranker(hashSet_citisByUser);
+        this.stemming=false;
+
 
     }
 
-    public Searcher(String query){
+    public Searcher(String query,boolean stemming){
         this.hashSet_citisByUser=new HashSet<>();
         ranker = new Ranker(hashSet_citisByUser);
         this.query_text=query;
         this.indexer=Indexer.getInstance();
         this.parse=new Parse(true);
         this.map_results=new TreeSet<RankingObject>();
+        this.stemming=false;
     }
 
     public ArrayList<Term> parseQuery(){
@@ -62,8 +67,9 @@ public class Searcher {
      * Find if the words in the query are in the inverted index and return a pointers to them
      */
     public void getPointers(){
-        ArrayList<Term> parsed_content=sendtoParse(query_text);
+        ArrayList<Term> parsed_content=sendtoParse(query_text,stemming);
         query=buildQuery(parsed_content);
+
         for (Term term: parsed_content){
             Pointer currentPointer =indexer.getDictionary().get(term.getName());
             if(currentPointer!=null){
@@ -71,9 +77,9 @@ public class Searcher {
             }
         }
     }
-    public ArrayList<Term> sendtoParse(String text){
+    public ArrayList<Term> sendtoParse(String text, boolean stemming){
         parse.ParseDoc(new Doc(""),text);
-        return parse.getQueryTerms();
+        return parse.getQueryTerms(stemming);
     }
 
     public Query buildQuery(ArrayList<Term> parsed_content){

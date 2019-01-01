@@ -168,7 +168,7 @@ Parse {
 
         while ((line = bufferedReader.readLine()) != null) {
             if (!line.equals(System.lineSeparator())) {
-                dict_stopWords.add(line);
+                dict_stopWords.add(line.toLowerCase());
             }
         }
     }
@@ -575,26 +575,21 @@ Parse {
     public void HandleHeader(String header) {
         String tmp = replaceText(header);
         String[] headerSplit = tmp.split(" ");
-        tmp = "";
+        StringBuilder temp = new StringBuilder("");
         for (String s : headerSplit) {
-            if (!dict_stopWords.contains(s) && !dict_stopWords.contains(s.toUpperCase()) && !dict_stopWords.contains(s.toLowerCase())) {
+            if (!dict_stopWords.contains(s.toLowerCase())) {
                 /*** Stemming***/
                 if (isSteam) {
                     stemmer.setCurrent(s);
                     if (stemmer.stem()) {
-                        //tmp = tmp + " "  + (stemmer.getCurrent());
-                        String stemStringTmp = stemmer.getCurrent().toLowerCase();
-                        if (indexer.getDictionary().contains(stemStringTmp))
-                            tmp = tmp + " " + stemStringTmp;
-                        else
-                            tmp = tmp + " " + stemStringTmp.toUpperCase();
+                        temp.append(" "+stemmer.getCurrent());
                     }
                 } else {
-                    tmp = tmp + " " + s;
+                    temp.append(" "+s);
                 }
             }
         }
-        doc.setHEADER(tmp);
+        doc.setHEADER(temp.toString());
     }
 
 
@@ -904,7 +899,16 @@ Parse {
     }
 
 
-    public ArrayList<Term> getQueryTerms() {
+    public ArrayList<Term> getQueryTerms(boolean stemming) {
+        for(int i=0 ; i<queryTerms.size() ; i++){
+            stemmer.setCurrent(queryTerms.get(i).getName());
+            if(stemmer.stem()){
+                Term t= new Term(queryTerms.get(i));
+                t.setName(stemmer.getCurrent());
+                queryTerms.set(i,t);
+            }
+        }
+
         for (int i = 0; i <queryTerms.size() ; i++) {
             if(indexer.getDictionary().get(queryTerms.get(i).getName().toLowerCase())!=null){
                 Term Otherterm = queryTerms.get(i);
@@ -915,6 +919,9 @@ Parse {
                 Term Otherterm = queryTerms.get(i);
                 Otherterm.setName(Otherterm.getName().toUpperCase());
                 queryTerms.set(i,Otherterm);
+            }
+            else{
+                queryTerms.remove(i);
             }
         }
         return queryTerms;
