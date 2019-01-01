@@ -170,6 +170,7 @@ public class Controller implements Initializable {
     }
     private String save() {
         FileChooser fc = new FileChooser();
+        fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("text file", "*.txt"));
         File f = fc.showSaveDialog(null);
         if (f == null) {
             return null;
@@ -446,7 +447,6 @@ public class Controller implements Initializable {
             Label docName = new Label();
             docName.setText("   " + r.getDOCNO());
             map_docIndex.put(i, r.getDOCNO());
-            System.out.println(r.getDOCNO());
             hBox.getChildren().add(button);
             hBox.getChildren().add(docName);
             listView_docs.getItems().add(hBox);

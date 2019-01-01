@@ -34,7 +34,7 @@ public class Searcher {
         this.indexer=Indexer.getInstance();
         this.parse=new Parse(true);
         this.map_results=new TreeSet<RankingObject>();
-        this.stemming=false;
+        this.stemming=stemming;
 
     }
 
@@ -45,7 +45,7 @@ public class Searcher {
         this.map_results=new TreeSet<RankingObject>();
         this.query_text=query.getText();
         ranker = new Ranker(hashSet_citisByUser);
-        this.stemming=false;
+        this.stemming=stemming;
 
 
     }
@@ -57,7 +57,7 @@ public class Searcher {
         this.indexer=Indexer.getInstance();
         this.parse=new Parse(true);
         this.map_results=new TreeSet<RankingObject>();
-        this.stemming=false;
+        this.stemming=stemming;
     }
 
     public ArrayList<Term> parseQuery(){
@@ -132,15 +132,6 @@ public class Searcher {
 
 
 
-//    public String getLine(Pointer term_pointer){
-//        String line="";
-//        try (Stream<String> lines = Files.lines(Paths.get(indexer.getPath()+ File.separator+ term_pointer.getFile_name()+".txt"))) {
-//            line = lines.skip(term_pointer.getLine_number()).findFirst().get();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return line;
-//    }
 
     /**
      * Splits the line into fields

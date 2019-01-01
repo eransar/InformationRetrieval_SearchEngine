@@ -27,23 +27,10 @@ public class Ranker {
 
     }
 
-    public TreeSet<RankingObject> getSorted_rankingobject() {
-        return sorted_rankingobject;
-    }
 
-    public void setSorted_rankingobject(TreeSet<RankingObject> sorted_rankingobject) {
-        this.sorted_rankingobject = sorted_rankingobject;
-    }
-
-    public HashSet<String> getSet_citiesChoosen() {
-        return set_citiesChoosen;
-    }
-
-    public void setSet_citiesChoosen(HashSet<String> set_citiesChoosen) {
-        this.set_citiesChoosen = set_citiesChoosen;
-    }
-
-
+    /**
+     * Calculate RankingObjects by BM25 Function
+     */
     public void calculateBM25() {
         for (RankingObject rank : map_ranked_docs.values()) {
             BM25 bm25 = new BM25(rank);
@@ -51,6 +38,9 @@ public class Ranker {
         }
     }
 
+    /**
+     * Calculate RankingObjects by Cossim Function
+     */
     public void calculateCosSim(){
         for (RankingObject rank : map_ranked_docs.values()) {
             CosSim cosSim = new CosSim(rank);
@@ -58,6 +48,9 @@ public class Ranker {
         }
     }
 
+    /**
+     * Calculate RankingObjects by Header Function
+     */
     public void calculateHeader() {
         for (RankingObject rank : map_ranked_docs.values()) {
             Header header = new Header(rank);
@@ -65,6 +58,9 @@ public class Ranker {
         }
     }
 
+    /**
+     * Calculate Final ranking of rankingobjects by all functions
+     */
     public void calculate() {
         calculateBM25();
         calculateCosSim();
@@ -143,5 +139,20 @@ public class Ranker {
     public void setSemantics(boolean semantics) {
 
         this.semantics = semantics;
+    }
+    public TreeSet<RankingObject> getSorted_rankingobject() {
+        return sorted_rankingobject;
+    }
+
+    public void setSorted_rankingobject(TreeSet<RankingObject> sorted_rankingobject) {
+        this.sorted_rankingobject = sorted_rankingobject;
+    }
+
+    public HashSet<String> getSet_citiesChoosen() {
+        return set_citiesChoosen;
+    }
+
+    public void setSet_citiesChoosen(HashSet<String> set_citiesChoosen) {
+        this.set_citiesChoosen = set_citiesChoosen;
     }
 }
