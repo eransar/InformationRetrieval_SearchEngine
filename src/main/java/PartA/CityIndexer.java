@@ -100,6 +100,7 @@ public class CityIndexer implements Serializable {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("City Api");
             alert.setHeaderText("There is no internet connection");
+            alert.show();
         }
         JSONParser parser = new JSONParser();
         Object obj = null;

@@ -578,9 +578,7 @@ Parse {
         tmp = "";
         for (String s : headerSplit) {
             if (!dict_stopWords.contains(s) && !dict_stopWords.contains(s.toUpperCase()) && !dict_stopWords.contains(s.toLowerCase())) {
-                /**
-                 * Stemming
-                 */
+                /*** Stemming***/
                 if (isSteam) {
                     stemmer.setCurrent(s);
                     if (stemmer.stem()) {
