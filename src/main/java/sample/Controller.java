@@ -29,6 +29,7 @@ import java.util.*;
 
 public class Controller implements Initializable {
 
+    public Button button_trecEvalFileSave;
     public Button corpusPath;
     public Button PostingPath;
     public Button StopW;
@@ -92,6 +93,7 @@ public class Controller implements Initializable {
         button_next.setVisible(false);
         button_back.setVisible(false);
         labal_numOfQuery.setVisible(false);
+        button_trecEvalFileSave.setDisable(true);
     }
 
     /**
@@ -341,11 +343,11 @@ public class Controller implements Initializable {
             item.setText(tmp1);
             menu_item.getItems().add(item);
         }
-//        CheckComboBox_Citis.setDisable(false);
-//        CheckComboBox_Citis.getItems().setAll(Citis);
     }
 
     public void runQuery(ActionEvent event) {
+        labal_numOfQuery.setText("");
+        listView_docs.getItems().clear();
         String query = "";
         if (Q_text.getText() != null && !Q_text.getText().equals("")) {
             HashSet<String> set_CitisByUser = new HashSet<>();
@@ -354,10 +356,6 @@ public class Controller implements Initializable {
                 if(item1.isSelected())
                     set_CitisByUser.add(item1.getText());
             }
-//            ObservableList<Integer> indexOfCheckComboBox_Citis = CheckComboBox_Citis.getCheckModel().getCheckedIndices();
-//            for (Integer i : indexOfCheckComboBox_Citis) {
-//                set_CitisByUser.add((String) CheckComboBox_Citis.getItems().get(i));
-//            }
             query = Q_text.getText();
             runSearch(query, set_CitisByUser);
         }
@@ -386,6 +384,14 @@ public class Controller implements Initializable {
         ranker.sortSet();
         DisplayDocs(ranker.getSorted_rankingobject());
         ranker.writeResults(PathOfPosting);
+        button_trecEvalFileSave.setDisable(false);
+        ranker= new Ranker(new HashSet<>());
+        searcher = new Searcher("",false);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText("System Message");
+        alert.setContentText("Finished running.");
+        alert.show();
     }
 
     private void margeRank(Ranker r1, Ranker r2) {
@@ -457,7 +463,6 @@ public class Controller implements Initializable {
         pathFileQuery = browse();
     }
 
-
     /**
      * use query text file
      *
@@ -466,6 +471,7 @@ public class Controller implements Initializable {
      */
     public void button_BrowseQuery(ActionEvent event) throws IOException {
         if (pathFileQuery != null) {
+
             File f = new File(pathFileQuery);
             queryFile = new QueryFile(f);
             queryFile.parse();
@@ -480,7 +486,7 @@ public class Controller implements Initializable {
         }
     }
 
-    public void next_vacation(ActionEvent event) {
+    public void next(ActionEvent event) {
         if(map_results.higherKey(currentNumQurrey) !=null){
             currentNumQurrey = map_results.higherKey(currentNumQurrey);
         }
@@ -488,7 +494,7 @@ public class Controller implements Initializable {
         labal_numOfQuery.setText(currentNumQurrey.getNumOfQuery());
     }
 
-    public void prev_vacation(ActionEvent event) {
+    public void prev(ActionEvent event) {
         if(map_results.lowerKey(currentNumQurrey) !=null){
             currentNumQurrey = map_results.lowerKey(currentNumQurrey);
         }
@@ -497,16 +503,13 @@ public class Controller implements Initializable {
     }
 
     public void searchFile() {
+        listView_docs.getItems().clear();
         HashSet<String> set_CitisByUser = new HashSet<>();
         for(MenuItem item : menu_item.getItems()){
             CheckMenuItem item1 = (CheckMenuItem)item;
             if(item1.isSelected())
                 set_CitisByUser.add(item1.getText());
         }
-//        ObservableList<Integer> indexOfCheckComboBox_Citis = CheckComboBox_Citis.getCheckModel().getCheckedIndices();
-//        for (Integer i : indexOfCheckComboBox_Citis) {
-//            set_CitisByUser.add((String) CheckComboBox_Citis.getItems().get(i));
-//        }
         ArrayList<Query> queries = queryFile.getQueryArrayList();
         boolean stem = StemmingCheckBox.isSelected();
         for (Query q : queries) {
@@ -530,8 +533,15 @@ public class Controller implements Initializable {
             }
             ranker.sortSet();
             map_results.put(q, ranker.getSorted_rankingobject());
+            ranker = new Ranker(new HashSet<>());
+            searcher = new Searcher("",false);
         }
-
+        button_trecEvalFileSave.setDisable(false);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText("System Message");
+        alert.setContentText("Finished running.");
+        alert.show();
     }
 
     private void writeResults() {
