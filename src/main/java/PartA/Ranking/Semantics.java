@@ -53,17 +53,16 @@ public class Semantics {
                 }
                 if (obj != null) {
                     String word = "";
+                    int defult = 3;
+                    if(termName.charAt(0)>=65 && termName.charAt(0)<=90)
+                        defult = 4;
                     parsed_json = ((JSONArray) obj).toArray();
-//                    for (Object s : parsed_json) {
-//                        word = (String) ((JSONObject) s).get("word");
-//                        map_concepte.put(termName, word);
-//                    }
                     int index = 0;
                     map_concepte.put(termName, new ArrayList<>());
                     for (Object s : parsed_json) {
                         word = (String) ((JSONObject) s).get("word");
                         map_concepte.get(termName).add(index, word);
-                        if (index == 4)
+                        if (index == defult)
                             break;
                         index++;
                     }
