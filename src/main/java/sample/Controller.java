@@ -67,14 +67,12 @@ public class Controller implements Initializable {
     public Label labal_numOfQuery;
     public Button button_next;
     public Button button_back;
-    public int CurrentQuery = 0;
+    public MenuButton menu_item;
     public TreeMap<Query, TreeSet<RankingObject>> map_results;
     private Query currentNumQurrey;
     private String pathFileQuery;
     private StringBuilder sb = new StringBuilder("");
-    public ComboBox<CheckBox> checkCombo;
-    public MenuButton menu_item;
-    public ObservableList<MenuItem> menuItemObservableList;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -210,6 +208,16 @@ public class Controller implements Initializable {
             language.setValue("Language");
             newPostingPath = "";
             indexer.setLoad(false);
+            menu_item.getItems().clear();
+            map_docIndex = new HashMap<>();
+            map_results = new TreeMap<>();
+            labal_numOfQuery.setText("");
+            check_Semantic.setSelected(false);
+            Alert  alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setHeaderText("System Message");
+            alert.setContentText("The reset is done");
+            alert.show();
         }
     }
 
@@ -379,11 +387,11 @@ public class Controller implements Initializable {
             searcher2.getPointers();
             Ranker ranker2 = searcher.getRanker();
             ranker2.calculate();
-            margeRank(ranker, ranker2);
+            mergeRank(ranker, ranker2);
         }
         ranker.sortSet();
         DisplayDocs(ranker.getSorted_rankingobject());
-        writeResults_for_file(ranker.getSorted_rankingobject());
+        ranker.writeResults(PathOfPosting);
         button_trecEvalFileSave.setDisable(false);
         ranker= new Ranker(new HashSet<>());
         searcher = new Searcher("",false);
@@ -394,13 +402,12 @@ public class Controller implements Initializable {
         alert.show();
     }
 
-
-    private void margeRank(Ranker r1, Ranker r2) {
+    private void mergeRank(Ranker r1, Ranker r2) {
         for (Map.Entry<String, RankingObject> d : r2.getMap_ranked_docs().entrySet()) {
             if (r1.getMap_ranked_docs().containsKey(d.getKey())) {
                 double rank1 = r1.getMap_ranked_docs().get(d.getKey()).getRank();
                 double rank2 = r2.getMap_ranked_docs().get(d.getKey()).getRank();
-                r1.getMap_ranked_docs().get(d.getKey()).setRank(0.70 * rank1 + 0.3 * rank2);
+                r1.getMap_ranked_docs().get(d.getKey()).setRank(0.7 * rank1 + 0.3 * rank2);
             }
         }
     }
@@ -459,6 +466,7 @@ public class Controller implements Initializable {
             listView_docs.getItems().add(hBox);
             i++;
         }
+
     }
     public void BrowseQuery(ActionEvent event) throws IOException {
         pathFileQuery = browse();
@@ -530,7 +538,7 @@ public class Controller implements Initializable {
                 searcher2.getPointers();
                 Ranker ranker2 = searcher.getRanker();
                 ranker2.calculate();
-                margeRank(ranker, ranker2);
+                mergeRank(ranker, ranker2);
             }
             ranker.sortSet();
             map_results.put(q, ranker.getSorted_rankingobject());
@@ -559,33 +567,30 @@ public class Controller implements Initializable {
             }
         }
     }
-    private void writeResults_for_file(TreeSet<RankingObject> treeresult) {
-        sb = new StringBuilder();
-        int i = 0;
-        for (RankingObject rank : treeresult) {
-            {
-                if (i == 50){
-                    break;
-
-                }
-                sb.append("999" + " 0 " + rank.getDOCNO() + " 1 42.38 mt" + System.lineSeparator());
-
-                i++;
-                }
-            }
-        }
-
 
     public void button_writeResult(ActionEvent event){
         String p = save();
         try {
-            File f = new File(p);
-            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f, false)));
-            out.write(sb.toString());
-            out.close();
+            if(p!=null && p.length()>0) {
+                File f = new File(p);
+                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f, false)));
+                out.write(sb.toString());
+                out.close();
+            }
+            else {
+                alertNoFileSelect();
+            }
         } catch (IOException e) {
-            //exception handling left as an exercise for the reader
+            alertNoFileSelect();
         }
+    }
+
+    private void alertNoFileSelect() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText("System Message");
+        alert.setContentText("No file had been chosen");
+        alert.show();
     }
 }
 

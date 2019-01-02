@@ -22,11 +22,13 @@ public class Header extends ARankerFunction {
         String s= super.getRankingObject().getHEADER();
         int length =s.length();
         String [] Header = s.split(" ");
+        double i =length;
         for(String tmp : Header){
             if(super.getRankingObject().getQuery().getMap_query().containsKey(tmp.toLowerCase()) || super.getRankingObject().getQuery().getMap_query().containsKey(tmp.toUpperCase())){
                 result = result + 1;
+
             }
         }
-        return result;
+        return result/length;
     }
 }
