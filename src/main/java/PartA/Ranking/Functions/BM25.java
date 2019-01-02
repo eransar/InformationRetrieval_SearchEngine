@@ -6,7 +6,9 @@ import PartA.Ranking.RankingObject;
 
 import java.util.ArrayList;
 
-
+/**
+ * Ranking by BM25 function
+ */
 public class BM25 extends ARankerFunction{
 
     private final double b = 0.45;
@@ -23,7 +25,10 @@ public class BM25 extends ARankerFunction{
         this.rankingObject = rankingObject;
     }
 
-
+    /**
+     * Calculate by BM25 function and returns the result
+     * @return
+     */
     public double calculate(){
         double result=0;
         int average_doc=indexer.getDocsaverage();

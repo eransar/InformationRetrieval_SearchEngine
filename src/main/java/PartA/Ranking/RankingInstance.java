@@ -4,6 +4,9 @@ import PartA.Indexer;
 
 import java.util.Objects;
 
+/**
+ * A Class that represents an instance of rankingobject or basiclly a term that we can rank
+ */
 public class RankingInstance {
     String term_name;
     int count_query;
@@ -11,17 +14,7 @@ public class RankingInstance {
     int df;
 
 
-    public String getTerm_name() {
-        return term_name;
-    }
 
-    public int getDf() {
-        return df;
-    }
-
-    public void setDf(int df) {
-        this.df = df;
-    }
 
     public RankingInstance(String term_name, int count_query, int  count_doc){
         this.count_query=count_query;
@@ -30,6 +23,10 @@ public class RankingInstance {
         this.df= Indexer.getInstance().getDictionary().get(term_name).getTerm_df();
     }
 
+    /**
+     * Return the number of times this instance appear in the query
+     * @return
+     */
     public int getCount_query() {
         return count_query;
     }
@@ -57,5 +54,17 @@ public class RankingInstance {
     public int hashCode() {
 
         return Objects.hash(term_name);
+    }
+
+    public String getTerm_name() {
+        return term_name;
+    }
+
+    public int getDf() {
+        return df;
+    }
+
+    public void setDf(int df) {
+        this.df = df;
     }
 }

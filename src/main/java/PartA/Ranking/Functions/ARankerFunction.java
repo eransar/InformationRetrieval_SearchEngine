@@ -3,6 +3,9 @@ package PartA.Ranking.Functions;
 import PartA.Indexer;
 import PartA.Ranking.RankingObject;
 
+/**
+ * Abstract ranking function
+ */
 public abstract class ARankerFunction implements IRankerFunction {
 
     private RankingObject rankingObject;

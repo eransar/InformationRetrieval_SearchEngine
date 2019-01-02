@@ -14,6 +14,9 @@ import java.util.HashSet;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
+/**
+ * Class used to search in the posting and retrieve the relvant docs
+ */
 public class Searcher {
 
 
@@ -60,11 +63,8 @@ public class Searcher {
         this.stemming=stemming;
     }
 
-    public ArrayList<Term> parseQuery(){
-        return parse.parseQuery(query.text);
-    }
     /**
-     * Find if the words in the query are in the inverted index and return a pointers to them
+     * return pointers for the query and building a rankingobjects for them
      */
     public void getPointers(){
         ArrayList<Term> parsed_content=sendtoParse(query_text,stemming);
@@ -77,11 +77,23 @@ public class Searcher {
             }
         }
     }
+
+    /**
+     * Send query to parse and return an array of terms
+     * @param text
+     * @param stemming
+     * @return
+     */
     public ArrayList<Term> sendtoParse(String text, boolean stemming){
         parse.ParseDoc(new Doc(""),text);
         return parse.getQueryTerms(stemming);
     }
 
+    /**
+     * Build query from term array
+     * @param parsed_content
+     * @return
+     */
     public Query buildQuery(ArrayList<Term> parsed_content){
         StringBuilder sb = new StringBuilder("");
         for (int i = 0; i < parsed_content.size(); i++) {
@@ -149,10 +161,12 @@ public class Searcher {
     }
 
 
-
-    public void clear(){
-
+    public ArrayList<Term> parseQuery(){
+        return parse.parseQuery(query.text);
     }
+    /**
+     * Find if the words in the query are in the inverted index and return a pointers to them
+     */
 
     public static Query getQuery(){
         return query;

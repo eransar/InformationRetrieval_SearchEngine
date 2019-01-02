@@ -3,6 +3,9 @@ package PartA.Ranking.Functions;
 import PartA.Indexer;
 import PartA.Ranking.RankingObject;
 
+/**
+ * Function that calculates that header algorithm and returns the ranking.
+ */
 public class Header extends ARankerFunction {
     Indexer indexer = Indexer.getInstance();
     double result =0;
@@ -12,6 +15,9 @@ public class Header extends ARankerFunction {
     }
 
     @Override
+    /**
+     * Ranking by header and return the results
+     */
     public double calculate() {
         String s= super.getRankingObject().getHEADER();
         int length =s.length();

@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+/**
+ * Class that represents a query file in our program.
+ */
 public class QueryFile {
     private Document doc;
     private File querysFile;
@@ -23,6 +26,10 @@ public class QueryFile {
         init_replace();
     }
 
+    /**
+     * Parsing query file with jsoup
+     * @throws IOException
+     */
     public void parse() throws IOException {
         Document query;
         query = Jsoup.parse(querysFile, "UTF-8");

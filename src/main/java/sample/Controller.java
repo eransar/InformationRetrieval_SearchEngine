@@ -383,7 +383,7 @@ public class Controller implements Initializable {
         }
         ranker.sortSet();
         DisplayDocs(ranker.getSorted_rankingobject());
-        ranker.writeResults(PathOfPosting);
+        writeResults_for_file(ranker.getSorted_rankingobject());
         button_trecEvalFileSave.setDisable(false);
         ranker= new Ranker(new HashSet<>());
         searcher = new Searcher("",false);
@@ -393,6 +393,7 @@ public class Controller implements Initializable {
         alert.setContentText("Finished running.");
         alert.show();
     }
+
 
     private void margeRank(Ranker r1, Ranker r2) {
         for (Map.Entry<String, RankingObject> d : r2.getMap_ranked_docs().entrySet()) {
@@ -558,6 +559,22 @@ public class Controller implements Initializable {
             }
         }
     }
+    private void writeResults_for_file(TreeSet<RankingObject> treeresult) {
+        sb = new StringBuilder();
+        int i = 0;
+        for (RankingObject rank : treeresult) {
+            {
+                if (i == 50){
+                    break;
+
+                }
+                sb.append("999" + " 0 " + rank.getDOCNO() + " 1 42.38 mt" + System.lineSeparator());
+
+                i++;
+                }
+            }
+        }
+
 
     public void button_writeResult(ActionEvent event){
         String p = save();

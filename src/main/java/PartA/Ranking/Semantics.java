@@ -15,6 +15,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Semantic class used to for semantic search in the search engine.
+ * we use api of datamuse.com/api to search for a simillar words
+ */
 public class Semantics {
 
     private Indexer indexer = Indexer.getInstance();
@@ -27,6 +31,9 @@ public class Semantics {
         query = q;
     }
 
+    /**
+     * Starting connection for the api
+     */
     public void startConnection() {
         String[] terms = query.getTitle().split(" ");
         for (String termName : terms) {
@@ -54,10 +61,6 @@ public class Semantics {
                 if (obj != null) {
                     String word = "";
                     parsed_json = ((JSONArray) obj).toArray();
-//                    for (Object s : parsed_json) {
-//                        word = (String) ((JSONObject) s).get("word");
-//                        map_concepte.put(termName, word);
-//                    }
                     int index = 0;
                     map_concepte.put(termName, new ArrayList<>());
                     for (Object s : parsed_json) {

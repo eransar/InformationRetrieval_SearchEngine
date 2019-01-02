@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * A Class for query file in our search engine
+ */
 public class Query implements Comparable{
 
     private String numOfQuery="";
@@ -34,6 +37,9 @@ public class Query implements Comparable{
         return title+" "+description;
     }
 
+    /**
+     * initialize the map query.
+     */
     public void init_mapquery(){
         String[] splitted = text.split(" ");
         for (String word: splitted){

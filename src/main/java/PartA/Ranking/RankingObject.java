@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * A Class that represents a ranking object that holds a document data and ranking
+ */
 public class RankingObject implements Comparable {
     Indexer indexer = Indexer.getInstance();
     int length;
@@ -29,22 +32,7 @@ public class RankingObject implements Comparable {
     HashMap<String, RankingInstance> terms_data; // String is the name of the term
 
 
-    public double getWeight() {
-        return weight;
-    }
 
-    public void setWeight(float weight) {
-        this.weight = weight;
-    }
-
-
-    public String getHEADER() {
-        return HEADER;
-    }
-
-    public void setHEADER(String HEADER) {
-        this.HEADER = HEADER;
-    }
 
 
     public RankingObject(String DOCNO, String file, int length, double weight, double weight_pow2,String [] entities_arr, Query query) {
@@ -68,41 +56,11 @@ public class RankingObject implements Comparable {
                 }
 
             }
-            //rank_entities += query.getMap_query().get(this.entities[i].toLowerCase()) == null ? 0.00d : query.getMap_query().get(this.entities[i].toLowerCase());
+
         }
     }
 
-    public double getRank_BM25() {
-        return rank_BM25;
-    }
 
-    public void setRank_BM25(double rank_BM25) {
-        this.rank_BM25 = rank_BM25;
-    }
-
-    public double getRank_cossim() {
-        return rank_cossim;
-    }
-
-    public void setRank_cossim(double rank_cossim) {
-        this.rank_cossim = rank_cossim;
-    }
-    public Query getQuery() {
-        return query;
-    }
-
-    public void setQuery(Query query) {
-        this.query = query;
-    }
-
-
-    public double getRank_header() {
-        return rank_header;
-    }
-
-    public void setRank_header(double rank_header) {
-        this.rank_header = rank_header;
-    }
 
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -114,6 +72,23 @@ public class RankingObject implements Comparable {
     public int hashCode() {
 
         return Objects.hash(DOCNO);
+    }
+    @Override
+    /***
+     * Comparing by ranking
+     */
+    public int compareTo(Object o) {
+        if (this == o) return 0;
+
+        if ((o instanceof RankingObject)) {
+            RankingObject OtherRakingObject = ((RankingObject) o);
+            if (this.rank > OtherRakingObject.rank) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
+        return -1;
     }
 
     public int getLength() {
@@ -176,27 +151,61 @@ public class RankingObject implements Comparable {
         this.weight_pow2 = weight_pow2;
     }
 
-    @Override
-    public int compareTo(Object o) {
-        if (this == o) return 0;
 
-        if ((o instanceof RankingObject)) {
-            RankingObject OtherRakingObject = ((RankingObject) o);
-            if (this.rank > OtherRakingObject.rank) {
-                return -1;
-            } else {
-                return 1;
-            }
-        }
-        return -1;
+    public double getWeight() {
+        return weight;
     }
 
+    public void setWeight(float weight) {
+        this.weight = weight;
+    }
+
+
+    public String getHEADER() {
+        return HEADER;
+    }
+
+    public void setHEADER(String HEADER) {
+        this.HEADER = HEADER;
+    }
     public double getRank_entities() {
         return rank_entities;
     }
 
     public void setRank_entities(double rank_entities) {
         this.rank_entities = rank_entities;
+    }
+
+    public double getRank_BM25() {
+        return rank_BM25;
+    }
+
+    public void setRank_BM25(double rank_BM25) {
+        this.rank_BM25 = rank_BM25;
+    }
+
+    public double getRank_cossim() {
+        return rank_cossim;
+    }
+
+    public void setRank_cossim(double rank_cossim) {
+        this.rank_cossim = rank_cossim;
+    }
+    public Query getQuery() {
+        return query;
+    }
+
+    public void setQuery(Query query) {
+        this.query = query;
+    }
+
+
+    public double getRank_header() {
+        return rank_header;
+    }
+
+    public void setRank_header(double rank_header) {
+        this.rank_header = rank_header;
     }
 
 }

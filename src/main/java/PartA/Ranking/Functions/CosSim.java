@@ -4,6 +4,9 @@ import PartA.Indexer;
 import PartA.Ranking.RankingInstance;
 import PartA.Ranking.RankingObject;
 
+/**
+ * Cossim ranking function
+ */
 public class CosSim extends ARankerFunction {
 
     private int numOfDocs =0;
@@ -13,6 +16,9 @@ public class CosSim extends ARankerFunction {
         numOfDocs = indexer.getDict_docs().size();
     }
     @Override
+    /**
+     * Calculate ranking by cossim function
+     */
     public double calculate() {
         double weight = super.getRankingObject().getWeight();
         double weight_pow2 = super.getRankingObject().getWeight_pow2();
